@@ -10,7 +10,7 @@ player_creature = [100, 15, 10, 1, 3, 3, 15]
 
 # Характеристики врагов:
 
-enemies_dict_str = {}
+now_enemies_dict_str = []
 
 # Статистика:
 
