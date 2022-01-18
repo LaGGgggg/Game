@@ -1,4 +1,4 @@
-status = "medium"
+status = "easy"
 
 # Артефакты:
 
