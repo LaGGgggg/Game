@@ -1,4 +1,4 @@
-status = "in_hub"
+status = "easy"
 
 # Артефакты:
 
