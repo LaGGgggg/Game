@@ -382,12 +382,12 @@ def start_session():  # Берём данные из save и назначаем 
     player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1], saves.player_creature[2],
                                      saves.player_creature[3], saves.player_creature[4], saves.player_creature[5],
                                      saves.player_creature[6])
-    enemies_dict = saves.enemies_dict
+    enemies_dict = saves.enemies_dict_str
 
     return difficult, player_artefacts, player_creature, enemies_dict
 
 
-def end_session(status, enemies_dict, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+def end_session(status, enemies_dict_str, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
                 cells_passed):  # статус это название карты или in_hub
 
     # сохраняем всё важное(данные игрока, статус игры, данные врагов и статистику
@@ -479,7 +479,7 @@ def end_session(status, enemies_dict, get_artifacts, enemies_killed, damage_rece
                                                                             player_creature.healing_power)
     # Заносим характеристики врага
 
-    old_data[12] = 'enemies_dict = ' + enemies_dict + '\n'  # кажись так оставить
+    old_data[12] = 'enemies_dict_str = ' + enemies_dict_str + '\n'  # кажись так оставить
 
     # Заносим статистику
 

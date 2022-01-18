@@ -1,4 +1,4 @@
-status = "in_hub"
+status = "easy"
 
 # Артефакты:
 
@@ -10,7 +10,7 @@ player_creature = [100, 15, 10, 1, 3, 3, 15]
 
 # Характеристики врагов:
 
-enemies_dict = {}
+enemies_dict_str = {}
 
 # Статистика:
 

@@ -39,7 +39,52 @@ while game_go == 1:
 
         #
 
-        # надо взять из файла словарь строкой и его в словарь превратить
+        data = open('game_2_0_functions.py', 'r', encoding='UTF-8')
+
+        old_data = data.readlines()
+
+        data.close()
+
+        line = max(game_2_0_data.enemies_indexes.values()) + 1
+
+        p = old_data[line][16:-2]
+
+        p3 = []
+
+        p = p.replace('], ', ']&')
+
+        for e in p.split('&'):
+
+            p2 = []
+            n = 0
+
+            for i in e.split(': '):
+                print(i[0])
+                print(i)
+                if i[0] == '[':
+                    print('-------------------------------')
+                    print(i)
+                    i = [i[1:-1]]
+                    i = str(i).replace("'", '')
+
+                    print(i)
+                    print(type(i))
+                else:
+                    i = i.replace("'", '')
+                p2.append(i)
+
+            p3.append(p2)
+
+        p4 = {}
+
+        for i in p3:
+            p4[i[0]] = i[1]
+        print(p4)
+        print(type(p4))
+
+        #p4 = str(str(p4).replace("'", ''))
+
+        old_data[line + 1] = old_data[line + 1][:15] + str(p4) + '\n'
 
         # Печать текущей карты
 

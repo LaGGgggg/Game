@@ -202,7 +202,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     p4 = str(str(p4).replace("'", ''))
 
-    old_data[line + 1] = old_data[line + 1][:15] + p4 + '\n'
+    old_data[line + 1] = old_data[line + 1][:15] + str(p4) + '\n'
 
     # Записываем всё в файл
 
