@@ -1,4 +1,4 @@
-status = "medium"
+status = "in_hub"
 
 # Артефакты:
 
