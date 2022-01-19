@@ -50,7 +50,7 @@ class EnemyCreature:
 
 enemy_creature_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, "easy")
 enemy_creature_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, "medium")
-all_enemies_dict = {'easy': [enemy_creature_1], 'medium': [enemy_creature_2]}
+enemies_dict_const = {'easy': [enemy_creature_1], 'medium': [enemy_creature_2]}
 
 
 class PlayerCreature:
@@ -327,73 +327,76 @@ def player_moving(map_name, player_position):
     return player_position
 
 
-def create_session():
-
-    # Создание файла, если его нет и заполнение стоковой информацией
-
-    data = open('saves.py', 'w+')
-
-    data.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
-               '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
-
-    n = 17
-
-    for i in game_2_0_data.difficult_list:
-        data.write(i + '_passed = 0' + '\n')
-
-        n += 1
-
-    data.write('get_artifacts = 0\nenemies_killed = 0\ndamage_received = 0\ndamage_done = 0\nhealth_regenerated = 0\n'
-               'cells_passed = 0\n')
-
-    data.close()
-
-
-def start_session():  # Берём данные из save и назначаем их переменным
-
-    # Проверка существования файла и его правильности по количеству строк
-
-    importlib.reload(saves)
+def check_saves():
 
     if not os.path.exists('saves.py'):
+        data = open('saves.py', 'w+')
 
-        create_session()
+        data.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
+                   '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
 
-    data = open('saves.py', 'r')
+        n = 17
 
-    old_data = data.readlines()
+        for i in game_2_0_data.difficult_list:
+            data.write(i + '_passed = 0' + '\n')
 
-    data.close()
+            n += 1
 
-    stat_chek = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
-                 'health_regenerated = 0\n', 'cells_passed = 0\n']
+        data.write(
+            'get_artifacts = 0\nenemies_killed = 0\ndamage_received = 0\ndamage_done = 0\nhealth_regenerated = 0\n'
+            'cells_passed = 0\n')
 
-    n = 0
+        data.close()
 
-    for i in game_2_0_data.difficult_list:
-        stat_chek.insert(n, i + '_passed = 0' + '\n')
+        return False
 
-        n += 1
+    else:
+        data = open('saves.py', 'r')
 
-    if len(old_data) != 22 + len(game_2_0_data.difficult_list) or old_data[16:22 + len(game_2_0_data.difficult_list)] \
-            != stat_chek:
+        old_data = data.readlines()
 
-        create_session()
+        data.close()
 
-    importlib.reload(saves)
+        stat_chek = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
+                     'health_regenerated = 0\n', 'cells_passed = 0\n']
 
-    difficult = saves.status
-    player_artefacts = saves.player_artefacts
-    player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1], saves.player_creature[2],
-                                     saves.player_creature[3], saves.player_creature[4], saves.player_creature[5],
-                                     saves.player_creature[6])
-    all_enemies_dict_str = saves.now_enemies_dict_str  # просто прочитать
+        n = 0
 
-    return difficult, player_artefacts, player_creature, all_enemies_dict_str
+        for i in game_2_0_data.difficult_list:
+            stat_chek.insert(n, i + '_passed = 0' + '\n')
+
+            n += 1
+
+        if len(old_data) != 22 + len(game_2_0_data.difficult_list) or old_data[
+                                                                      16:22 + len(game_2_0_data.difficult_list)] \
+                != stat_chek:
+
+            data = open('saves.py', 'w+')
+
+            data.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
+                       '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
+
+            n = 17
+
+            for i in game_2_0_data.difficult_list:
+                data.write(i + '_passed = 0' + '\n')
+
+                n += 1
+
+            data.write(
+                'get_artifacts = 0\nenemies_killed = 0\ndamage_received = 0\ndamage_done = 0\nhealth_regenerated = 0\n'
+                'cells_passed = 0\n')
+
+            data.close()
+
+            return False
+        else:
+            return True
 
 
-def end_session(status, enemies_list_str, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                cells_passed):  # статус это название карты или in_hub
+def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
+                enemies_dict):
+    # статус это название карты или in_hub
 
     # сохраняем всё важное(данные игрока, статус игры, данные врагов и статистику
 
@@ -401,63 +404,7 @@ def end_session(status, enemies_list_str, get_artifacts, enemies_killed, damage_
 
     importlib.reload(saves)
 
-    if not os.path.exists('saves.py'):
-
-        d = open('saves.py', 'w+')
-
-        d.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
-                '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
-
-        n = 17
-
-        for i in game_2_0_data.difficult_list:
-
-            d.write(i + '_passed = 0' + '\n')
-
-            n += 1
-
-        d.write('get_artifacts = 0\nenemies_killed = 0\ndamage_received = 0\ndamage_done = 0\nhealth_regenerated = 0\n'
-                'cells_passed = 0\n')
-
-        d.close()
-
-    data = open('saves.py', 'r')
-
-    old_data = data.readlines()
-
-    data.close()
-
-    stat_chek = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
-                 'health_regenerated = 0\n', 'cells_passed = 0\n']
-
-    n = 0
-
-    for i in game_2_0_data.difficult_list:
-
-        stat_chek.insert(n, i + '_passed = 0' + '\n')
-
-        n += 1
-
-    if len(old_data) != 22 + len(game_2_0_data.difficult_list) or old_data[16:22 + len(game_2_0_data.difficult_list)] \
-            != stat_chek:
-
-        d = open('saves.py', 'w')
-
-        d.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
-                '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
-
-        n = 17
-
-        for i in game_2_0_data.difficult_list:
-
-            d.write(i + '_passed = 0' + '\n')
-
-            n += 1
-
-        d.write('get_artifacts = 0\nenemies_killed = 0\ndamage_received = 0\ndamage_done = 0\nhealth_regenerated = 0\n'
-                'cells_passed = 0\n')
-
-        d.close()
+    check_saves()
 
     # Открываем и читаем файл
 
@@ -484,7 +431,24 @@ def end_session(status, enemies_list_str, get_artifacts, enemies_killed, damage_
                                                                             player_creature.healing_power)
     # Заносим характеристики врага
 
-    old_data[12] = 'all_enemies_dict_str = ' + enemies_list_str + '\n'  # кажись так оставить
+    for i in range(len(enemies_dict)):
+        if i == 0:
+            old_data[12] = 'enemies_list = [[{}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
+                                                                                    enemies_dict[i].damage,
+                                                                                    enemies_dict[i].ranged_damage,
+                                                                                    enemies_dict[i].close_fight_radius,
+                                                                                    enemies_dict[i].ranged_combat_radius,
+                                                                                    enemies_dict[i].moving_speed,
+                                                                                    enemies_dict[i].healing_power)
+        else:
+            old_data[12] = old_data[12][:-2] + ', [{}, {}, {}, {}, {}, {}, {}]\n'.format(enemies_dict[i].health,
+                                                                                         enemies_dict[i].damage,
+                                                                                         enemies_dict[i].ranged_damage,
+                                                                                         enemies_dict[i].close_fight_radius,
+                                                                                         enemies_dict[i].ranged_combat_radius,
+                                                                                         enemies_dict[i].moving_speed,
+                                                                                         enemies_dict[i].healing_power)
+            old_data[12] = old_data[12] + ']\n'
 
     # Заносим статистику
 
@@ -512,13 +476,6 @@ def end_session(status, enemies_list_str, get_artifacts, enemies_killed, damage_
     n += 1
     old_data[n] = 'cells_passed = ' + str(saves.cells_passed + cells_passed) + '\n'
 
-    get_artifacts = 0
-    enemies_killed = 0
-    damage_received = 0
-    damage_done = 0
-    health_regenerated = 0
-    cells_passed = 0
-
     # Записываем всё в файл
 
     new_data = open('saves.py', 'w')
@@ -528,8 +485,6 @@ def end_session(status, enemies_list_str, get_artifacts, enemies_killed, damage_
         new_data.write(str(i))
 
     new_data.close()
-
-    return get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
 
 
 def game():
@@ -550,11 +505,38 @@ def game():
 
         global player_creature, player_artefacts, player_creature
 
-        difficult, player_artefacts, player_creature, now_enemies_list = start_session()
+        # Проверка saves
 
-        if difficult == 'in_hub':
+        if check_saves():
 
+            # импорт данных из saves
+
+            difficult = saves.status
+            player_artefacts = saves.player_artefacts
+
+            if difficult != 'in_hub':
+                player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1],
+                                                 saves.player_creature[2], saves.player_creature[3],
+                                                 saves.player_creature[4], saves.player_creature[5],
+                                                 saves.player_creature[6])
+                enemies_list = enemies_dict_const[difficult]
+                for i in range(len(enemies_dict_const[difficult])):
+                    enemies_list[i].health = saves.enemies_list[i][0]
+                    enemies_list[i].damage = saves.enemies_list[i][1]
+                    enemies_list[i].ranged_damage = saves.enemies_list[i][2]
+                    enemies_list[i].close_fight_radius = saves.enemies_list[i][3]
+                    enemies_list[i].ranged_combat_radius = saves.enemies_list[i][4]
+                    enemies_list[i].moving_speed = saves.enemies_list[i][5]
+                    enemies_list[i].healing_power = saves.enemies_list[i][6]
+            else:
+
+                difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
+
+                enemies_list = enemies_dict_const[difficult]
+        else:
             difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
+
+            enemies_list = enemies_dict_const[difficult]
 
         print('Your map difficult now: ' + difficult)
 
@@ -574,20 +556,10 @@ def game():
             print_map(difficult)
             map_go = 0
 
-        # Обнуление характеристик игрока и врагов до стандартных
-
-        player_creature = PlayerCreature(100, 15, 10, 1, 3, 3, 15)
-
-        # тут надо характеристики врагов с ЭТОЙ карты к стоку привести
-
         # Сохранение всех данных на случай экстренного выключения
 
-        # поход только так: player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1], saves.player_creature[2],
-        #                                      saves.player_creature[3], saves.player_creature[4], saves.player_creature[5],
-        #                                      saves.player_creature[6]
-
-        end_session(difficult, str(all_enemies_dict), get_artifacts, enemies_killed, damage_received, damage_done,
-                    health_regenerated, cells_passed)
+        end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                    cells_passed, enemies_list)
 
         the_map_passed = {}
         for i in game_2_0_data.difficult_list:
@@ -598,8 +570,6 @@ def game():
         damage_done = 0
         health_regenerated = 0
         cells_passed = 0
-
-        # Статус это название карты или in_hub
 
         game_go = 0  # убрать потом
 

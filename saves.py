@@ -10,13 +10,13 @@ player_creature = [100, 15, 10, 1, 3, 3, 15]
 
 # Характеристики врагов:
 
-now_enemies_dict_str = {}
+enemies_list = [[10, 1, 1, 1, 1, 1, 1]]
 
 # Статистика:
 
 easy_passed = 0
 medium_passed = 0
-get_artifacts = 1
+get_artifacts = 0
 enemies_killed = 0
 damage_received = 0
 damage_done = 0

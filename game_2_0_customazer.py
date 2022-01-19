@@ -166,7 +166,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # добавляем врага к нужной карте
 
-    p = old_data[line + 1][16:-2]
+    p = old_data[line + 1][22:-2]
 
     p3 = []
 
@@ -196,7 +196,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     p4 = str(str(p4).replace("'", ''))
 
-    old_data[line + 1] = old_data[line + 1][:15] + str(p4) + '\n'
+    old_data[line + 1] = old_data[line + 1][:21] + str(p4) + '\n'
 
     # Записываем всё в файл
 
