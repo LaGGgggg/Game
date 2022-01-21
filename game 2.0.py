@@ -187,7 +187,9 @@ def random_artefact(map_name):
     return received_artefact
 
 
-def print_map(map_name):
+def print_map():
+
+    global now_map
 
     n = 1
 
@@ -203,6 +205,9 @@ def print_map(map_name):
 
 
 def player_moving(map_name, player_position):
+
+    global now_map
+
     # блок спроса пользователя
 
     moving = 1
@@ -336,7 +341,7 @@ def check_saves():
                    'РёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n'
                    '# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
 
-        n = 17
+        n = 20
 
         for i in game_2_0_data.difficult_list:
             data.write(i + '_passed = 0' + '\n')
@@ -368,8 +373,8 @@ def check_saves():
 
             n += 1
 
-        if len(old_data) != 22 + len(game_2_0_data.difficult_list) or old_data[
-                                                                      16:22 + len(game_2_0_data.difficult_list)] \
+        if len(old_data) != 26 + len(game_2_0_data.difficult_list) or old_data[
+                                                                      20:26 + len(game_2_0_data.difficult_list)] \
                 != stat_chek:
 
             data = open('saves.py', 'w+')
@@ -378,7 +383,7 @@ def check_saves():
                        'РёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n'
                        '# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
 
-            n = 17
+            n = 20
 
             for i in game_2_0_data.difficult_list:
                 data.write(i + '_passed = 0' + '\n')
@@ -398,6 +403,9 @@ def check_saves():
 
 def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
                 enemies_dict, now_map):
+
+    global player_artefacts
+
     # статус это название карты или in_hub
 
     # сохраняем всё важное(данные игрока, статус игры, данные врагов и статистику
@@ -426,7 +434,12 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     # Заносим характеристики игрока
 
-    old_data[8] = 'player_artefacts = ' + str(player_artefacts.player_artefacts_list) + '\n'  # когда файл перезаписывается через check, то криво записывает
+    if type(player_artefacts) == dict:
+        p = player_artefacts
+    else:
+        p = player_artefacts.player_artefacts_list
+
+    old_data[8] = 'player_artefacts = ' + str(p) + '\n'
 
     old_data[12] = 'player_creature = [{}, {}, {}, {}, {}, {}, {}]\n'.format(player_creature.health,
                                                                             player_creature.damage,
@@ -548,34 +561,20 @@ def game():
 
             now_map = all_maps_const[difficult]
 
-            # Стартовые позиции здесь
-
             crop_number = round(len(now_map) / 2)
-            print(now_map[1])
-            print(len(now_map[1]))
-            print(len(now_map[1]) / 2)
-            print(round(4.5))
-            print(crop_number)
-            print()
 
             enemies_number = game_2_0_data.max_map_enemies[difficult]
-            print(enemies_number)
 
             while enemies_number != 0:
-                print('Go')
-                print(str(enemies_number) + '  1')
 
                 for i in range(len(now_map[1:])):
-                    print(str(enemies_number) + '  2')
 
                     if i == 0:
                         i += 1
-                    print(len(now_map[i][crop_number:]))
 
                     for e in range(len(now_map[i][crop_number:])):
                         if e == 0:
                             e += 1
-                        print(str(enemies_number) + '  3')
 
                         if enemies_number == 0:
                             break
@@ -585,11 +584,9 @@ def game():
                         if choice == ' E':
 
                             enemies_number -= 1
-                            print('-1')
 
                             now_map[i][-e] = choice
-                    print(str(enemies_number) + '  4')
-            print(now_map)
+
 
         print('Your map difficult now: ' + difficult)
 
@@ -602,7 +599,7 @@ def game():
             # Печать текущей карты
 
             print('\n')
-            print_map(difficult)
+            print_map()
             map_go = 0
 
         # Сохранение всех данных на случай экстренного выключения
