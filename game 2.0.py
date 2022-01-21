@@ -191,10 +191,10 @@ def print_map(map_name):
 
     n = 1
 
-    y = now_map[map_name]
+    y = now_map
 
     try:
-        for _ in range(len(now_map[map_name])):
+        for _ in range(len(now_map)):
             print(Fore.LIGHTWHITE_EX + '|' + ''.join(y[n][1:]) + ' |')
 
             n += 1
@@ -332,8 +332,9 @@ def check_saves():
     if not os.path.exists('saves.py'):
         data = open('saves.py', 'w+')
 
-        data.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
-                   '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
+        data.write('0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё '
+                   'РёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n'
+                   '# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
 
         n = 17
 
@@ -373,8 +374,9 @@ def check_saves():
 
             data = open('saves.py', 'w+')
 
-            data.write('0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РёРіСЂРѕРєР°:\n\n0\n\n'
-                       '# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n''# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
+            data.write('0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё '
+                       'РёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n'
+                       '# РЎС‚Р°С‚РёСЃС‚РёРєР°:\n\n')
 
             n = 17
 
@@ -395,7 +397,7 @@ def check_saves():
 
 
 def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
-                enemies_dict):
+                enemies_dict, now_map):
     # статус это название карты или in_hub
 
     # сохраняем всё важное(данные игрока, статус игры, данные врагов и статистику
@@ -418,11 +420,15 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     old_data[0] = 'status = "' + status + '"\n'
 
+    # Заносим карту
+
+    old_data[4] = 'now_map = ' + str(now_map) + '\n'
+
     # Заносим характеристики игрока
 
-    old_data[4] = 'player_artefacts = ' + str(player_artefacts.player_artefacts_list) + '\n'  # когда файл перезаписывается через check, то криво записывает
+    old_data[8] = 'player_artefacts = ' + str(player_artefacts.player_artefacts_list) + '\n'  # когда файл перезаписывается через check, то криво записывает
 
-    old_data[8] = 'player_creature = [{}, {}, {}, {}, {}, {}, {}]\n'.format(player_creature.health,
+    old_data[12] = 'player_creature = [{}, {}, {}, {}, {}, {}, {}]\n'.format(player_creature.health,
                                                                             player_creature.damage,
                                                                             player_creature.ranged_damage,
                                                                             player_creature.close_fight_radius,
@@ -433,7 +439,7 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     for i in range(len(enemies_dict)):
         if i == 0:
-            old_data[12] = 'enemies_list = [[{}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
+            old_data[16] = 'enemies_list = [[{}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
                                                                                     enemies_dict[i].damage,
                                                                                     enemies_dict[i].ranged_damage,
                                                                                     enemies_dict[i].close_fight_radius,
@@ -441,18 +447,17 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
                                                                                     enemies_dict[i].moving_speed,
                                                                                     enemies_dict[i].healing_power)
         else:
-            old_data[12] = old_data[12][:-2] + ', [{}, {}, {}, {}, {}, {}, {}]\n'.format(enemies_dict[i].health,
+            old_data[16] = old_data[16][:-2] + ', [{}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
                                                                                          enemies_dict[i].damage,
                                                                                          enemies_dict[i].ranged_damage,
                                                                                          enemies_dict[i].close_fight_radius,
                                                                                          enemies_dict[i].ranged_combat_radius,
                                                                                          enemies_dict[i].moving_speed,
                                                                                          enemies_dict[i].healing_power)
-            old_data[12] = old_data[12] + ']\n'
 
     # Заносим статистику
 
-    n = 16  # надо ещё?
+    n = 20
 
     importlib.reload(saves)
 
@@ -545,26 +550,46 @@ def game():
 
             # Стартовые позиции здесь
 
-            crop_number = round(len(now_map))
+            crop_number = round(len(now_map) / 2)
+            print(now_map[1])
+            print(len(now_map[1]))
+            print(len(now_map[1]) / 2)
+            print(round(4.5))
+            print(crop_number)
+            print()
 
             enemies_number = game_2_0_data.max_map_enemies[difficult]
+            print(enemies_number)
 
             while enemies_number != 0:
+                print('Go')
+                print(str(enemies_number) + '  1')
 
-                for i in now_map[1:]:
+                for i in range(len(now_map[1:])):
+                    print(str(enemies_number) + '  2')
 
-                    for e in i[crop_number:]:
+                    if i == 0:
+                        i += 1
+                    print(len(now_map[i][crop_number:]))
+
+                    for e in range(len(now_map[i][crop_number:])):
+                        if e == 0:
+                            e += 1
+                        print(str(enemies_number) + '  3')
 
                         if enemies_number == 0:
                             break
 
-                        choice = ''.join(random.choices(['E', ''], [10, 90], k=1))
+                        choice = ''.join(random.choices([' E', ''], [1, 99], k=1))
 
-                        if choice == 'E':
+                        if choice == ' E':
 
                             enemies_number -= 1
+                            print('-1')
 
-                            now_map[e] = choice
+                            now_map[i][-e] = choice
+                    print(str(enemies_number) + '  4')
+            print(now_map)
 
         print('Your map difficult now: ' + difficult)
 
@@ -583,7 +608,7 @@ def game():
         # Сохранение всех данных на случай экстренного выключения
 
         end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                    cells_passed, enemies_list)
+                    cells_passed, enemies_list, now_map)
 
         the_map_passed = {}
         for i in game_2_0_data.difficult_list:
