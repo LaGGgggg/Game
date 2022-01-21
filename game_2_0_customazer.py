@@ -3,7 +3,9 @@ import game_2_0_data
 
 
 def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list, map_artefacts_chances,
-             map_enemies_list):
+             map_enemies_list, max_enemies_on_map):
+
+    importlib.reload(game_2_0_data)
 
     n = 1
     all_y = [i for i in range(101)]  # карта до ста строк
@@ -13,36 +15,40 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
         all_y[n].insert(0, '#')
         n += 1
 
+    for i in all_y:
+
+        if type(i) == int:
+            if n == 0:
+                n += 1
+            else:
+                break
+
     # открываем, читаем и записываем файл
-
-    data = open('game_2_0_data.py', 'r')
-
-    new_data = data.readlines()
-
-    # вытягиваем нужные данные и изменяем ка нужно
-
-    if new_data[0][17:] == '[]\n':
-        new_data[0] = new_data[0][:-2] + '"' + map_difficult + '"]\n'
-    else:
-        new_data[0] = new_data[0][:-2] + ', "' + map_difficult + '"]\n'
-
-    if new_data[1][17:] == '[]\n':
-        new_data[1] = new_data[1][:-2] + str(map_weight) + ']\n'
-    else:
-        new_data[1] = new_data[1][:-2] + ', ' + str(map_weight) + ']\n'
-
-    if new_data[2][17:] == '{}\n':
-        new_data[2] = new_data[2][:-2] + '"' + map_difficult + '": ' + str(all_y) + '}\n'
-    else:
-        new_data[2] = new_data[2][:-2] + ', "' + map_difficult + '": ' + str(all_y) + '}\n'
-
-    # Добавление артефактов к карте
 
     data = open('game_2_0_data.py', 'r')
 
     old_data = data.readlines()
 
     data.close()
+
+    # вытягиваем нужные данные и изменяем ка нужно
+
+    if old_data[0][17:] == '[]\n':
+        old_data[0] = old_data[0][:-2] + '"' + map_difficult + '"]\n'
+    else:
+        old_data[0] = old_data[0][:-2] + ', "' + map_difficult + '"]\n'
+
+    if old_data[1][17:] == '[]\n':
+        old_data[1] = old_data[1][:-2] + str(map_weight) + ']\n'
+    else:
+        old_data[1] = old_data[1][:-2] + ', ' + str(map_weight) + ']\n'
+
+    if old_data[2][17:] == '{}\n':
+        old_data[2] = old_data[2][:-2] + '"' + map_difficult + '": ' + str(all_y) + '}\n'
+    else:
+        old_data[2] = old_data[2][:-2] + ', "' + map_difficult + '": ' + str(all_y) + '}\n'
+
+    # Добавление артефактов к карте
 
     new_map_index = str(max(game_2_0_data.map_indexes.values()) + 1)
 
@@ -68,6 +74,11 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
                                       str(map_artefacts_chances[i])
 
     old_data[new_map_index] = old_data[new_map_index] + '}\n'
+
+    p = game_2_0_data.max_map_enemies
+    p[map_difficult] = max_enemies_on_map
+
+    old_data[10] = old_data[10][:19] + str(p)[1:] + '\n'
 
     # Записываем всё в файл
 
@@ -113,6 +124,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
         data.write(i)
 
     data.close()
+made_map('test_map', 9, 9, 9, ['sharpening_stone_1'], [100], ['enemy_creature_1', 'enemy_creature_2'], 3)
 
 
 def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_radius, moving_speed, healing_power,

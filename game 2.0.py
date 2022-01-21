@@ -1,11 +1,9 @@
 import random
 import game_2_0_data
-import game_2_0_functions
 import importlib
 import random
 import math
 import os.path
-import game_2_0_data
 import saves
 from colorama import Fore, init
 
@@ -13,7 +11,8 @@ init(autoreset=True)
 
 difficult_list = game_2_0_data.difficult_list
 difficult_weights = game_2_0_data.difficult_weights
-all_maps = game_2_0_data.all_maps
+all_maps_const = game_2_0_data.all_maps
+now_map = all_maps_const
 
 # Сама игра
 
@@ -50,7 +49,7 @@ class EnemyCreature:
 
 enemy_creature_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, "easy")
 enemy_creature_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, "medium")
-enemies_dict_const = {'easy': [enemy_creature_1], 'medium': [enemy_creature_2]}
+enemies_dict_const = {'easy': [enemy_creature_1], 'medium': [enemy_creature_2], "test_map": [enemy_creature_1, enemy_creature_2]}
 
 
 class PlayerCreature:
@@ -189,12 +188,13 @@ def random_artefact(map_name):
 
 
 def print_map(map_name):
+
     n = 1
 
-    y = all_maps[map_name]
+    y = now_map[map_name]
 
     try:
-        for _ in range(len(all_maps[map_name])):
+        for _ in range(len(now_map[map_name])):
             print(Fore.LIGHTWHITE_EX + '|' + ''.join(y[n][1:]) + ' |')
 
             n += 1
@@ -219,56 +219,56 @@ def player_moving(map_name, player_position):
 
         # 1
         try:
-            if all_maps[map_name][player_position[0] - 1][player_position[1] - 1] == ' `':
+            if now_map[map_name][player_position[0] - 1][player_position[1] - 1] == ' `':
                 correct_directions.append(1)
         except:
             IndexError()
 
         # 2
         try:
-            if all_maps[map_name][player_position[0] - 1][player_position[1]] == ' `':
+            if now_map[map_name][player_position[0] - 1][player_position[1]] == ' `':
                 correct_directions.append(2)
         except:
             IndexError()
 
         # 3
         try:
-            if all_maps[map_name][player_position[0] - 1][player_position[1] + 1] == ' `':
+            if now_map[map_name][player_position[0] - 1][player_position[1] + 1] == ' `':
                 correct_directions.append(3)
         except:
             IndexError()
 
         # 4
         try:
-            if all_maps[map_name][player_position[0]][player_position[1] + 1] == ' `':
+            if now_map[map_name][player_position[0]][player_position[1] + 1] == ' `':
                 correct_directions.append(4)
         except:
             IndexError()
 
         # 5
         try:
-            if all_maps[map_name][player_position[0] + 1][player_position[1] + 1] == ' `':
+            if now_map[map_name][player_position[0] + 1][player_position[1] + 1] == ' `':
                 correct_directions.append(5)
         except:
             IndexError()
 
         # 6
         try:
-            if all_maps[map_name][player_position[0] + 1][player_position[1]] == ' `':
+            if now_map[map_name][player_position[0] + 1][player_position[1]] == ' `':
                 correct_directions.append(6)
         except:
             IndexError()
 
         # 7
         try:
-            if all_maps[map_name][player_position[0] + 1][player_position[1] - 1] == ' `':
+            if now_map[map_name][player_position[0] + 1][player_position[1] - 1] == ' `':
                 correct_directions.append(7)
         except:
             IndexError()
 
         # 8
         try:
-            if all_maps[map_name][player_position[0]][player_position[1] - 1] == ' `':
+            if now_map[map_name][player_position[0]][player_position[1] - 1] == ' `':
                 correct_directions.append(8)
         except:
             IndexError()
@@ -289,35 +289,35 @@ def player_moving(map_name, player_position):
 
         # Изменение позиции на карте
 
-        all_maps[map_name][player_position[0]][player_position[1]] = ' `'
+        now_map[map_name][player_position[0]][player_position[1]] = ' `'
 
         if direction_move == 1:
-            all_maps[map_name][player_position[0] - 1][player_position[1] - 1] = ' P'
+            now_map[map_name][player_position[0] - 1][player_position[1] - 1] = ' P'
             player_position[0] -= 1
             player_position[1] -= 1
         if direction_move == 2:
-            all_maps[map_name][player_position[0] - 1][player_position[1]] = ' P'
+            now_map[map_name][player_position[0] - 1][player_position[1]] = ' P'
             player_position[0] -= 1
         if direction_move == 3:
-            all_maps[map_name][player_position[0] - 1][player_position[1] + 1] = ' P'
+            now_map[map_name][player_position[0] - 1][player_position[1] + 1] = ' P'
             player_position[0] -= 1
             player_position[1] += 1
         if direction_move == 4:
-            all_maps[map_name][player_position[0]][player_position[1] + 1] = ' P'
+            now_map[map_name][player_position[0]][player_position[1] + 1] = ' P'
             player_position[1] += 1
         if direction_move == 5:
-            all_maps[map_name][player_position[0] + 1][player_position[1] + 1] = ' P'
+            now_map[map_name][player_position[0] + 1][player_position[1] + 1] = ' P'
             player_position[0] += 1
             player_position[1] += 1
         if direction_move == 6:
-            all_maps[map_name][player_position[0] + 1][player_position[1]] = ' P'
+            now_map[map_name][player_position[0] + 1][player_position[1]] = ' P'
             player_position[0] += 1
         if direction_move == 7:
-            all_maps[map_name][player_position[0] + 1][player_position[1] - 1] = ' P'
+            now_map[map_name][player_position[0] + 1][player_position[1] - 1] = ' P'
             player_position[0] += 1
             player_position[1] -= 1
         if direction_move == 8:
-            all_maps[map_name][player_position[0]][player_position[1] - 1] = ' P'
+            now_map[map_name][player_position[0]][player_position[1] - 1] = ' P'
             player_position[1] -= 1
 
         moving_points -= 1
@@ -420,7 +420,7 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     # Заносим характеристики игрока
 
-    old_data[4] = 'player_artefacts = ' + str(player_artefacts) + '\n'
+    old_data[4] = 'player_artefacts = ' + str(player_artefacts.player_artefacts_list) + '\n'  # когда файл перезаписывается через check, то криво записывает
 
     old_data[8] = 'player_creature = [{}, {}, {}, {}, {}, {}, {}]\n'.format(player_creature.health,
                                                                             player_creature.damage,
@@ -489,6 +489,8 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
 def game():
 
+    importlib.reload(game_2_0_data)
+
     the_map_passed = {}
     for i in game_2_0_data.difficult_list:
         the_map_passed[i] = 0
@@ -503,7 +505,7 @@ def game():
 
     while game_go == 1:
 
-        global player_creature, player_artefacts, player_creature
+        global player_creature, player_artefacts, player_creature, now_map
 
         # Проверка saves
 
@@ -513,6 +515,7 @@ def game():
 
             difficult = saves.status
             player_artefacts = saves.player_artefacts
+            now_map = saves.now_map
 
             if difficult != 'in_hub':
                 player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1],
@@ -538,6 +541,31 @@ def game():
 
             enemies_list = enemies_dict_const[difficult]
 
+            now_map = all_maps_const[difficult]
+
+            # Стартовые позиции здесь
+
+            crop_number = round(len(now_map))
+
+            enemies_number = game_2_0_data.max_map_enemies[difficult]
+
+            while enemies_number != 0:
+
+                for i in now_map[1:]:
+
+                    for e in i[crop_number:]:
+
+                        if enemies_number == 0:
+                            break
+
+                        choice = ''.join(random.choices(['E', ''], [10, 90], k=1))
+
+                        if choice == 'E':
+
+                            enemies_number -= 1
+
+                            now_map[e] = choice
+
         print('Your map difficult now: ' + difficult)
 
         map_go = 1
@@ -545,10 +573,6 @@ def game():
         while map_go == 1:
 
             # Дальше надо
-
-            # надо ещё стартовые позиции всех туту сделать !!!!!!!!!!!!!!!!!!!!!!!!
-
-            #
 
             # Печать текущей карты
 
