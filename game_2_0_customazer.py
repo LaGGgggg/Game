@@ -124,15 +124,13 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
         data.write(i)
 
     data.close()
-made_map('test_map', 9, 9, 9, ['sharpening_stone_1'], [100], ['enemy_creature_1', 'enemy_creature_2'], 3)
 
 
 def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_radius, moving_speed, healing_power,
                enemy_difficult, enemy_name):
 
-    reformat_specifications = '{}, {}, {}, {}, {}, {}, {}, "{}"'.format(health, damage, ranged_damage,
-                                                                        close_fight_radius, ranged_combat_radius,
-                                                                        moving_speed, healing_power, enemy_difficult)
+    reformat_specifications = '{}, {}, {}, {}, {}, {}, {}'.format(health, damage, ranged_damage, close_fight_radius,
+                                                                  ranged_combat_radius, moving_speed, healing_power)
 
     importlib.reload(game_2_0_data)
 

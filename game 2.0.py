@@ -1,3 +1,4 @@
+import pdb
 import random
 import game_2_0_data
 import importlib
@@ -20,8 +21,7 @@ now_map = all_maps_const
 class EnemyCreature:
 
     def __init__(self, health, damage, ranged_damage, close_fight_radius, ranged_combat_radius, moving_speed,
-                 healing_power, enemy_difficult):
-        self.enemy_difficult = enemy_difficult
+                 healing_power):
         self.health = health
         self.damage = damage
         self.close_fight_radius = close_fight_radius
@@ -47,9 +47,9 @@ class EnemyCreature:
         return creature.health
 
 
-enemy_creature_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, "easy")
-enemy_creature_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, "medium")
-enemies_dict_const = {'easy': [enemy_creature_1], 'medium': [enemy_creature_2], "test_map": [enemy_creature_1, enemy_creature_2]}
+enemy_creature_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1)
+enemy_creature_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1)
+enemies_dict_const = {'easy': [enemy_creature_1], 'medium': [enemy_creature_2]}
 
 
 class PlayerCreature:
@@ -204,9 +204,28 @@ def print_map():
         TypeError()
 
 
-def player_moving(map_name, player_position):
+def player_moving():
+    pass
+
+
+def player_moving():
 
     global now_map
+
+    n1 = 0
+
+    for i in now_map[1:]:
+
+        n1 += 1
+        n2 = -1
+
+        for e in i:
+
+            n2 += 1
+
+            if e == ' P':
+
+                player_position = [n1, n2]
 
     # блок спроса пользователя
 
@@ -224,65 +243,66 @@ def player_moving(map_name, player_position):
 
         # 1
         try:
-            if now_map[map_name][player_position[0] - 1][player_position[1] - 1] == ' `':
+            if now_map[player_position[0] - 1][player_position[1] - 1] == ' `':
                 correct_directions.append(1)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 2
         try:
-            if now_map[map_name][player_position[0] - 1][player_position[1]] == ' `':
+            if now_map[player_position[0] - 1][player_position[1]] == ' `':
                 correct_directions.append(2)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 3
         try:
-            if now_map[map_name][player_position[0] - 1][player_position[1] + 1] == ' `':
+            if now_map[player_position[0] - 1][player_position[1] + 1] == ' `':
                 correct_directions.append(3)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 4
         try:
-            if now_map[map_name][player_position[0]][player_position[1] + 1] == ' `':
+            if now_map[player_position[0]][player_position[1] + 1] == ' `':
                 correct_directions.append(4)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 5
         try:
-            if now_map[map_name][player_position[0] + 1][player_position[1] + 1] == ' `':
+            if now_map[player_position[0] + 1][player_position[1] + 1] == ' `':
                 correct_directions.append(5)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 6
         try:
-            if now_map[map_name][player_position[0] + 1][player_position[1]] == ' `':
+            if now_map[player_position[0] + 1][player_position[1]] == ' `':
                 correct_directions.append(6)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 7
         try:
-            if now_map[map_name][player_position[0] + 1][player_position[1] - 1] == ' `':
+            if now_map[player_position[0] + 1][player_position[1] - 1] == ' `':
                 correct_directions.append(7)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         # 8
         try:
-            if now_map[map_name][player_position[0]][player_position[1] - 1] == ' `':
+            if now_map[player_position[0]][player_position[1] - 1] == ' `':
                 correct_directions.append(8)
-        except:
-            IndexError()
+        except (TypeError, IndexError):
+            pass
 
         direction_move = int(input('On why direction you want to move? You can move on ' + str(correct_directions[1:]) +
-                                   ' directions and on ' + str(moving_points) + ' cell(s) or 0 if you want quit'))
+                                   ' directions and on ' + str(moving_points) + ' cell(s)(or 0 if you want quit)'))
 
         if direction_move == 0:
             moving = 0
+            break
 
         # Проверка правильности ввода
 
@@ -294,42 +314,40 @@ def player_moving(map_name, player_position):
 
         # Изменение позиции на карте
 
-        now_map[map_name][player_position[0]][player_position[1]] = ' `'
+        now_map[player_position[0]][player_position[1]] = ' `'
 
         if direction_move == 1:
-            now_map[map_name][player_position[0] - 1][player_position[1] - 1] = ' P'
+            now_map[player_position[0] - 1][player_position[1] - 1] = ' P'
             player_position[0] -= 1
             player_position[1] -= 1
         if direction_move == 2:
-            now_map[map_name][player_position[0] - 1][player_position[1]] = ' P'
+            now_map[player_position[0] - 1][player_position[1]] = ' P'
             player_position[0] -= 1
         if direction_move == 3:
-            now_map[map_name][player_position[0] - 1][player_position[1] + 1] = ' P'
+            now_map[player_position[0] - 1][player_position[1] + 1] = ' P'
             player_position[0] -= 1
             player_position[1] += 1
         if direction_move == 4:
-            now_map[map_name][player_position[0]][player_position[1] + 1] = ' P'
+            now_map[player_position[0]][player_position[1] + 1] = ' P'
             player_position[1] += 1
         if direction_move == 5:
-            now_map[map_name][player_position[0] + 1][player_position[1] + 1] = ' P'
+            now_map[player_position[0] + 1][player_position[1] + 1] = ' P'
             player_position[0] += 1
             player_position[1] += 1
         if direction_move == 6:
-            now_map[map_name][player_position[0] + 1][player_position[1]] = ' P'
+            now_map[player_position[0] + 1][player_position[1]] = ' P'
             player_position[0] += 1
         if direction_move == 7:
-            now_map[map_name][player_position[0] + 1][player_position[1] - 1] = ' P'
+            now_map[player_position[0] + 1][player_position[1] - 1] = ' P'
             player_position[0] += 1
             player_position[1] -= 1
         if direction_move == 8:
-            now_map[map_name][player_position[0]][player_position[1] - 1] = ' P'
+            now_map[player_position[0]][player_position[1] - 1] = ' P'
             player_position[1] -= 1
 
         moving_points -= 1
 
-        print_map(map_name)
-
-    return player_position
+        print_map()
 
 
 def check_saves():
@@ -561,6 +579,8 @@ def game():
 
             now_map = all_maps_const[difficult]
 
+            # Определяем позиции(ю) врагов(а)
+
             crop_number = round(len(now_map) / 2)
 
             enemies_number = game_2_0_data.max_map_enemies[difficult]
@@ -587,6 +607,32 @@ def game():
 
                             now_map[i][-e] = choice
 
+            # Определяем позицию игрока
+
+            player_number = 1
+
+            while player_number != 0:
+
+                for i in range(len(now_map[1:])):
+
+                    if i == 0:
+                        i += 1
+
+                    for e in range(len(now_map[i][crop_number:])):
+
+                        if e == 0:
+                            e += 1
+
+                        if player_number == 0:
+                            break
+
+                        choice = ''.join(random.choices([' P', ''], [1, 99], k=1))
+
+                        if choice == ' P':
+
+                            player_number -= 1
+
+                            now_map[i][e] = choice
 
         print('Your map difficult now: ' + difficult)
 
@@ -594,18 +640,27 @@ def game():
 
         while map_go == 1:
 
-            # Дальше надо
-
             # Печать текущей карты
 
             print('\n')
             print_map()
             map_go = 0
 
-        # Сохранение всех данных на случай экстренного выключения
+            # Ход игрока
+
+            need_move = input('You need move?(Yes or No(Y/N))')
+
+            if need_move.lower() in ['yes', 'y']:
+                player_moving()
+
+            # Ход врага
+
+        # Автосохранение после конца карты
 
         end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
                     cells_passed, enemies_list, now_map)
+
+        # Сброс локальной статистики
 
         the_map_passed = {}
         for i in game_2_0_data.difficult_list:
