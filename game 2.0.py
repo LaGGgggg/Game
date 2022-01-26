@@ -610,7 +610,6 @@ def distance():
         else:
             enemies_distance[i] = num
 
-    print(enemies_distance, enemies_positions_list, player_position)  # почему одно расстояние?
     return enemies_distance
 
 
