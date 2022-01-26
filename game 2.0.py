@@ -559,15 +559,17 @@ def distance():
 
     for i in range(len(now_map)):
 
-        if i == 0:
-            i += 1
+        if len(enemies_positions_list) == game_2_0_data.max_map_enemies[difficult] and player_position != []:
+            break
+
+        if i == len(now_map):
+            break
+
+        i += 1
 
         for e in range(len(now_map[i])):
 
-            if e == 0:
-                e += 1
-
-            if now_map[i][e] != ' `' and now_map[i][e] != ' P':
+            if now_map[i][e] != ' `' and now_map[i][e] != ' P' and now_map[i][e] != '#':
 
                 enemies_positions_list.append([i, e])
                 enemies_distance[now_map[i][e]] = 0
@@ -586,9 +588,29 @@ def distance():
 
         n += 1
 
-        enemies_distance[i] = round(math.sqrt((enemies_positions_list[n][0] - player_position[0]) +  # round
-                                              (enemies_positions_list[n][1] - player_position[1])))  # верно округлит?
-    print(enemies_distance)  # почему одно расстояние?
+        num = math.sqrt((enemies_positions_list[n][0] - player_position[0]) ** 2 +
+                        (enemies_positions_list[n][1] - player_position[1]) ** 2)
+        if '.0' not in str(num):
+            y = 0
+            crop_str_num_1 = ''
+            crop_str_num_2 = ''
+            for e in str(num):
+                if y == 1:
+                    crop_str_num_2 = int(e)
+                    break
+                if e != '.':
+                    crop_str_num_1 += e
+                else:
+                    y += 1
+            if int(crop_str_num_2) > 4:
+                num = int(crop_str_num_1[0]) + 1
+            else:
+                num = int(crop_str_num_1[0])
+            enemies_distance[i] = num
+        else:
+            enemies_distance[i] = num
+
+    print(enemies_distance, enemies_positions_list, player_position)  # почему одно расстояние?
     return enemies_distance
 
 
