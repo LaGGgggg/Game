@@ -758,12 +758,32 @@ def game():
 
             # Использование способностей
 
-            ability_can = ['doing nothing']
+            ability_can = ['doing nothing.']
+
+            # Health check
 
             if player_creature.health < player_creature.max_health:
-                ability_can.append('health')
-            distance()
-            #if player_creature.close_fight_radius >= distance()
+                ability_can.append('health.')
+
+            # Close fight check
+
+            for items in distance().items():
+
+                if player_creature.close_fight_radius >= items[1]:
+
+                    ability_can.append('"' + items[0][1:] + '" close attack.')
+
+            # Range fight check
+
+            for items in distance().items():
+
+                if player_creature.ranged_combat_radius >= items[1]:
+
+                    ability_can.append('"' + items[0][1:] + '" ranged attack.')
+
+            # циферки на способности и через строку с \n вывод в столбик
+
+
 
             ability = input('What ability you would use? You can use {}'.format(str(ability_can)[1:-1]))
 
