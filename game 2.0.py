@@ -224,7 +224,7 @@ def print_map():
                 mapp += Fore.LIGHTRED_EX + e
 
         print(mapp + Fore.LIGHTWHITE_EX + ' |')
-
+    print()
 
 
 def enemies_moving():
@@ -320,8 +320,9 @@ def player_moving():
         except (TypeError, IndexError):
             pass
 
-        direction_move = int(input('On why direction you want to move? You can move on ' + str(correct_directions[1:]) +
-                                   ' directions and on ' + str(moving_points) + ' cell(s)(or 0 if you want quit)'))
+        direction_move = int(input(Fore.LIGHTWHITE_EX + 'On why direction you want to move? You can move on ' +
+                                   str(correct_directions[1:]) + ' directions and on ' + str(moving_points) +
+                                   ' cell(s)(or 0 if you want quit)'))
 
         if direction_move == 0:
             moving = 0
@@ -332,8 +333,8 @@ def player_moving():
         while True:
             if direction_move in (correct_directions[0:]):
                 break
-            print('It`s incorrect value, please enter correct.')
-            direction_move = int(input('You can move on ' + str(correct_directions[1:])))
+            print(Fore.LIGHTWHITE_EX + 'It`s incorrect value, please enter correct.')
+            direction_move = int(input(Fore.LIGHTWHITE_EX + 'You can move on ' + str(correct_directions[1:])))
 
         # Изменение позиции на карте
 
@@ -370,6 +371,7 @@ def player_moving():
 
         moving_points -= 1
 
+        print()
         print_map()
 
 
@@ -735,7 +737,7 @@ def game():
 
                             now_map[i][e] = choice
 
-        print('Your map difficult now: ' + difficult)
+        print(Fore.LIGHTWHITE_EX + 'Your map difficult now: ' + difficult)
 
         map_go = 1
 
@@ -743,7 +745,7 @@ def game():
 
             # Печать текущей карты
 
-            print('\n')
+            print()
             print_map()
             map_go = 0
 
@@ -751,19 +753,19 @@ def game():
 
             # Движение
 
-            need_move = input('You need move?(Yes or No(Y/N))')
+            need_move = input(Fore.LIGHTWHITE_EX + 'You need move?(Yes or No(Y/N))')
 
             if need_move.lower() in ['yes', 'y']:
                 player_moving()
 
             # Использование способностей
 
-            ability_can = ['doing nothing.']
+            ability_can_list = [Fore.LIGHTWHITE_EX + 'doing nothing']
 
             # Health check
 
             if player_creature.health < player_creature.max_health:
-                ability_can.append('health.')
+                ability_can_list.append(Fore.LIGHTWHITE_EX + 'health')
 
             # Close fight check
 
@@ -771,7 +773,8 @@ def game():
 
                 if player_creature.close_fight_radius >= items[1]:
 
-                    ability_can.append('"' + items[0][1:] + '" close attack.')
+                    ability_can_list.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
+                                            Fore.LIGHTWHITE_EX + ' close attack')
 
             # Range fight check
 
@@ -779,17 +782,25 @@ def game():
 
                 if player_creature.ranged_combat_radius >= items[1]:
 
-                    ability_can.append('"' + items[0][1:] + '" ranged attack.')
+                    ability_can_list.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
+                                            Fore.LIGHTWHITE_EX + ' ranged attack')
 
-            # циферки на способности и через строку с \n вывод в столбик
+            ability_can_str = '\n'
+            n = 0
 
+            for i in ability_can_list:
 
+                n += 1
 
-            ability = input('What ability you would use? You can use {}'.format(str(ability_can)[1:-1]))
+                ability_can_str += Fore.LIGHTWHITE_EX + str(n) + '. ' + i + '.\n'
 
-            while ability not in ability_can:
+            ability = input(Fore.LIGHTWHITE_EX + 'What ability you would use? You can use:' + ability_can_str)
 
-                ability = input('Incorrect value, try again.')
+            ability_can_numbers = [str(i + 1) for i in range(len(ability_can_list))]
+
+            while ability not in ability_can_list and ability not in ability_can_numbers:
+
+                ability = input(Fore.LIGHTYELLOW_EX + 'Incorrect value, try again.')
 
             # Ход врага
 
@@ -813,6 +824,6 @@ def game():
         game_go = 0  # убрать потом
 
 
-print('Hello, it`s a nice game, luck don`t help you)')  # Отсыыыылочка
+print(Fore.LIGHTWHITE_EX + 'Hello, it`s a nice game, luck don`t help you)')  # Отсыыыылочка
 
 game()
