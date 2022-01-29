@@ -53,6 +53,7 @@ class EnemyCreature:
 Baron = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
 Elsa = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 enemies_dict_const = {'easy': [Baron], 'medium': [Elsa]}
+enemies_dict_names = {'Baron': Baron, 'Elsa': Elsa}
 
 
 class PlayerCreature:
@@ -494,25 +495,54 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
                                                                                  player_creature.max_health)
     # Заносим характеристики врага
 
-    for i in range(len(enemies_dict)):
-        if i == 0:
-            old_data[16] = 'enemies_list = [[{}, {}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
-                                                                                        enemies_dict[i].damage,
-                                                                                        enemies_dict[i].ranged_damage,
-                                                                                        enemies_dict[i].close_fight_radius,
-                                                                                        enemies_dict[i].ranged_combat_radius,
-                                                                                        enemies_dict[i].moving_speed,
-                                                                                        enemies_dict[i].healing_power,
-                                                                                        enemies_dict[i].max_health)
-        else:
-            old_data[16] = old_data[16][:-2] + ', [{}, {}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
-                                                                                              enemies_dict[i].damage,
-                                                                                              enemies_dict[i].ranged_damage,
-                                                                                              enemies_dict[i].close_fight_radius,
-                                                                                              enemies_dict[i].ranged_combat_radius,
-                                                                                              enemies_dict[i].moving_speed,
-                                                                                              enemies_dict[i].healing_power,
-                                                                                              enemies_dict[i].max_health)
+    numbers_of_enemies = 0
+
+    for i in enemies_dict.items():
+        for e in i[1].items():
+
+            if numbers_of_enemies == 0:
+                numbers_of_enemies += 1
+                part_1 = 'enemies_dict = {"Enemy_' + str(numbers_of_enemies) + '": {'
+                old_data[16] = part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health, e[1].damage,
+                                                                                        e[1].ranged_damage,
+                                                                                        e[1].close_fight_radius,
+                                                                                        e[1].ranged_combat_radius,
+                                                                                        e[1].moving_speed,
+                                                                                        e[1].healing_power,
+                                                                                        e[1].max_health)
+                old_data[16] += '}'
+            else:
+                numbers_of_enemies += 1
+                part_1 = ', "Enemy_' + str(numbers_of_enemies) + '": {'
+                old_data[16] += part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health,
+                                                                                           e[1].damage,
+                                                                                           e[1].ranged_damage,
+                                                                                           e[1].close_fight_radius,
+                                                                                           e[1].ranged_combat_radius,
+                                                                                           e[1].moving_speed,
+                                                                                           e[1].healing_power,
+                                                                                           e[1].max_health)
+                old_data[16] += '}'
+    old_data[16] += '}\n'
+
+        #if i == 0:
+        #    old_data[16] = 'enemies_list = [[{}, {}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
+        #                                                                                enemies_dict[i].damage,
+        #                                                                                enemies_dict[i].ranged_damage,
+        #                                                                                enemies_dict[i].close_fight_radius,
+        #                                                                                enemies_dict[i].ranged_combat_radius,
+        #                                                                                enemies_dict[i].moving_speed,
+        #                                                                                enemies_dict[i].healing_power,
+        #                                                                                enemies_dict[i].max_health)
+        #else:
+        #    old_data[16] = old_data[16][:-2] + ', [{}, {}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
+        #                                                                                      enemies_dict[i].damage,
+        #                                                                                      enemies_dict[i].ranged_damage,
+        #                                                                                      enemies_dict[i].close_fight_radius,
+        #                                                                                      enemies_dict[i].ranged_combat_radius,
+        #                                                                                      enemies_dict[i].moving_speed,
+        #                                                                                      enemies_dict[i].healing_power,
+        #                                                                                      enemies_dict[i].max_health)
 
     # Заносим статистику
 
@@ -650,33 +680,118 @@ def game():
                                                  saves.player_creature[2], saves.player_creature[3],
                                                  saves.player_creature[4], saves.player_creature[5],
                                                  saves.player_creature[6], saves.player_creature[7])
-                enemies_list = enemies_dict_const[difficult]
-                for i in range(len(enemies_dict_const[difficult])):
-                    enemies_list[i].health = saves.enemies_list[i][0]
-                    enemies_list[i].damage = saves.enemies_list[i][1]
-                    enemies_list[i].ranged_damage = saves.enemies_list[i][2]
-                    enemies_list[i].close_fight_radius = saves.enemies_list[i][3]
-                    enemies_list[i].ranged_combat_radius = saves.enemies_list[i][4]
-                    enemies_list[i].moving_speed = saves.enemies_list[i][5]
-                    enemies_list[i].healing_power = saves.enemies_list[i][6]
-                    enemies_list[i].max_health = saves.enemies_list[i][7]
+                enemies_dict = {'Enemy_1': {}}
+                number_of_enemy = 0
+                for i in saves.enemies_dict.values():
+                    number_of_enemy += 1
+                    for e in i.keys():
+                        enemies_dict['Enemy_' + str(number_of_enemy)] = {}
+                        enemies_dict['Enemy_' + str(number_of_enemy)][e] = enemies_dict_names[e]
+                for i in saves.enemies_dict.items():
+                    for e in i[1].items():
+                        enemies_dict[i[0]][e[0]].health = e[1][0]
+                        enemies_dict[i[0]][e[0]].damage = e[1][1]
+                        enemies_dict[i[0]][e[0]].ranged_damage = e[1][2]
+                        enemies_dict[i[0]][e[0]].close_fight_radius = e[1][3]
+                        enemies_dict[i[0]][e[0]].ranged_combat_radius = e[1][4]
+                        enemies_dict[i[0]][e[0]].moving_speed = e[1][5]
+                        enemies_dict[i[0]][e[0]].healing_power = e[1][6]
+                        enemies_dict[i[0]][e[0]].max_health = e[1][7]
             else:
 
                 difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
-                enemies_list = enemies_dict_const[difficult]
+                now_map = all_maps_const[difficult]
+
+                # Определяем позиции(ю) врагов(а) на карте
+
+                crop_number = round(len(now_map) / 2)
+
+                enemies_number = game_2_0_data.max_map_enemies[difficult]
+
+                enemies_dict = {'Enemy_1': {}}
+
+                enemy_names = []
+
+                numbers_of_enemies = 0
+
+                for u in game_2_0_data.enemies_indexes.keys():
+                    enemy_names.append(u)
+
+                while enemies_number != 0:
+
+                    for i in range(len(now_map[1:])):
+
+                        if i == 0:
+                            i += 1
+
+                        for e in range(len(now_map[i][crop_number:])):
+                            if e == 0:
+                                continue
+
+                            if enemies_number == 0:
+                                break
+
+                            choice = ''.join(random.choices(['Go', ''], [1, 99], k=1))
+
+                            if choice == 'Go':
+                                choice = ''.join(random.choices(enemy_names, k=1))
+
+                                numbers_of_enemies += 1
+
+                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {choice: enemies_dict_names[choice]}
+
+                                choice = ' ' + choice[0]
+
+                                enemies_number -= 1
+
+                                now_map[i][-e] = choice
+
+                # Определяем позицию игрока
+
+                player_number = 1
+
+                while player_number != 0:
+
+                    for i in range(len(now_map[1:])):
+
+                        if i == 0:
+                            i += 1
+
+                        for e in range(len(now_map[i][crop_number:])):
+
+                            if e == 0:
+                                e += 1
+
+                            if player_number == 0:
+                                break
+
+                            choice = ''.join(random.choices([' P', ''], [1, 99], k=1))
+
+                            if choice == ' P':
+                                player_number -= 1
+
+                                now_map[i][e] = choice
         else:
             difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
-            enemies_list = enemies_dict_const[difficult]
-
             now_map = all_maps_const[difficult]
 
-            # Определяем позиции(ю) врагов(а)
+            # Определяем позиции(ю) врагов(а) на карте
 
             crop_number = round(len(now_map) / 2)
 
             enemies_number = game_2_0_data.max_map_enemies[difficult]
+
+            enemies_dict = {}
+
+            enemy_names = []
+
+            numbers_of_enemies = 0
+
+            for u in game_2_0_data.enemies_indexes.keys():
+
+                enemy_names.append(u)
 
             while enemies_number != 0:
 
@@ -687,22 +802,20 @@ def game():
 
                     for e in range(len(now_map[i][crop_number:])):
                         if e == 0:
-                            e += 1
+                            continue
 
                         if enemies_number == 0:
                             break
-
-                        enemy_names = []
-
-                        for u in game_2_0_data.enemies_indexes.keys():
-
-                            enemy_names.append(u)
 
                         choice = ''.join(random.choices(['Go', ''], [1, 99], k=1))
 
                         if choice == 'Go':
 
                             choice = ''.join(random.choices(enemy_names, k=1))
+
+                            numbers_of_enemies += 1
+
+                            enemies_dict['Enemy_' + str(numbers_of_enemies)] = {choice: enemies_dict_names[choice]}
 
                             choice = ' ' + choice[0]
 
@@ -738,6 +851,13 @@ def game():
                             now_map[i][e] = choice
 
         print(Fore.LIGHTWHITE_EX + 'Your map difficult now: ' + difficult)
+
+        # Печать характеристик(и) врагов(а)
+
+        #for i in enemy_names_now:
+
+            # сохранение,
+            # как несколько?
 
         map_go = 1
 
@@ -807,7 +927,7 @@ def game():
         # Автосохранение после конца карты
 
         end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                    cells_passed, enemies_list)
+                    cells_passed, enemies_dict)
 
         # Сброс локальной статистики
 

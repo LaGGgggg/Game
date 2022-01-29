@@ -208,6 +208,16 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     old_data[line + 1] = old_data[line + 1][:21] + str(p4) + '\n'
 
+    # Добавляем врага в enemies_dict_names
+
+    if old_data[line + 2] == 'enemies_dict_names = {}\n':
+
+        old_data[line + 2] = old_data[line + 2][:-2] + '"' + enemy_name + '": ' + enemy_name + '}\n'
+
+    else:
+
+        old_data[line + 2] = old_data[line + 2][:-2] + ', "' + enemy_name + '": ' + enemy_name + '}\n'
+
     # Записываем всё в файл
 
     data = open('game 2.0.py', 'w', encoding='UTF-8')
