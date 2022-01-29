@@ -784,9 +784,8 @@ def game():
             enemies_number = game_2_0_data.max_map_enemies[difficult]
 
             enemies_dict = {}
-
             enemy_names = []
-
+            all_choices = []
             numbers_of_enemies = 0
 
             for u in game_2_0_data.enemies_indexes.keys():
@@ -817,7 +816,19 @@ def game():
 
                             enemies_dict['Enemy_' + str(numbers_of_enemies)] = {choice: enemies_dict_names[choice]}
 
-                            choice = ' ' + choice[0]
+                            if choice in all_choices:
+
+                                c = all_choices.count(choice) + 1
+
+                                all_choices.append(choice)
+
+                                choice = str(choice[0]) + str(c)  # 1 str надо?
+
+                            else:
+
+                                all_choices.append(choice)
+
+                                choice = ' ' + choice[0]
 
                             enemies_number -= 1
 
@@ -852,13 +863,6 @@ def game():
 
         print(Fore.LIGHTWHITE_EX + 'Your map difficult now: ' + difficult)
 
-        # Печать характеристик(и) врагов(а)
-
-        #for i in enemy_names_now:
-
-            # сохранение,
-            # как несколько?
-
         map_go = 1
 
         while map_go == 1:
@@ -868,6 +872,47 @@ def game():
             print()
             print_map()
             map_go = 0
+
+            # Печать характеристик(и) врагов(а)
+
+            enemy_names = []
+
+            for i in enemies_dict.values():
+
+                for e in i.items():
+
+                    if e[0] in enemy_names:
+
+                        n = 1
+
+                        for u in enemy_names:
+
+                            if u == e[0]:
+
+                                n += 1
+
+                        enemy_names.append(e[0] + ' ' + str(n))
+
+                        enemy_name = e[0] + ' ' + str(n)
+
+                    else:
+
+                        enemy_names.append(e[0])
+
+                        enemy_name = e[0]
+
+                    print(Fore.LIGHTWHITE_EX + enemy_name + ' characters:\nHealth ' + Fore.LIGHTGREEN_EX +
+                          str(e[1].health) + Fore.LIGHTWHITE_EX +
+                          '\nHealing power ' + Fore.LIGHTGREEN_EX + str(e[1].healing_power) + Fore.LIGHTWHITE_EX +
+                          '\nClose fight damage ' + Fore.LIGHTRED_EX + str(e[1].damage) +
+                          Fore.LIGHTWHITE_EX +
+                          '\nRanged combat damage ' + Fore.LIGHTRED_EX + str(e[1].ranged_damage) + Fore.LIGHTWHITE_EX +
+                          '\nClose fight radius ' + Fore .LIGHTMAGENTA_EX + str(e[1].close_fight_radius) +
+                          Fore.LIGHTWHITE_EX +
+                          '\nRanged combat radius ' + Fore.LIGHTMAGENTA_EX + str(e[1].ranged_combat_radius) +
+                          Fore.LIGHTWHITE_EX +
+                          '\nMoving speed ' +
+                          Fore.LIGHTCYAN_EX + str(e[1].moving_speed) + '\n')
 
             # Ход игрока
 
