@@ -709,10 +709,9 @@ def game():
 
                 enemies_number = game_2_0_data.max_map_enemies[difficult]
 
-                enemies_dict = {'Enemy_1': {}}
-
+                enemies_dict = {}
                 enemy_names = []
-
+                all_choices = []
                 numbers_of_enemies = 0
 
                 for u in game_2_0_data.enemies_indexes.keys():
@@ -735,13 +734,26 @@ def game():
                             choice = ''.join(random.choices(['Go', ''], [1, 99], k=1))
 
                             if choice == 'Go':
+
                                 choice = ''.join(random.choices(enemy_names, k=1))
 
                                 numbers_of_enemies += 1
 
                                 enemies_dict['Enemy_' + str(numbers_of_enemies)] = {choice: enemies_dict_names[choice]}
 
-                                choice = ' ' + choice[0]
+                                if choice in all_choices:
+
+                                    c = all_choices.count(choice) + 1
+
+                                    all_choices.append(choice)
+
+                                    choice = choice[0] + str(c)
+
+                                else:
+
+                                    all_choices.append(choice)
+
+                                    choice = ' ' + choice[0]
 
                                 enemies_number -= 1
 
@@ -822,7 +834,7 @@ def game():
 
                                 all_choices.append(choice)
 
-                                choice = str(choice[0]) + str(c)  # 1 str надо?
+                                choice = choice[0] + str(c)
 
                             else:
 
