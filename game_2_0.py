@@ -993,14 +993,70 @@ def game():
 
                 print(Fore.LIGHTWHITE_EX + 'you didn`t do anything')
 
-                pass
-
             elif 'heal' in ability_choose or ability_choose == '2' and ability_can_list[1] == 'heal':
 
                 heal_cache = player_creature.heal()
 
                 print(Fore.LIGHTWHITE_EX + 'You health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
                       + '(' + Fore.LIGHTGREEN_EX + '+' + str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+
+            elif 'close attack' in ability_choose or 'close attack' in ability_can_list[int(ability_choose)]:
+                # чекнуть
+                enemy_names_cache = {}
+
+                for i in enemies_dict.values():
+
+                    for e in list(i.keys()):
+
+                        if e in list(enemy_names_cache.values()):
+
+                            enemy_names_cache[e] = 0
+
+                        else:
+
+                            enemy_names_cache[e] = 0
+
+                ability_choose_number = ''
+
+                for i in ability_choose[1:]:  # 1 or 0?
+
+                    if i != ' ':
+                        ability_choose_number += i
+                    else:
+                        break
+
+                enemy_names_cache_str_list = []
+                k = -1
+
+                for i in enemy_names_cache.items():
+
+                    if i[0][0] == ability_choose[0].upper():
+
+                        for e in enemies_dict.values():
+
+                            k += 1
+
+                            for u in e.items():
+
+                                for o in list(enemy_names_cache.keys()):
+
+                                    enemy_names_cache_str_list.append(str(o))
+
+                                if u[0] == enemy_names_cache_str_list[k]:
+
+                                    if i[1] == ability_choose_number:
+
+                                        player_creature.close_fight(u[1])
+
+                                    else:
+                                        print(i)
+
+                                        # Тут всё ок, надо просто код ниже от сюда<:
+
+                                        #i[1] += 1
+                                        #enemy_names_cache[j] += 1
+
+                                        # До сюда>
 
 
 
