@@ -75,12 +75,14 @@ class PlayerCreature:
         return creature.health
 
     def heal(self):
-        self.health += self.healing_power
 
         if self.health > self.max_health:
             self.health = self.max_health
+            return self.health, self.max_health
 
-        return self.health
+        else:
+            self.health += self.healing_power
+            return self.health, self.healing_power
 
     def ranged_combat(self, creature):
         creature.health -= self.ranged_damage
@@ -212,11 +214,11 @@ def print_map():
 
                 mapp += Fore.LIGHTWHITE_EX + '|'
 
-            if e == ' `':
+            if e == '  `':
 
                 mapp += Fore.LIGHTWHITE_EX + e
 
-            elif e == ' P':
+            elif e == '  P':
 
                 mapp += Fore.LIGHTGREEN_EX + e
 
@@ -247,7 +249,7 @@ def player_moving():
 
             n2 += 1
 
-            if e == ' P':
+            if e == '  P':
 
                 player_position = [n1, n2]
 
@@ -267,56 +269,56 @@ def player_moving():
 
         # 1
         try:
-            if now_map[player_position[0] - 1][player_position[1] - 1] == ' `':
+            if now_map[player_position[0] - 1][player_position[1] - 1] == '  `':
                 correct_directions.append(1)
         except (TypeError, IndexError):
             pass
 
         # 2
         try:
-            if now_map[player_position[0] - 1][player_position[1]] == ' `':
+            if now_map[player_position[0] - 1][player_position[1]] == '  `':
                 correct_directions.append(2)
         except (TypeError, IndexError):
             pass
 
         # 3
         try:
-            if now_map[player_position[0] - 1][player_position[1] + 1] == ' `':
+            if now_map[player_position[0] - 1][player_position[1] + 1] == '  `':
                 correct_directions.append(3)
         except (TypeError, IndexError):
             pass
 
         # 4
         try:
-            if now_map[player_position[0]][player_position[1] + 1] == ' `':
+            if now_map[player_position[0]][player_position[1] + 1] == '  `':
                 correct_directions.append(4)
         except (TypeError, IndexError):
             pass
 
         # 5
         try:
-            if now_map[player_position[0] + 1][player_position[1] + 1] == ' `':
+            if now_map[player_position[0] + 1][player_position[1] + 1] == '  `':
                 correct_directions.append(5)
         except (TypeError, IndexError):
             pass
 
         # 6
         try:
-            if now_map[player_position[0] + 1][player_position[1]] == ' `':
+            if now_map[player_position[0] + 1][player_position[1]] == '  `':
                 correct_directions.append(6)
         except (TypeError, IndexError):
             pass
 
         # 7
         try:
-            if now_map[player_position[0] + 1][player_position[1] - 1] == ' `':
+            if now_map[player_position[0] + 1][player_position[1] - 1] == '  `':
                 correct_directions.append(7)
         except (TypeError, IndexError):
             pass
 
         # 8
         try:
-            if now_map[player_position[0]][player_position[1] - 1] == ' `':
+            if now_map[player_position[0]][player_position[1] - 1] == '  `':
                 correct_directions.append(8)
         except (TypeError, IndexError):
             pass
@@ -339,35 +341,35 @@ def player_moving():
 
         # Изменение позиции на карте
 
-        now_map[player_position[0]][player_position[1]] = ' `'
+        now_map[player_position[0]][player_position[1]] = '  `'
 
         if direction_move == 1:
-            now_map[player_position[0] - 1][player_position[1] - 1] = ' P'
+            now_map[player_position[0] - 1][player_position[1] - 1] = '  P'
             player_position[0] -= 1
             player_position[1] -= 1
         if direction_move == 2:
-            now_map[player_position[0] - 1][player_position[1]] = ' P'
+            now_map[player_position[0] - 1][player_position[1]] = '  P'
             player_position[0] -= 1
         if direction_move == 3:
-            now_map[player_position[0] - 1][player_position[1] + 1] = ' P'
+            now_map[player_position[0] - 1][player_position[1] + 1] = '  P'
             player_position[0] -= 1
             player_position[1] += 1
         if direction_move == 4:
-            now_map[player_position[0]][player_position[1] + 1] = ' P'
+            now_map[player_position[0]][player_position[1] + 1] = '  P'
             player_position[1] += 1
         if direction_move == 5:
-            now_map[player_position[0] + 1][player_position[1] + 1] = ' P'
+            now_map[player_position[0] + 1][player_position[1] + 1] = '  P'
             player_position[0] += 1
             player_position[1] += 1
         if direction_move == 6:
-            now_map[player_position[0] + 1][player_position[1]] = ' P'
+            now_map[player_position[0] + 1][player_position[1]] = '  P'
             player_position[0] += 1
         if direction_move == 7:
-            now_map[player_position[0] + 1][player_position[1] - 1] = ' P'
+            now_map[player_position[0] + 1][player_position[1] - 1] = '  P'
             player_position[0] += 1
             player_position[1] -= 1
         if direction_move == 8:
-            now_map[player_position[0]][player_position[1] - 1] = ' P'
+            now_map[player_position[0]][player_position[1] - 1] = '  P'
             player_position[1] -= 1
 
         moving_points -= 1
@@ -601,12 +603,12 @@ def distance():
 
         for e in range(len(now_map[i])):
 
-            if now_map[i][e] != ' `' and now_map[i][e] != ' P' and now_map[i][e] != '#':
+            if now_map[i][e] != '  `' and now_map[i][e] != '  P' and now_map[i][e] != '#':
 
                 enemies_positions_list.append([i, e])
                 enemies_distance[now_map[i][e]] = 0
 
-            if now_map[i][e] == ' P':
+            if now_map[i][e] == '  P':
 
                 player_position = [i, e]
 
@@ -747,13 +749,13 @@ def game():
 
                                     all_choices.append(choice)
 
-                                    choice = choice[0] + str(c)
+                                    choice = ' ' + choice[0] + str(c)
 
                                 else:
 
                                     all_choices.append(choice)
 
-                                    choice = ' ' + choice[0]
+                                    choice = '  ' + choice[0]
 
                                 enemies_number -= 1
 
@@ -778,9 +780,9 @@ def game():
                             if player_number == 0:
                                 break
 
-                            choice = ''.join(random.choices([' P', ''], [1, 99], k=1))
+                            choice = ''.join(random.choices(['  P', ''], [1, 99], k=1))
 
-                            if choice == ' P':
+                            if choice == '  P':
                                 player_number -= 1
 
                                 now_map[i][e] = choice
@@ -834,13 +836,13 @@ def game():
 
                                 all_choices.append(choice)
 
-                                choice = choice[0] + str(c)
+                                choice = ' ' + choice[0] + str(c)
 
                             else:
 
                                 all_choices.append(choice)
 
-                                choice = ' ' + choice[0]
+                                choice = '  ' + choice[0]
 
                             enemies_number -= 1
 
@@ -865,9 +867,9 @@ def game():
                         if player_number == 0:
                             break
 
-                        choice = ''.join(random.choices([' P', ''], [1, 99], k=1))
+                        choice = ''.join(random.choices(['  P', ''], [1, 99], k=1))
 
-                        if choice == ' P':
+                        if choice == '  P':
 
                             player_number -= 1
 
@@ -937,12 +939,17 @@ def game():
 
             # Использование способностей
 
-            ability_can_list = [Fore.LIGHTWHITE_EX + 'doing nothing']
+            player_creature.health = 9
+
+            ability_can_list = ['doing nothing']
+            ability_can_list_colorama = [Fore.LIGHTWHITE_EX + 'Doing nothing']
 
             # Health check
 
             if player_creature.health < player_creature.max_health:
-                ability_can_list.append(Fore.LIGHTWHITE_EX + 'health')
+
+                ability_can_list.append('heal')
+                ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + 'Heal')
 
             # Close fight check
 
@@ -950,8 +957,9 @@ def game():
 
                 if player_creature.close_fight_radius >= items[1]:
 
-                    ability_can_list.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
-                                            Fore.LIGHTWHITE_EX + ' close attack')
+                    ability_can_list.append('' + items[0][1:].lower() + ' close attack')
+                    ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
+                                                     Fore.LIGHTWHITE_EX + ' close attack')
 
             # Range fight check
 
@@ -959,25 +967,42 @@ def game():
 
                 if player_creature.ranged_combat_radius >= items[1]:
 
-                    ability_can_list.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
-                                            Fore.LIGHTWHITE_EX + ' ranged attack')
+                    ability_can_list.append('' + items[0][1:].lower() + ' ranged attack')
+                    ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
+                                                     Fore.LIGHTWHITE_EX + ' ranged attack')
 
             ability_can_str = '\n'
             n = 0
 
-            for i in ability_can_list:
+            for i in ability_can_list_colorama:
 
                 n += 1
 
                 ability_can_str += Fore.LIGHTWHITE_EX + str(n) + '. ' + i + '.\n'
 
-            ability = input(Fore.LIGHTWHITE_EX + 'What ability you would use? You can use:' + ability_can_str)
+            ability_choose = input(Fore.LIGHTWHITE_EX + 'What ability you would use? You can use:' + ability_can_str).\
+                lower()
 
             ability_can_numbers = [str(i + 1) for i in range(len(ability_can_list))]
 
-            while ability not in ability_can_list and ability not in ability_can_numbers:
+            while ability_choose not in ability_can_list and ability_choose not in ability_can_numbers:
 
-                ability = input(Fore.LIGHTYELLOW_EX + 'Incorrect value, try again.')
+                ability_choose = input(Fore.LIGHTYELLOW_EX + 'Incorrect value, try again.')
+
+            if 'doing nothing' in ability_choose or ability_choose == '1':
+
+                print(Fore.LIGHTWHITE_EX + 'you didn`t do anything')
+
+                pass
+
+            elif 'heal' in ability_choose or ability_choose == '2' and ability_can_list[1] == 'heal':
+
+                heal_cache = player_creature.heal()
+
+                print(Fore.LIGHTWHITE_EX + 'You health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
+                      + '(' + Fore.LIGHTGREEN_EX + '+' + str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+
+
 
             # Ход врага
 

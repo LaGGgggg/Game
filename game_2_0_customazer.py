@@ -11,7 +11,8 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
     all_y = [i for i in range(101)]  # карта до ста строк
 
     for _ in range(int(lines)):
-        all_y[n] = [' `' for _ in range(0, int(cells_in_line) + 1)]
+        line_ = ['  `' for _ in range(0, int(cells_in_line) + 1)]
+        all_y[n] = line_
         all_y[n].insert(0, '#')
         n += 1
 
@@ -90,7 +91,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     data.close()
 
-    data = open('game 2.0.py', 'r', encoding='UTF-8')
+    data = open('game_2_0.py', 'r', encoding='UTF-8')
 
     old_data = data.readlines()
 
@@ -117,7 +118,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     old_data[line] = old_data[line][:-2] + ', "' + map_difficult + '": [' + p + ']}\n'
 
-    data = open('game 2.0.py', 'w', encoding='UTF-8')
+    data = open('game_2_0.py', 'w', encoding='UTF-8')
 
     for i in old_data:
 
@@ -164,7 +165,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # читаем файл
 
-    data = open('game 2.0.py', 'r', encoding='UTF-8')
+    data = open('game_2_0.py', 'r', encoding='UTF-8')
 
     old_data = data.readlines()
 
@@ -220,7 +221,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # Записываем всё в файл
 
-    data = open('game 2.0.py', 'w', encoding='UTF-8')
+    data = open('game_2_0.py', 'w', encoding='UTF-8')
 
     for i in old_data:
 
