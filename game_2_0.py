@@ -69,10 +69,25 @@ class PlayerCreature:
         self.healing_power = healing_power
         self.max_health = max_health
 
-    def close_fight(self, creature):
-        creature.health -= self.damage
+    def close_fight(self, creature_name, creature_number, enemies_dict):
 
-        return creature.health
+        n = 0
+
+        for i in enemies_dict.values():
+
+            for e in i.items():
+
+                if e[0] == creature_name:  # перенести в enemies class
+
+                    if n == creature_number - 1:
+
+                        e[1].health -= self.damage
+
+                        return e[1].health
+
+                    else:
+
+                        n += 1
 
     def heal(self):
 
@@ -1008,55 +1023,78 @@ def game():
 
                     for e in list(i.keys()):
 
-                        if e in list(enemy_names_cache.values()):
+                        if e[0] == ability_choose[0].upper():
 
-                            enemy_names_cache[e] = 0
+                            enemy_name = e
 
-                        else:
+                            break
 
-                            enemy_names_cache[e] = 0
+                        #if e in list(enemy_names_cache.values()):
 
-                ability_choose_number = ''
+                        #    enemy_names_cache[e] = 0
 
-                for i in ability_choose[1:]:  # 1 or 0?
+                        #else:
+
+                        #    enemy_names_cache[e] = 0
+
+                enemy_number = ''
+
+                for i in ability_choose[1:]:
 
                     if i != ' ':
-                        ability_choose_number += i
+
+                        enemy_number += i
+
                     else:
+
+                        enemy_number = int(enemy_number)
+
                         break
 
-                enemy_names_cache_str_list = []
-                k = -1
+                print(player_creature.close_fight(enemy_name, enemy_number, enemies_dict))  # тут всё ок, осталось сделать на дальнюю атаку и что-б менялся конкретный экземпляр класса, а не все, возможно через кучу классов с одинаковыми характеристиками.
 
-                for i in enemy_names_cache.items():
+                #enemy_names_cache_str_list = []
+                #k = -1
 
-                    if i[0][0] == ability_choose[0].upper():
+                #for i in enemy_names_cache.items():
 
-                        for e in enemies_dict.values():
+                #    if i[0][0] == ability_choose[0].upper():
 
-                            k += 1
+                #        for e in enemies_dict.values():
 
-                            for u in e.items():
+                #            k += 1
 
-                                for o in list(enemy_names_cache.keys()):
+                #            for u in e.items():
 
-                                    enemy_names_cache_str_list.append(str(o))
+                #                for o in list(enemy_names_cache.keys()):
 
-                                if u[0] == enemy_names_cache_str_list[k]:
+                #                    enemy_names_cache_str_list.append(str(o))
 
-                                    if i[1] == ability_choose_number:
+                #                if u[0] == enemy_names_cache_str_list[k]:
+                #                    #print(ability_choose_number)
+                #                    #print(i[1])
 
-                                        player_creature.close_fight(u[1])
+                #                    if i[1] == ability_choose_number - 1:
 
-                                    else:
-                                        print(i)
+                #                        print(player_creature.close_fight(u[1]))  # вывод урона доделать
 
-                                        # Тут всё ок, надо просто код ниже от сюда<:
+                #                    else:
+                #                        #print(i)
 
-                                        #i[1] += 1
-                                        #enemy_names_cache[j] += 1
+                #                        # Тут всё ок, надо просто код ниже от сюда<:
 
-                                        # До сюда>
+                #                        #i[1] += 1
+                #                        #print(enemy_names_cache)
+                #                        #enemy_names_cache[enemy_names_cache_str_list[k]] += 1
+                #                        #print(enemy_names_cache)
+
+                #                        i = list(i)
+                #                        i[1] += 1
+                #                        i = tuple(i)
+
+                #                        #print(i)
+
+                #                        # До сюда>
 
 
 
