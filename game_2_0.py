@@ -682,7 +682,7 @@ def game():
 
     while game_go == 1:
 
-        global player_creature, player_artefacts, player_creature, now_map, difficult,
+        global player_creature, player_artefacts, player_creature, now_map, difficult
 
         # Проверка saves
 
@@ -733,7 +733,7 @@ def game():
                 all_choices = []
                 numbers_of_enemies = 0
 
-                for u in str(enemies_dict_const[difficult].values()):
+                for u in str(enemies_dict_const[difficult]):
                     enemy_names.append(u)
 
                 while enemies_number != 0:
@@ -760,7 +760,7 @@ def game():
 
                                 enemies_numbers = {}
 
-                                if choice in enemy_names:
+                                if choice in enemies_numbers:
 
                                     enemies_numbers[choice] += 1
 
@@ -772,9 +772,9 @@ def game():
 
                                     enemy_names.append(choice + ' 1')
 
-                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                    choice + str(enemies_numbers[choice]): enemies_dict_names[
-                                        choice + str(enemies_numbers[choice])]}
+                                    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                                        choice + str(enemies_numbers[choice]): enemies_dict_names[
+                                            choice + str(enemies_numbers[choice])]}
 
                                 if choice in all_choices:
 
@@ -835,7 +835,7 @@ def game():
             all_choices = []
             numbers_of_enemies = 0
 
-            for u in str(enemies_dict_const[difficult].values()):
+            for u in str(enemies_dict_const[difficult]):
 
                 enemy_names.append(u)
 
@@ -863,7 +863,7 @@ def game():
 
                             enemies_numbers = {}
 
-                            if choice in enemy_names:
+                            if choice in enemies_numbers:
 
                                 enemies_numbers[choice] += 1
 
@@ -875,9 +875,13 @@ def game():
 
                                 enemy_names.append(choice + ' 1')
 
-                            enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                choice + str(enemies_numbers[choice]): enemies_dict_names[
-                                    choice + str(enemies_numbers[choice])]}
+                                print(choice)  # _
+                                print(enemies_numbers)  # {'_': 1}
+                                print(enemies_numbers[choice])  # 1
+
+                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                                    choice + str(enemies_numbers[choice]): enemies_dict_names[
+                                        choice + str(enemies_numbers[choice])]}
 
                             if choice in all_choices:
 
