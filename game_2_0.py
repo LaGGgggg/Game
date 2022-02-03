@@ -52,10 +52,11 @@ class EnemyCreature:
 
 Baron = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
 Baron_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_2 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
 Elsa = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
-enemies_dict_const = {'easy': [Baron], 'medium': [Elsa]}
-enemies_dict_names = {'Baron': Baron, 'Baron 1': Baron_1, 'Baron 2': Baron_2, 'Elsa': Elsa}
+Elsa_1 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+enemies_dict_const = {'easy': ['Baron'], 'medium': ['Elsa']}
+enemies_dict_names = {'Baron': Baron, 'Baron 1': Baron_1, 'Elsa': Elsa, 'Elsa 1': Elsa_1, 'Elsa 2': Elsa_2}
 
 
 class PlayerCreature:
@@ -71,25 +72,36 @@ class PlayerCreature:
         self.healing_power = healing_power
         self.max_health = max_health
 
-    def close_fight(self, creature_name, creature_number, enemies_dict):
+    def close_fight(self, creature_name, enemies_dict):
 
-        n = 0
+        #n = 0
+
+        print(creature_name, enemies_dict)
 
         for i in enemies_dict.values():
+            print(i)
 
             for e in i.items():
+                print(e)
 
                 if e[0] == creature_name:  # перенести в enemies class
+                    print('OP_1')
 
-                    if n == creature_number - 1:
+                    e[1].health -= self.damage
 
-                        e[1].health -= self.damage
+                    return e[1].health
 
-                        return e[1].health
+                    #if n == creature_number - 1:
+                    #    print('OP_2')
 
-                    else:
+                    #    e[1].health -= self.damage
 
-                        n += 1
+                    #    return e[1].health
+
+                    #else:
+                    #    print('OP_3')
+
+                    #    n += 1
 
     def heal(self):
 
@@ -729,11 +741,12 @@ def game():
                 enemies_number = game_2_0_data.max_map_enemies[difficult]
 
                 enemies_dict = {}
+                enemies_numbers = {}
                 enemy_names = []
                 all_choices = []
                 numbers_of_enemies = 0
 
-                for u in str(enemies_dict_const[difficult]):
+                for u in enemies_dict_const[difficult]:
                     enemy_names.append(u)
 
                 while enemies_number != 0:
@@ -758,41 +771,52 @@ def game():
 
                                 numbers_of_enemies += 1
 
-                                enemies_numbers = {}
-
-                                if choice in enemies_numbers:
+                                if choice in enemies_numbers.keys():
 
                                     enemies_numbers[choice] += 1
 
-                                    enemy_names.append(choice + ' ' + str(enemies_numbers[choice]))
+                                    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                                        choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[
+                                            choice + ' ' + str(enemies_numbers[choice])]}
 
                                 else:
 
                                     enemies_numbers[choice] = 1
 
-                                    enemy_names.append(choice + ' 1')
-
                                     enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                        choice + str(enemies_numbers[choice]): enemies_dict_names[
-                                            choice + str(enemies_numbers[choice])]}
+                                        choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[
+                                            choice + ' ' + str(enemies_numbers[choice])]}
 
-                                if choice in all_choices:
+                                c = all_choices.count(choice) + 1
 
-                                    c = all_choices.count(choice) + 1
+                                all_choices.append(choice)
 
-                                    all_choices.append(choice)
-
-                                    choice = ' ' + choice[0] + str(c)
-
-                                else:
-
-                                    all_choices.append(choice)
-
-                                    choice = '  ' + choice[0]
+                                choice = ' ' + choice[0] + str(c)
 
                                 enemies_number -= 1
 
-                                now_map[i][-e] = choice
+                                # Смещаем врага если клетка занята
+
+                                e_1 = 0
+                                i_1 = 0
+
+                                while now_map[i + i_1][-e + e_1] != '  `':
+
+                                    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+
+                                    if direction == 'left':
+                                        e_1 -= 1
+
+                                    elif direction == 'right':
+                                        e_1 += 1
+
+                                    elif direction == 'up':
+                                        i_1 -= 1
+
+                                    elif direction == 'down':
+                                        i_1 += 1
+
+                                now_map[i + i_1][-e + e_1] = choice
 
                 # Определяем позицию игрока
 
@@ -816,9 +840,31 @@ def game():
                             choice = ''.join(random.choices(['  P', ''], [1, 99], k=1))
 
                             if choice == '  P':
+
                                 player_number -= 1
 
-                                now_map[i][e] = choice
+                                # Смещаем врага если клетка занята
+
+                                e_1 = 0
+                                i_1 = 0
+
+                                while now_map[i + i_1][-e + e_1] != '  `':
+
+                                    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+
+                                    if direction == 'left':
+                                        e_1 -= 1
+
+                                    elif direction == 'right':
+                                        e_1 += 1
+
+                                    elif direction == 'up':
+                                        i_1 -= 1
+
+                                    elif direction == 'down':
+                                        i_1 += 1
+
+                                now_map[i + i_1][e + e_1] = choice
         else:
             difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
@@ -831,11 +877,12 @@ def game():
             enemies_number = game_2_0_data.max_map_enemies[difficult]
 
             enemies_dict = {}
+            enemies_numbers = {}
             enemy_names = []
             all_choices = []
             numbers_of_enemies = 0
 
-            for u in str(enemies_dict_const[difficult]):
+            for u in enemies_dict_const[difficult]:
 
                 enemy_names.append(u)
 
@@ -861,45 +908,48 @@ def game():
 
                             numbers_of_enemies += 1
 
-                            enemies_numbers = {}
-
-                            if choice in enemies_numbers:
+                            if choice in enemies_numbers.keys():
 
                                 enemies_numbers[choice] += 1
 
-                                enemy_names.append(choice + ' ' + str(enemies_numbers[choice]))
+                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[choice + ' ' + str(enemies_numbers[choice])]}
 
                             else:
 
                                 enemies_numbers[choice] = 1
 
-                                enemy_names.append(choice + ' 1')
+                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[choice + ' ' + str(enemies_numbers[choice])]}
 
-                                print(choice)  # _
-                                print(enemies_numbers)  # {'_': 1}
-                                print(enemies_numbers[choice])  # 1
+                            c = all_choices.count(choice) + 1
 
-                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                    choice + str(enemies_numbers[choice]): enemies_dict_names[
-                                        choice + str(enemies_numbers[choice])]}
+                            all_choices.append(choice)
 
-                            if choice in all_choices:
-
-                                c = all_choices.count(choice) + 1
-
-                                all_choices.append(choice)
-
-                                choice = ' ' + choice[0] + str(c)
-
-                            else:
-
-                                all_choices.append(choice)
-
-                                choice = '  ' + choice[0]
+                            choice = ' ' + choice[0] + str(c)
 
                             enemies_number -= 1
 
-                            now_map[i][-e] = choice
+                            # Смещаем врага если клетка занята
+
+                            e_1 = 0
+                            i_1 = 0
+
+                            while now_map[i + i_1][-e + e_1] != '  `':
+
+                                direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+
+                                if direction == 'left':
+                                    e_1 -= 1
+
+                                elif direction == 'right':
+                                    e_1 += 1
+
+                                elif direction == 'up':
+                                    i_1 -= 1
+
+                                elif direction == 'down':
+                                    i_1 += 1
+
+                            now_map[i + i_1][-e + e_1] = choice
 
             # Определяем позицию игрока
 
@@ -926,7 +976,28 @@ def game():
 
                             player_number -= 1
 
-                            now_map[i][e] = choice
+                            # Смещаем врага если клетка занята
+
+                            e_1 = 0
+                            i_1 = 0
+
+                            while now_map[i + i_1][-e + e_1] != '  `':
+
+                                direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+
+                                if direction == 'left':
+                                    e_1 -= 1
+
+                                elif direction == 'right':
+                                    e_1 += 1
+
+                                elif direction == 'up':
+                                    i_1 -= 1
+
+                                elif direction == 'down':
+                                    i_1 += 1
+
+                            now_map[i + i_1][e + e_1] = choice
 
         print(Fore.LIGHTWHITE_EX + 'Your map difficult now: ' + difficult)
 
@@ -1053,27 +1124,11 @@ def game():
                 print(Fore.LIGHTWHITE_EX + 'You health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
                       + '(' + Fore.LIGHTGREEN_EX + '+' + str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
-            elif 'close attack' in ability_choose or 'close attack' in ability_can_list[int(ability_choose)]:
-                # чекнуть
-                enemy_names_cache = {}
+            elif 'close attack' in ability_choose or ability_choose.isnumeric() and 'close attack' in ability_can_list[int(ability_choose)]:
 
-                for i in enemies_dict.values():
+                if ability_choose.isnumeric():
 
-                    for e in list(i.keys()):
-
-                        if e[0] == ability_choose[0].upper():
-
-                            enemy_name = e
-
-                            break
-
-                        #if e in list(enemy_names_cache.values()):
-
-                        #    enemy_names_cache[e] = 0
-
-                        #else:
-
-                        #    enemy_names_cache[e] = 0
+                    ability_choose = ability_can_list[int(ability_choose) - 1]
 
                 enemy_number = ''
 
@@ -1085,11 +1140,19 @@ def game():
 
                     else:
 
-                        enemy_number = int(enemy_number)
-
                         break
 
-                print(player_creature.close_fight(enemy_name, enemy_number, enemies_dict))  # тут всё ок, осталось сделать на дальнюю атаку и что-б менялся конкретный экземпляр класса, а не все, возможно через кучу классов с одинаковыми характеристиками.
+                for i in enemies_dict.values():
+
+                    for e in i.keys():
+
+                        if e[0] == ability_choose[0].upper() and e[-1] == enemy_number:
+
+                            enemy_name = e
+
+                            break
+
+                print(player_creature.close_fight(enemy_name, enemies_dict))  # почему "4" не работает, а "3" работает
 
                 #enemy_names_cache_str_list = []
                 #k = -1
