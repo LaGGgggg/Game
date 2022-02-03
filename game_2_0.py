@@ -74,34 +74,15 @@ class PlayerCreature:
 
     def close_fight(self, creature_name, enemies_dict):
 
-        #n = 0
-
-        print(creature_name, enemies_dict)
-
         for i in enemies_dict.values():
-            print(i)
 
             for e in i.items():
-                print(e)
 
                 if e[0] == creature_name:  # перенести в enemies class
-                    print('OP_1')
 
                     e[1].health -= self.damage
 
-                    return e[1].health
-
-                    #if n == creature_number - 1:
-                    #    print('OP_2')
-
-                    #    e[1].health -= self.damage
-
-                    #    return e[1].health
-
-                    #else:
-                    #    print('OP_3')
-
-                    #    n += 1
+                    return e[1].health, self.damage
 
     def heal(self):
 
@@ -113,10 +94,17 @@ class PlayerCreature:
             self.health += self.healing_power
             return self.health, self.healing_power
 
-    def ranged_combat(self, creature):
-        creature.health -= self.ranged_damage
+    def ranged_combat(self, creature_name, enemies_dict):
 
-        return creature.health
+        for i in enemies_dict.values():
+
+            for e in i.items():
+
+                if e[0] == creature_name:  # перенести в enemies class
+
+                    e[1].health -= self.ranged_damage
+
+                    return e[1].health, self.ranged_damage
 
 
 player_creature = PlayerCreature(100, 15, 10, 1, 3, 3, 15, 100)
@@ -556,25 +544,6 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
                 old_data[16] += '}'
     old_data[16] += '}\n'
 
-        #if i == 0:
-        #    old_data[16] = 'enemies_list = [[{}, {}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
-        #                                                                                enemies_dict[i].damage,
-        #                                                                                enemies_dict[i].ranged_damage,
-        #                                                                                enemies_dict[i].close_fight_radius,
-        #                                                                                enemies_dict[i].ranged_combat_radius,
-        #                                                                                enemies_dict[i].moving_speed,
-        #                                                                                enemies_dict[i].healing_power,
-        #                                                                                enemies_dict[i].max_health)
-        #else:
-        #    old_data[16] = old_data[16][:-2] + ', [{}, {}, {}, {}, {}, {}, {}, {}]]\n'.format(enemies_dict[i].health,
-        #                                                                                      enemies_dict[i].damage,
-        #                                                                                      enemies_dict[i].ranged_damage,
-        #                                                                                      enemies_dict[i].close_fight_radius,
-        #                                                                                      enemies_dict[i].ranged_combat_radius,
-        #                                                                                      enemies_dict[i].moving_speed,
-        #                                                                                      enemies_dict[i].healing_power,
-        #                                                                                      enemies_dict[i].max_health)
-
     # Заносим статистику
 
     n = 20
@@ -754,7 +723,7 @@ def game():
                     for i in range(len(now_map[1:])):
 
                         if i == 0:
-                            i += 1
+                            continue
 
                         for e in range(len(now_map[i][crop_number:])):
                             if e == 0:
@@ -762,6 +731,9 @@ def game():
 
                             if enemies_number == 0:
                                 break
+
+                            if now_map[i][e] != '  `':
+                                continue
 
                             choice = ''.join(random.choices(['Go', ''], [1, 99], k=1))
 
@@ -795,28 +767,30 @@ def game():
 
                                 enemies_number -= 1
 
-                                # Смещаем врага если клетка занята
+                                now_map[i][e] = choice
 
-                                e_1 = 0
-                                i_1 = 0
+                                ## Смещаем врага если клетка занята
 
-                                while now_map[i + i_1][-e + e_1] != '  `':
+                                #e_1 = 0
+                                #i_1 = 0
 
-                                    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+                                #while now_map[i + i_1][-e + e_1] != '  `':
 
-                                    if direction == 'left':
-                                        e_1 -= 1
+                                #    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
 
-                                    elif direction == 'right':
-                                        e_1 += 1
+                                #    if direction == 'left':
+                                #        e_1 -= 1
 
-                                    elif direction == 'up':
-                                        i_1 -= 1
+                                #    elif direction == 'right':
+                                #        e_1 += 1
 
-                                    elif direction == 'down':
-                                        i_1 += 1
+                                #    elif direction == 'up':
+                                #        i_1 -= 1
 
-                                now_map[i + i_1][-e + e_1] = choice
+                                #    elif direction == 'down':
+                                #        i_1 += 1
+
+                                #now_map[i + i_1][-e + e_1] = choice
 
                 # Определяем позицию игрока
 
@@ -827,15 +801,18 @@ def game():
                     for i in range(len(now_map[1:])):
 
                         if i == 0:
-                            i += 1
+                            continue
 
                         for e in range(len(now_map[i][crop_number:])):
 
                             if e == 0:
-                                e += 1
+                                continue
 
                             if player_number == 0:
                                 break
+
+                            if now_map[i][e] != '  `':
+                                continue
 
                             choice = ''.join(random.choices(['  P', ''], [1, 99], k=1))
 
@@ -843,28 +820,30 @@ def game():
 
                                 player_number -= 1
 
-                                # Смещаем врага если клетка занята
+                                now_map[i][e] = choice
 
-                                e_1 = 0
-                                i_1 = 0
+                                ## Смещаем врага если клетка занята
 
-                                while now_map[i + i_1][-e + e_1] != '  `':
+                                #e_1 = 0
+                                #i_1 = 0
 
-                                    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+                                #while now_map[i + i_1][-e + e_1] != '  `':
 
-                                    if direction == 'left':
-                                        e_1 -= 1
+                                #    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
 
-                                    elif direction == 'right':
-                                        e_1 += 1
+                                #    if direction == 'left':
+                                #        e_1 -= 1
 
-                                    elif direction == 'up':
-                                        i_1 -= 1
+                                #    elif direction == 'right':
+                                #        e_1 += 1
 
-                                    elif direction == 'down':
-                                        i_1 += 1
+                                #    elif direction == 'up':
+                                #        i_1 -= 1
 
-                                now_map[i + i_1][e + e_1] = choice
+                                #    elif direction == 'down':
+                                #        i_1 += 1
+
+                                #now_map[i + i_1][e + e_1] = choice
         else:
             difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
@@ -891,7 +870,7 @@ def game():
                 for i in range(len(now_map[1:])):
 
                     if i == 0:
-                        i += 1
+                        continue
 
                     for e in range(len(now_map[i][crop_number:])):
                         if e == 0:
@@ -899,6 +878,9 @@ def game():
 
                         if enemies_number == 0:
                             break
+
+                        if now_map[i][e] != '  `':
+                            continue
 
                         choice = ''.join(random.choices(['Go', ''], [1, 99], k=1))
 
@@ -928,28 +910,30 @@ def game():
 
                             enemies_number -= 1
 
-                            # Смещаем врага если клетка занята
+                            now_map[i][e] = choice
 
-                            e_1 = 0
-                            i_1 = 0
+                            ## Смещаем врага если клетка занята
 
-                            while now_map[i + i_1][-e + e_1] != '  `':
+                            #e_1 = 0
+                            #i_1 = 0
 
-                                direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+                            #while now_map[i + i_1][-e + e_1] != '  `':
 
-                                if direction == 'left':
-                                    e_1 -= 1
+                            #    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
 
-                                elif direction == 'right':
-                                    e_1 += 1
+                            #    if direction == 'left':
+                            #        e_1 -= 1
 
-                                elif direction == 'up':
-                                    i_1 -= 1
+                            #    elif direction == 'right':
+                            #        e_1 += 1
 
-                                elif direction == 'down':
-                                    i_1 += 1
+                            #    elif direction == 'up':
+                            #        i_1 -= 1
 
-                            now_map[i + i_1][-e + e_1] = choice
+                            #    elif direction == 'down':
+                            #        i_1 += 1
+
+                            #now_map[i + i_1][-e + e_1] = choice
 
             # Определяем позицию игрока
 
@@ -960,15 +944,18 @@ def game():
                 for i in range(len(now_map[1:])):
 
                     if i == 0:
-                        i += 1
+                        continue
 
                     for e in range(len(now_map[i][crop_number:])):
 
                         if e == 0:
-                            e += 1
+                            continue
 
                         if player_number == 0:
                             break
+
+                        if now_map[i][e] != '  `':
+                            continue
 
                         choice = ''.join(random.choices(['  P', ''], [1, 99], k=1))
 
@@ -976,28 +963,30 @@ def game():
 
                             player_number -= 1
 
-                            # Смещаем врага если клетка занята
+                            now_map[i][e] = choice
 
-                            e_1 = 0
-                            i_1 = 0
+                            ## Смещаем врага если клетка занята
 
-                            while now_map[i + i_1][-e + e_1] != '  `':
+                            #e_1 = 0
+                            #i_1 = 0
 
-                                direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
+                            #while now_map[i + i_1][-e + e_1] != '  `':
+                            #
+                            #    direction = ''.join(random.choices(['left', 'right', 'up', 'down'], k=1))
 
-                                if direction == 'left':
-                                    e_1 -= 1
+                            #    if direction == 'left':
+                            #        e_1 -= 1
 
-                                elif direction == 'right':
-                                    e_1 += 1
+                            #    elif direction == 'right':
+                            #        e_1 += 1
 
-                                elif direction == 'up':
-                                    i_1 -= 1
+                            #    elif direction == 'up':
+                            #        i_1 -= 1
 
-                                elif direction == 'down':
-                                    i_1 += 1
+                            #    elif direction == 'down':
+                            #        i_1 += 1
 
-                            now_map[i + i_1][e + e_1] = choice
+                            #now_map[i + i_1][e + e_1] = choice
 
         print(Fore.LIGHTWHITE_EX + 'Your map difficult now: ' + difficult)
 
@@ -1019,38 +1008,36 @@ def game():
 
                 for e in i.items():
 
-                    if e[0] in enemy_names:
+                #for e in i.items():
 
-                        n = 1
+                #    if e[0] in enemy_names:
 
-                        for u in enemy_names:
+                #        n = 1
 
-                            if u == e[0]:
+                #        for u in enemy_names:
 
-                                n += 1
+                #            if u == e[0]:
 
-                        enemy_names.append(e[0] + ' ' + str(n))
+                #                n += 1
 
-                        enemy_name = e[0] + ' ' + str(n)
+                #        enemy_names.append(e[0] + ' ' + str(n))
 
-                    else:
+                #        enemy_name = e[0] + ' ' + str(n)
 
-                        enemy_names.append(e[0])
+                #    else:
 
-                        enemy_name = e[0]
+                #        enemy_names.append(e[0])
 
-                    print(Fore.LIGHTWHITE_EX + enemy_name + ' characters:\nHealth ' + Fore.LIGHTGREEN_EX +
-                          str(e[1].health) + Fore.LIGHTWHITE_EX +
-                          '\nHealing power ' + Fore.LIGHTGREEN_EX + str(e[1].healing_power) + Fore.LIGHTWHITE_EX +
-                          '\nClose fight damage ' + Fore.LIGHTRED_EX + str(e[1].damage) +
-                          Fore.LIGHTWHITE_EX +
-                          '\nRanged combat damage ' + Fore.LIGHTRED_EX + str(e[1].ranged_damage) + Fore.LIGHTWHITE_EX +
-                          '\nClose fight radius ' + Fore .LIGHTMAGENTA_EX + str(e[1].close_fight_radius) +
-                          Fore.LIGHTWHITE_EX +
-                          '\nRanged combat radius ' + Fore.LIGHTMAGENTA_EX + str(e[1].ranged_combat_radius) +
-                          Fore.LIGHTWHITE_EX +
-                          '\nMoving speed ' +
-                          Fore.LIGHTCYAN_EX + str(e[1].moving_speed) + '\n')
+                #        enemy_name = e[0]
+
+                    print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + ' characters:\nHealth: ' + Fore.LIGHTGREEN_EX +
+                          str(e[1].health) + Fore.LIGHTWHITE_EX + '\nHealing power: ' + Fore.LIGHTGREEN_EX +
+                          str(e[1].healing_power) + Fore.LIGHTWHITE_EX + '\nClose fight damage: ' + Fore.LIGHTRED_EX +
+                          str(e[1].damage) + Fore.LIGHTWHITE_EX + '\nRanged combat damage: ' + Fore.LIGHTRED_EX +
+                          str(e[1].ranged_damage) + Fore.LIGHTWHITE_EX + '\nClose fight radius: ' +
+                          Fore .LIGHTMAGENTA_EX + str(e[1].close_fight_radius) + Fore.LIGHTWHITE_EX +
+                          '\nRanged combat radius: ' + Fore.LIGHTMAGENTA_EX + str(e[1].ranged_combat_radius) +
+                          Fore.LIGHTWHITE_EX + '\nMoving speed: ' + Fore.LIGHTCYAN_EX + str(e[1].moving_speed) + '\n')
 
             # Ход игрока
 
@@ -1063,8 +1050,6 @@ def game():
 
             # Использование способностей
 
-            player_creature.health = 9
-
             ability_can_list = ['doing nothing']
             ability_can_list_colorama = [Fore.LIGHTWHITE_EX + 'Doing nothing']
 
@@ -1073,7 +1058,7 @@ def game():
             if player_creature.health < player_creature.max_health:
 
                 ability_can_list.append('heal')
-                ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + 'Heal')
+                ability_can_list_colorama.append(Fore.LIGHTGREEN_EX + 'Heal')
 
             # Close fight check
 
@@ -1121,10 +1106,11 @@ def game():
 
                 heal_cache = player_creature.heal()
 
-                print(Fore.LIGHTWHITE_EX + 'You health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
+                print(Fore.LIGHTGREEN_EX + 'You' + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
                       + '(' + Fore.LIGHTGREEN_EX + '+' + str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
-            elif 'close attack' in ability_choose or ability_choose.isnumeric() and 'close attack' in ability_can_list[int(ability_choose)]:
+            elif 'close attack' in ability_choose or ability_choose.isnumeric() and \
+                 'close attack' in ability_can_list[int(ability_choose) - 1]:
 
                 if ability_choose.isnumeric():
 
@@ -1152,53 +1138,11 @@ def game():
 
                             break
 
-                print(player_creature.close_fight(enemy_name, enemies_dict))  # почему "4" не работает, а "3" работает
+                close_attack_cache = player_creature.close_fight(enemy_name, enemies_dict)
 
-                #enemy_names_cache_str_list = []
-                #k = -1
-
-                #for i in enemy_names_cache.items():
-
-                #    if i[0][0] == ability_choose[0].upper():
-
-                #        for e in enemies_dict.values():
-
-                #            k += 1
-
-                #            for u in e.items():
-
-                #                for o in list(enemy_names_cache.keys()):
-
-                #                    enemy_names_cache_str_list.append(str(o))
-
-                #                if u[0] == enemy_names_cache_str_list[k]:
-                #                    #print(ability_choose_number)
-                #                    #print(i[1])
-
-                #                    if i[1] == ability_choose_number - 1:
-
-                #                        print(player_creature.close_fight(u[1]))  # вывод урона доделать
-
-                #                    else:
-                #                        #print(i)
-
-                #                        # Тут всё ок, надо просто код ниже от сюда<:
-
-                #                        #i[1] += 1
-                #                        #print(enemy_names_cache)
-                #                        #enemy_names_cache[enemy_names_cache_str_list[k]] += 1
-                #                        #print(enemy_names_cache)
-
-                #                        i = list(i)
-                #                        i[1] += 1
-                #                        i = tuple(i)
-
-                #                        #print(i)
-
-                #                        # До сюда>
-
-
-
+                print(Fore.LIGHTRED_EX + enemy_name + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX +
+                      str(close_attack_cache[0]) + Fore.LIGHTWHITE_EX + '(' + Fore.LIGHTRED_EX + '-' +
+                      str(close_attack_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
             # Ход врага
 
