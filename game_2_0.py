@@ -1109,8 +1109,9 @@ def game():
                 print(Fore.LIGHTGREEN_EX + 'You' + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
                       + '(' + Fore.LIGHTGREEN_EX + '+' + str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
-            elif 'close attack' in ability_choose or ability_choose.isnumeric() and \
-                 'close attack' in ability_can_list[int(ability_choose) - 1]:
+            elif 'close attack' in ability_choose or ability_choose.isnumeric() and 'close attack' in \
+                    ability_can_list[int(ability_choose) - 1] or 'ranged attack' in ability_choose or \
+                    ability_choose.isnumeric() and 'ranged attack' in ability_can_list[int(ability_choose) - 1]:
 
                 if ability_choose.isnumeric():
 
@@ -1138,11 +1139,52 @@ def game():
 
                             break
 
-                close_attack_cache = player_creature.close_fight(enemy_name, enemies_dict)
+                if 'close attack' in ability_choose:
+
+                    fight_cache = player_creature.close_fight(enemy_name, enemies_dict)
+
+                else:
+
+                    fight_cache = player_creature.ranged_combat(enemy_name, enemies_dict)
 
                 print(Fore.LIGHTRED_EX + enemy_name + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX +
-                      str(close_attack_cache[0]) + Fore.LIGHTWHITE_EX + '(' + Fore.LIGHTRED_EX + '-' +
-                      str(close_attack_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+                      str(fight_cache[0]) + Fore.LIGHTWHITE_EX + '(' + Fore.LIGHTRED_EX + '-' +
+                      str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+
+            #elif 'ranged attack' in ability_choose or ability_choose.isnumeric() and \
+            #     'ranged attack' in ability_can_list[int(ability_choose) - 1]:
+
+            #    if ability_choose.isnumeric():
+
+            #        ability_choose = ability_can_list[int(ability_choose) - 1]
+
+            #    enemy_number = ''
+
+            #    for i in ability_choose[1:]:
+
+            #        if i != ' ':
+
+            #            enemy_number += i
+
+            #        else:
+
+            #            break
+
+            #    for i in enemies_dict.values():
+
+            #        for e in i.keys():
+
+            #            if e[0] == ability_choose[0].upper() and e[-1] == enemy_number:
+
+            #                enemy_name = e
+
+            #                break
+
+            #    close_attack_cache = player_creature.ranged_combat(enemy_name, enemies_dict)
+
+            #    print(Fore.LIGHTRED_EX + enemy_name + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX +
+            #          str(close_attack_cache[0]) + Fore.LIGHTWHITE_EX + '(' + Fore.LIGHTRED_EX + '-' +
+            #          str(close_attack_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
             # Ход врага
 
