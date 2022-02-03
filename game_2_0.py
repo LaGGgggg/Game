@@ -55,8 +55,8 @@ Baron_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
 Elsa = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 Elsa_1 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 Elsa_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
-enemies_dict_const = {'easy': ['Baron'], 'medium': ['Elsa']}
-enemies_dict_names = {'Baron': Baron, 'Baron 1': Baron_1, 'Elsa': Elsa, 'Elsa 1': Elsa_1, 'Elsa 2': Elsa_2}
+enemies_dict_const = {"easy": ["Baron"], "medium": ["Elsa"]}
+enemies_dict_names = {"Baron": Baron, "Baron 1": Baron_1, "Elsa": Elsa, "Elsa 1": Elsa_1, "Elsa 2": Elsa_2}
 
 
 class PlayerCreature:

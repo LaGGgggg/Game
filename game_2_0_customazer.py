@@ -8,7 +8,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
     importlib.reload(game_2_0_data)
 
     n = 1
-    all_y = [i for i in range(101)]  # карта до ста строк
+    all_y = [i for i in range(101)]  # карта до ста строк   ## Оно ж обрезаться должно, нужно срочно протестить
 
     for _ in range(int(lines)):
         line_ = ['  `' for _ in range(0, int(cells_in_line) + 1)]
@@ -116,7 +116,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
             p += ', '
 
-    old_data[line] = old_data[line][:-2] + ', "' + map_difficult + '": [' + p + ']}\n'
+    old_data[line] = old_data[line][:-2] + ', "' + map_difficult + '": ["' + p + '"]}\n'
 
     data = open('game_2_0.py', 'w', encoding='UTF-8')
 
@@ -173,7 +173,16 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # добавляем нового врага
 
-    old_data[line] = old_data[line] + enemy_name + ' = EnemyCreature(' + reformat_specifications + ')\n'
+    for i in range(game_2_0_data.max_map_enemies[enemy_difficult]):  # need test/check
+
+        if i != 0:
+
+            old_data[line] = old_data[line] + enemy_name + '_' + str(i) + ' = EnemyCreature(' + reformat_specifications\
+                             + ')\n'
+
+        else:
+
+            old_data[line] = old_data[line] + enemy_name + ' = EnemyCreature(' + reformat_specifications + ')\n'
 
     # добавляем врага к нужной карте
 
@@ -190,7 +199,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
         for i in e.split(': '):
             if n == 1:
-                p2.append(i[:-1] + ', ' + enemy_name + ']')
+                p2.append(i[:-1] + ', "' + enemy_name + '"]')  # here + "", need check how work
 
             else:
                 p2.append(i)
@@ -207,11 +216,11 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     p4 = str(str(p4).replace("'", ''))
 
-    old_data[line + 1] = old_data[line + 1][:21] + str(p4) + '\n'
+    old_data[line + 1] = old_data[line + 1][:21] + str(p4) + '\n'  # need check
 
     # Добавляем врага в enemies_dict_names
 
-    if old_data[line + 2] == 'enemies_dict_names = {}\n':
+    if old_data[line + 2] == 'enemies_dict_names = {}\n':  # need test/check
 
         old_data[line + 2] = old_data[line + 2][:-2] + '"' + enemy_name + '": ' + enemy_name + '}\n'
 
