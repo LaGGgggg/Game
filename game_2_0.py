@@ -276,8 +276,63 @@ def print_map():
     print()
 
 
-def enemies_moving():
-    pass
+def enemy_moving(enemy_name):
+
+    # 1
+    try:
+        if now_map[player_position[0] - 1][player_position[1] - 1] == '  `':  # надо менять позицию и на дистанс отправлять, потом обрптно
+            correct_directions.append(1)
+    except (TypeError, IndexError):
+        pass
+
+    # 2
+    try:
+        if now_map[player_position[0] - 1][player_position[1]] == '  `':
+            correct_directions.append(2)
+    except (TypeError, IndexError):
+        pass
+
+    # 3
+    try:
+        if now_map[player_position[0] - 1][player_position[1] + 1] == '  `':
+            correct_directions.append(3)
+    except (TypeError, IndexError):
+        pass
+
+    # 4
+    try:
+        if now_map[player_position[0]][player_position[1] + 1] == '  `':
+            correct_directions.append(4)
+    except (TypeError, IndexError):
+        pass
+
+    # 5
+    try:
+        if now_map[player_position[0] + 1][player_position[1] + 1] == '  `':
+            correct_directions.append(5)
+    except (TypeError, IndexError):
+        pass
+
+    # 6
+    try:
+        if now_map[player_position[0] + 1][player_position[1]] == '  `':
+            correct_directions.append(6)
+    except (TypeError, IndexError):
+        pass
+
+    # 7
+    try:
+        if now_map[player_position[0] + 1][player_position[1] - 1] == '  `':
+            correct_directions.append(7)
+    except (TypeError, IndexError):
+        pass
+
+    # 8
+    try:
+        if now_map[player_position[0]][player_position[1] - 1] == '  `':
+            correct_directions.append(8)
+    except (TypeError, IndexError):
+        pass
 
 
 def player_moving():
@@ -608,6 +663,81 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
         new_data.write(str(i))
 
     new_data.close()
+
+
+def enemy_distance(enemy_name):
+
+    global now_map, difficult
+
+    enemy_position = []
+    player_position = []
+    enemy_number = ''
+
+    for i in enemy_name:
+
+        if i.isnumeric():
+
+            enemy_number += i
+
+    enemy_number = int(enemy_number)
+
+    for i in range(len(now_map)):
+
+        if enemy_position != [] and player_position != []:
+            break
+
+        if i == len(now_map):
+            break
+
+        i += 1
+
+        for e in range(len(now_map[i])):
+
+            if now_map[i][e] == enemy_name[1].upper() + enemy_number:
+
+                enemy_position = [i, e]
+
+            if enemy_position != [] and player_position != []:
+                break
+
+            if now_map[i][e] == '  P':
+
+                player_position = [i, e]
+
+            if enemy_position != [] and player_position != []:
+                break
+
+    num = math.sqrt((enemy_position[0] - player_position[0]) ** 2 + (enemy_position[1] - player_position[1]) ** 2)
+
+    if '.0' not in str(num):
+
+        y = 0
+        crop_str_num_1 = ''
+        crop_str_num_2 = ''
+
+        for e in str(num):
+
+            if y == 1:
+                crop_str_num_2 = int(e)
+                break
+
+            if e != '.':
+                crop_str_num_1 += e
+
+            else:
+                y += 1
+
+        if int(crop_str_num_2) > 4:
+            num = int(crop_str_num_1[0]) + 1
+        else:
+            num = int(crop_str_num_1[0])
+
+        enemy_distance = num
+    else:
+
+        enemy_distance = num
+
+    return enemy_distance
 
 
 def distance():
@@ -1091,22 +1221,22 @@ def game():
 
             # Close fight check
 
-            for items in distance().items():
+            for i in distance().items():
 
-                if player_creature.close_fight_radius >= items[1]:
+                if player_creature.close_fight_radius >= i[1]:
 
-                    ability_can_list.append('' + items[0][1:].lower() + ' close attack')
-                    ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
+                    ability_can_list.append('' + i[0][1:].lower() + ' close attack')
+                    ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + i[0][1:] +
                                                      Fore.LIGHTWHITE_EX + ' close attack')
 
-            # Range fight check
+            # Range attack check
 
-            for items in distance().items():
+            for i in distance().items():
 
-                if player_creature.ranged_combat_radius >= items[1]:
+                if player_creature.ranged_combat_radius >= i[1]:
 
-                    ability_can_list.append('' + items[0][1:].lower() + ' ranged attack')
-                    ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
+                    ability_can_list.append('' + i[0][1:].lower() + ' ranged attack')
+                    ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + i[0][1:] +
                                                      Fore.LIGHTWHITE_EX + ' ranged attack')
 
             # Создаём допустимые номера
@@ -1228,6 +1358,34 @@ def game():
             #          str(close_attack_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
             # Ход врага
+
+            for i in enemies_dict.values():
+
+                for e in i.items():
+
+                    moving_points = e[1].moving_speed
+                    do_points = 1
+
+                    while moving_points != 0:
+
+                        if e[1].damage != 0 and enemy_distance(e[0]) <= e[1].close_fight_radius:
+                            print(e[1].close_fight())  # need beautiful
+                            do_points -= 1
+                            break
+
+                        elif e[1].ranged_damage != 0 and enemy_distance(e[0]) <= e[1].ranged_combat_radius:
+                            print(e[1].ranged_combat())  # need beautiful
+                            do_points -= 1
+                            break
+
+                        else:
+                            enemy_moving(e[0])
+
+                    if do_points != 0 and e[1].health < e[1].max_health:
+                        print(e[1].heal())  # need beautiful
+
+                    elif do_points != 0:
+                        print('Doing nothing')  # need beautiful
 
         # Автосохранение после конца карты
 
