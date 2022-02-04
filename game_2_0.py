@@ -14,8 +14,6 @@ difficult_list = game_2_0_data.difficult_list
 difficult_weights = game_2_0_data.difficult_weights
 all_maps_const = game_2_0_data.all_maps
 
-# Сама игра
-
 
 class EnemyCreature:
 
@@ -30,33 +28,64 @@ class EnemyCreature:
         self.healing_power = healing_power
         self.max_health = max_health
 
-    def close_fight(self, creature):
-        creature.health -= self.damage
+    def close_fight(self):
 
-        return creature.health
+        player_creature.health -= self.damage
+
+        return player_creature.health, self.damage
 
     def heal(self):
-        self.health += self.healing_power
 
         if self.health > self.max_health:
             self.health = self.max_health
+            return self.health, self.max_health
 
-        return self.health
+        else:
+            self.health += self.healing_power
+            return self.health, self.healing_power
 
-    def ranged_combat(self, creature):
+    def ranged_combat(self):
 
-        creature.health -= self.ranged_damage
+        player_creature.health -= self.ranged_damage
 
-        return creature.health
+        return player_creature.health, self.ranged_damage
 
 
 Baron = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
 Baron_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_2 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_3 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_4 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_5 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_6 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_7 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_8 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_9 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron_10 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
 Elsa = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 Elsa_1 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 Elsa_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
-enemies_dict_const = {"easy": ["Baron"], "medium": ["Elsa"]}
-enemies_dict_names = {"Baron": Baron, "Baron 1": Baron_1, "Elsa": Elsa, "Elsa 1": Elsa_1, "Elsa 2": Elsa_2}
+Elsa_3 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_4 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_5 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_6 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_7 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_8 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_9 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Elsa_10 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
+Lucius = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_1 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_2 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_3 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_4 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_5 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_6 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_7 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_8 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_9 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+Lucius_10 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
+enemies_dict_const = {"easy": ["Baron"], "medium": ["Elsa"], "hard": ["Elsa", "Baron", "Lucius"]}
+enemies_dict_names = {"Baron": Baron, "Baron 1": Baron_1, "Elsa": Elsa, "Elsa 1": Elsa_1, "Elsa 2": Elsa_2, "Elsa 3": Elsa_3, "Elsa 4": Elsa_4, "Elsa 5": Elsa_5, "Elsa 6": Elsa_6, "Elsa 7": Elsa_7, "Elsa 8": Elsa_8, "Elsa 9": Elsa_9, "Elsa 10": Elsa_10, "Baron 2": Baron_2, "Baron 3": Baron_3, "Baron 4": Baron_4, "Baron 5": Baron_5, "Baron 6": Baron_6, "Baron 7": Baron_7, "Baron 8": Baron_8, "Baron 9": Baron_9, "Baron 10": Baron_10, "Lucius": Lucius, "Lucius 1": Lucius_1, "Lucius 2": Lucius_2, "Lucius 3": Lucius_3, "Lucius 4": Lucius_4, "Lucius 5": Lucius_5, "Lucius 6": Lucius_6, "Lucius 7": Lucius_7, "Lucius 8": Lucius_8, "Lucius 9": Lucius_9, "Lucius 10": Lucius_10}
 
 
 class PlayerCreature:
@@ -78,7 +107,7 @@ class PlayerCreature:
 
             for e in i.items():
 
-                if e[0] == creature_name:  # перенести в enemies class
+                if e[0] == creature_name:
 
                     e[1].health -= self.damage
 
@@ -100,7 +129,7 @@ class PlayerCreature:
 
             for e in i.items():
 
-                if e[0] == creature_name:  # перенести в enemies class
+                if e[0] == creature_name:
 
                     e[1].health -= self.ranged_damage
 
@@ -1080,6 +1109,8 @@ def game():
                     ability_can_list_colorama.append(Fore.LIGHTWHITE_EX + '' + Fore.LIGHTRED_EX + items[0][1:] +
                                                      Fore.LIGHTWHITE_EX + ' ranged attack')
 
+            # Создаём допустимые номера
+
             ability_can_str = '\n'
             n = 0
 
@@ -1094,13 +1125,21 @@ def game():
 
             ability_can_numbers = [str(i + 1) for i in range(len(ability_can_list))]
 
+            # Проверка правильности ввода
+
             while ability_choose not in ability_can_list and ability_choose not in ability_can_numbers:
 
                 ability_choose = input(Fore.LIGHTYELLOW_EX + 'Incorrect value, try again.')
 
+            # Выполнение выбранной способности
+
+            # Ничего не делать
+
             if 'doing nothing' in ability_choose or ability_choose == '1':
 
                 print(Fore.LIGHTWHITE_EX + 'you didn`t do anything')
+
+            # Лечение
 
             elif 'heal' in ability_choose or ability_choose == '2' and ability_can_list[1] == 'heal':
 
@@ -1108,6 +1147,8 @@ def game():
 
                 print(Fore.LIGHTGREEN_EX + 'You' + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX + str(heal_cache[0]) + Fore.LIGHTWHITE_EX
                       + '(' + Fore.LIGHTGREEN_EX + '+' + str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+
+            # Ближняя и дальняя атаки
 
             elif 'close attack' in ability_choose or ability_choose.isnumeric() and 'close attack' in \
                     ability_can_list[int(ability_choose) - 1] or 'ranged attack' in ability_choose or \
