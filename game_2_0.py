@@ -467,13 +467,6 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
         enemy_position[0] += 1
         enemy_position[1] -= 1
-        print(enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position))
-        print(enemy_distance(enemy_name, enemy_position, player_position))
-        print(enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position))
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
             enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
@@ -1459,7 +1452,7 @@ def game():
 
             if 'doing nothing' in ability_choose or ability_choose == '1':
 
-                print(Fore.LIGHTWHITE_EX + 'you didn`t do anything')
+                print(Fore.LIGHTWHITE_EX + 'You didn`t do anything')
 
             # Лечение
 
@@ -1562,25 +1555,36 @@ def game():
 
                     while moving_points != 0:
 
-                        if e[1].damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= e[1].close_fight_radius:
-                            print(e[1].close_fight())  # need beautiful
+                        if e[1].damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
+                                e[1].close_fight_radius:
+                            fight_cache = e[1].close_fight()
+                            print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + ' close attack you, ' + 'your health: '
+                                  + Fore.LIGHTGREEN_EX + str(fight_cache[0]) + Fore.LIGHTWHITE_EX + '(' +
+                                  Fore.LIGHTRED_EX + '-' + str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
                             do_points -= 1
                             break
 
-                        elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= e[1].ranged_combat_radius:
-                            print(e[1].ranged_combat())  # need beautiful
+                        elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
+                                e[1].ranged_combat_radius:
+                            fight_cache = e[1].ranged_combat()
+                            print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + ' ranged attack you, ' + 'your health: '
+                                  + Fore.LIGHTGREEN_EX + str(fight_cache[0]) + Fore.LIGHTWHITE_EX + '(' +
+                                  Fore.LIGHTRED_EX + '-' + str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
                             do_points -= 1
                             break
 
                         else:
                             moving_points -= 1
-                            print(enemy_moving(e[0]))
+                            enemy_moving(e[0])
 
                     if do_points != 0 and e[1].health < e[1].max_health:
-                        print(e[1].heal())  # need beautiful
+                        heal_cache = e[1].heal()
+                        print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX +
+                              str(heal_cache[0]) + Fore.LIGHTWHITE_EX + '(' + Fore.LIGHTGREEN_EX + '+' +
+                              str(heal_cache[1]) + Fore.LIGHTWHITE_EX + ')')
 
                     elif do_points != 0:
-                        print('Doing nothing')  # need beautiful
+                        print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + 'Doing nothing')
 
         # Автосохранение после конца карты
 
