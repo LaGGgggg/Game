@@ -276,61 +276,234 @@ def print_map():
     print()
 
 
-def enemy_moving(enemy_name):
+def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
-    # 1
+    global now_map
+
+    # Если нужно, определяем позицию игрока
+
+    if not player_position:
+
+        n1 = 0
+
+        for i in now_map[1:]:
+
+            n1 += 1
+            n2 = -1
+
+            for e in i:
+
+                n2 += 1
+
+                if e == '  P':
+
+                    player_position = [n1, n2]
+
+    # Если нужно, определяем позицию врага
+
+    if not enemy_position:
+
+        enemy_number = ''
+
+        for i in enemy_name:
+
+            if i.isnumeric():
+                enemy_number += i
+
+        n1 = 0
+
+        for i in now_map[1:]:
+
+            n1 += 1
+            n2 = -1
+
+            for e in i:
+
+                n2 += 1
+
+                if e[0] == ' ':
+                    if e[1:] == enemy_name[0].upper() + enemy_number:
+                        enemy_position = [n1, n2]
+                else:
+                    if e == enemy_name[0].upper() + enemy_number:
+                        enemy_position = [n1, n2]
+
+    # Движение
+
+    # Поиск варианта сближения
+
+    # Делаем сэйв позиции
+
+    enemy_position_save = enemy_position.copy()
+
+    # 1 направление
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0] - 1][player_position[1] - 1] == '  `':  # надо менять позицию и на дистанс отправлять, потом обрптно
-            correct_directions.append(1)
+
+        enemy_position[0] -= 1
+        enemy_position[1] -= 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 2
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0] - 1][player_position[1]] == '  `':
-            correct_directions.append(2)
+
+        enemy_position[0] -= 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 3
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0] - 1][player_position[1] + 1] == '  `':
-            correct_directions.append(3)
+
+        enemy_position[0] -= 1
+        enemy_position[1] += 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 4
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0]][player_position[1] + 1] == '  `':
-            correct_directions.append(4)
+
+        enemy_position[1] += 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 5
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0] + 1][player_position[1] + 1] == '  `':
-            correct_directions.append(5)
+
+        enemy_position[0] += 1
+        enemy_position[1] += 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 6
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0] + 1][player_position[1]] == '  `':
-            correct_directions.append(6)
+
+        enemy_position[0] += 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 7
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0] + 1][player_position[1] - 1] == '  `':
-            correct_directions.append(7)
+
+        enemy_position[0] += 1
+        enemy_position[1] -= 1
+        print(enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position))
+        print(enemy_distance(enemy_name, enemy_position, player_position))
+        print(enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position))
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
     # 8
+
+    enemy_position = enemy_position_save.copy()
+
     try:
-        if now_map[player_position[0]][player_position[1] - 1] == '  `':
-            correct_directions.append(8)
+
+        enemy_position[1] -= 1
+
+        if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
+            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                         enemy_position_save,
+                                                                                         player_position):
+
+            now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
+            now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
+            return enemy_position, player_position
+
     except (TypeError, IndexError):
         pass
 
@@ -665,12 +838,10 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
     new_data.close()
 
 
-def enemy_distance(enemy_name):
+def enemy_distance(enemy_name, enemy_position=[], player_position=[]):
 
     global now_map, difficult
 
-    enemy_position = []
-    player_position = []
     enemy_number = ''
 
     for i in enemy_name:
@@ -679,9 +850,9 @@ def enemy_distance(enemy_name):
 
             enemy_number += i
 
-    enemy_number = int(enemy_number)
-
     for i in range(len(now_map)):
+
+        i += 1
 
         if enemy_position != [] and player_position != []:
             break
@@ -689,20 +860,30 @@ def enemy_distance(enemy_name):
         if i == len(now_map):
             break
 
-        i += 1
-
         for e in range(len(now_map[i])):
 
-            if now_map[i][e] == enemy_name[1].upper() + enemy_number:
+            if not enemy_position:
 
-                enemy_position = [i, e]
+                if now_map[i][e][0] == ' ':
+
+                    if now_map[i][e][1:] == enemy_name[0].upper() + enemy_number:
+
+                        enemy_position = [i, e]
+
+                else:
+
+                    if now_map[i][e][1:] == enemy_name[0].upper() + enemy_number:
+
+                        enemy_position = [i, e]
 
             if enemy_position != [] and player_position != []:
                 break
 
-            if now_map[i][e] == '  P':
+            if not player_position:
 
-                player_position = [i, e]
+                if now_map[i][e] == '  P':
+
+                    player_position = [i, e]
 
             if enemy_position != [] and player_position != []:
                 break
@@ -737,7 +918,7 @@ def enemy_distance(enemy_name):
 
         enemy_distance = num
 
-    return enemy_distance
+    return int(enemy_distance)
 
 
 def distance():
@@ -1157,7 +1338,6 @@ def game():
 
             print()
             print_map()
-            map_go = 0
 
             # Печать характеристик(и) врагов(а)
 
@@ -1202,7 +1382,13 @@ def game():
 
             # Движение
 
-            need_move = input(Fore.LIGHTWHITE_EX + 'You need move?(Yes or No(Y/N))')
+            need_move = input(Fore.LIGHTWHITE_EX + 'You need move?(Yes or No(Y/N)(Or "quit" if you want to exit.))')
+
+            if need_move.lower() == 'quit':
+
+                map_go = 0
+                game_go = 0
+                break
 
             if need_move.lower() in ['yes', 'y']:
                 player_moving()
@@ -1250,8 +1436,14 @@ def game():
 
                 ability_can_str += Fore.LIGHTWHITE_EX + str(n) + '. ' + i + '.\n'
 
-            ability_choose = input(Fore.LIGHTWHITE_EX + 'What ability you would use? You can use:' + ability_can_str).\
-                lower()
+            ability_choose = input(Fore.LIGHTWHITE_EX + 'What ability you would use? You can use:' + ability_can_str +
+                                   'P.S.: You can write "quit" if want to exit and save your progress.').lower()
+
+            if ability_choose == 'quit':
+
+                map_go = 0
+                game_go = 0
+                break
 
             ability_can_numbers = [str(i + 1) for i in range(len(ability_can_list))]
 
@@ -1365,21 +1557,24 @@ def game():
 
                     moving_points = e[1].moving_speed
                     do_points = 1
+                    enemy_position = []
+                    player_position = []
 
                     while moving_points != 0:
 
-                        if e[1].damage != 0 and enemy_distance(e[0]) <= e[1].close_fight_radius:
+                        if e[1].damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= e[1].close_fight_radius:
                             print(e[1].close_fight())  # need beautiful
                             do_points -= 1
                             break
 
-                        elif e[1].ranged_damage != 0 and enemy_distance(e[0]) <= e[1].ranged_combat_radius:
+                        elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= e[1].ranged_combat_radius:
                             print(e[1].ranged_combat())  # need beautiful
                             do_points -= 1
                             break
 
                         else:
-                            enemy_moving(e[0])
+                            moving_points -= 1
+                            print(enemy_moving(e[0]))
 
                     if do_points != 0 and e[1].health < e[1].max_health:
                         print(e[1].heal())  # need beautiful
@@ -1403,8 +1598,6 @@ def game():
         damage_done = 0
         health_regenerated = 0
         cells_passed = 0
-
-        game_go = 0  # убрать потом
 
 
 print(Fore.LIGHTWHITE_EX + 'Hello, it`s a nice game, luck don`t help you)')  # Отсыыыылочка
