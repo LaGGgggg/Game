@@ -1000,6 +1000,26 @@ def game():
 
         # Проверка saves
 
+        if player_creature.health <= 0:
+            choose = input(Fore.LIGHTWHITE_EX + 'You want to exit or start again?')
+
+            while choose not in ['exit', 'start again']:
+                choose = input(Fore.LIGHTYELLOW_EX + 'Incorrect value!' + Fore.LIGHTWHITE_EX +
+                               'You want to "exit" or "start again?"')
+
+            if choose == 'exit':
+
+                game_go = 0
+                break
+
+            else:
+
+                # Обнуляем всё до стока
+
+                data = open('saves.py', 'w')
+
+                data.close()
+
         if check_saves():
 
             # импорт данных из saves
@@ -1491,6 +1511,8 @@ def game():
 
                         if e[0] == ability_choose[0].upper() and e[-1] == enemy_number:
 
+                            short_enemy_name = e[0]
+
                             enemy_name = e
 
                             break
@@ -1506,6 +1528,51 @@ def game():
                 print(Fore.LIGHTRED_EX + enemy_name + Fore.LIGHTWHITE_EX + ' health: ' + Fore.LIGHTGREEN_EX +
                       str(fight_cache[0]) + Fore.LIGHTWHITE_EX + '(' + Fore.LIGHTRED_EX + '-' +
                       str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+
+                n = 0
+
+                for i in enemies_dict.values():
+
+                    n += 1
+
+                    for e in i.items():
+
+                        if e[0] == enemy_name:
+
+                            if e[1].health <= 0:
+
+                                print(Fore.LIGHTWHITE_EX + 'You killed ' + Fore.LIGHTRED_EX + e[0] +
+                                      Fore.LIGHTWHITE_EX + ', my congratulations')
+
+                                del enemies_dict['Enemy_' + str(n)]
+
+                                n1 = 0
+
+                                for u in now_map:
+
+                                    n1 += 1
+                                    n2 = 0
+
+                                    for y in u:
+
+                                        n2 += 1
+
+                                        if len(short_enemy_name + enemy_number) == 2:
+
+                                            if y == ' ' + short_enemy_name + enemy_number:
+
+                                                now_map[n1][n2] = '  `'
+
+                                                break
+
+                                        else:
+
+                                            if y == short_enemy_name + enemy_number:
+
+                                                now_map[n1][n2] = '  `'
+
+                                                break
+
 
             #elif 'ranged attack' in ability_choose or ability_choose.isnumeric() and \
             #     'ranged attack' in ability_can_list[int(ability_choose) - 1]:
@@ -1562,15 +1629,21 @@ def game():
                                   + Fore.LIGHTGREEN_EX + str(fight_cache[0]) + Fore.LIGHTWHITE_EX + '(' +
                                   Fore.LIGHTRED_EX + '-' + str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
                             do_points -= 1
+                            if player_creature.health <= 0:
+                                print(Fore.LIGHTWHITE_EX + 'You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH!')
+                                map_go = 0
                             break
 
                         elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
                                 e[1].ranged_combat_radius:
                             fight_cache = e[1].ranged_combat()
-                            print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + ' ranged attack you, ' + 'your health: '
-                                  + Fore.LIGHTGREEN_EX + str(fight_cache[0]) + Fore.LIGHTWHITE_EX + '(' +
-                                  Fore.LIGHTRED_EX + '-' + str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
+                            print(Fore.LIGHTRED_EX + e[0] + Fore.LIGHTWHITE_EX + ' ranged attack you, ' +
+                                  'your health: ' + Fore.LIGHTGREEN_EX + str(fight_cache[0]) + Fore.LIGHTWHITE_EX +
+                                  '(' + Fore.LIGHTRED_EX + '-' + str(fight_cache[1]) + Fore.LIGHTWHITE_EX + ')')
                             do_points -= 1
+                            if player_creature.health <= 0:
+                                print(Fore.LIGHTWHITE_EX + 'You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH!')
+                                map_go = 0
                             break
 
                         else:
