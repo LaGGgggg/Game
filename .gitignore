@@ -1,2 +1,5 @@
 *.pyc
 __pycache__
+*.pyc
+*.pyc
+__pycache__/game_2_0_data.cpython-39.pyc

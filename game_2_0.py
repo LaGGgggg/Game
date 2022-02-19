@@ -8,6 +8,19 @@ import os.path
 import saves
 from colorama import Fore, init
 
+# kivy
+
+from kivy.app import App
+from kivy.uix.widget import Widget
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.anchorlayout import AnchorLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.graphics import Color, Line
+from kivy.core.window import Window
+
+
 init(autoreset=True)
 
 difficult_list = game_2_0_data.difficult_list
@@ -196,6 +209,97 @@ class Artefacts:
 
 player_artefacts = Artefacts(game_2_0_data.artefact_do, game_2_0_data.start_player_artefacts)
 
+Window.size = (835, 625)
+
+
+class CanvasPaintWidget(Widget):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        size = Window.size
+
+        with self.canvas:
+            Line(points=[0, 0.57 * size[1], size[0], 0.57 * size[1]], width=2)
+            Line(points=[0, 0.4 * size[1], size[0], 0.4 * size[1]], width=2)
+            Line(points=[0.35 * size[0], 0.4 * size[1], 0.35 * size[0], 0], width=2)
+
+
+class GameApp(App):
+
+    # map info label
+
+    map_label = Label(text='None', halign='center', valign='middle', size_hint=[.5, .5], pos_hint={'x': .26, 'y': .5},
+                      font_size=20)
+
+    # action info label
+
+    action_label = Label(text='None', size_hint=[1, .17], pos_hint={'x': 0, 'y': .4})
+
+    # player info label
+
+    player_info_label = Label(text='None', size_hint=[.35, .4], pos_hint={'x': 0, 'y': 0})
+
+    # enemy info label
+
+    enemy_info_label = Label(text='None', size_hint=[.65, .4], pos_hint={'x': .35, 'y': 0})
+
+    # menu button
+
+    menu_button = Button(text='Click on me.')
+
+    # menu label
+
+    menu_label = Label(text='Hello, it`s a nice game, luck don`t help you)')
+
+    # menu layouts
+
+    menu_finish_layout = AnchorLayout(anchor_x='center', anchor_y='center')
+
+    menu_intermediate_layout = BoxLayout(orientation='vertical', size_hint=[.6, .3])
+
+    def build(self):
+
+        self.menu_button.bind(on_press=self.build_game)
+
+        self.menu_intermediate_layout.add_widget(self.menu_label)
+
+        self.menu_intermediate_layout.add_widget(self.menu_button)
+
+        self.menu_finish_layout.add_widget(self.menu_intermediate_layout)
+
+        return self.menu_finish_layout
+
+    def build_game(self, instance):
+
+        # game layout
+
+        game_layout = FloatLayout()
+
+        # add game widgets
+
+        game_layout.add_widget(self.map_label)
+
+        game_layout.add_widget(self.action_label)
+
+        game_layout.add_widget(self.player_info_label)
+
+        # color -: markup=True, '[color=ffffff]'
+
+        game_layout.add_widget(self.enemy_info_label)
+
+        # Линии разделители между виджетами
+
+        game_layout.add_widget(CanvasPaintWidget())
+
+        # удаляем лишнее и вставляем новое
+
+        self.menu_finish_layout.remove_widget(self.menu_intermediate_layout)
+
+        self.menu_finish_layout.add_widget(game_layout)
+
+        return self.menu_finish_layout
+
 
 def random_artefact(map_name):
 
@@ -243,37 +347,70 @@ def random_artefact(map_name):
     return received_artefact
 
 
+#def print_map():
+#
+#    global now_map
+#
+#    for i in now_map[1:]:
+#
+#        n = -1
+#        mapp = ''
+#
+#        for e in i[1:]:
+#
+#            n += 1
+#
+#            if n == 0:
+#
+#                mapp += Fore.LIGHTWHITE_EX + '|'
+#
+#            if e == '  `':
+#
+#                mapp += Fore.LIGHTWHITE_EX + e
+#
+#            elif e == '  P':
+#
+#                mapp += Fore.LIGHTGREEN_EX + e
+#
+#            else:
+#
+#                mapp += Fore.LIGHTRED_EX + e
+#
+#        print(mapp + Fore.LIGHTWHITE_EX + ' |')
+#    print()
+
+
 def print_map():
 
     global now_map
 
+    mapp = ''
+
     for i in now_map[1:]:
 
         n = -1
-        mapp = ''
 
         for e in i[1:]:
 
             n += 1
 
             if n == 0:
-
-                mapp += Fore.LIGHTWHITE_EX + '|'
+                mapp += '|'
 
             if e == '  `':
 
-                mapp += Fore.LIGHTWHITE_EX + e
+                mapp += e
 
             elif e == '  P':
 
-                mapp += Fore.LIGHTGREEN_EX + e
+                mapp += e
 
             else:
 
-                mapp += Fore.LIGHTRED_EX + e
+                mapp += e
 
-        print(mapp + Fore.LIGHTWHITE_EX + ' |')
-    print()
+        mapp += ' |\n'
+    return mapp + '\n'
 
 
 def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
@@ -1391,6 +1528,9 @@ def game():
                           '\nRanged combat radius: ' + Fore.LIGHTMAGENTA_EX + str(e[1].ranged_combat_radius) +
                           Fore.LIGHTWHITE_EX + '\nMoving speed: ' + Fore.LIGHTCYAN_EX + str(e[1].moving_speed) + '\n')
 
+            # Печать характеристик игрока
+
+
             # Ход игрока
 
             # Движение
@@ -1679,4 +1819,6 @@ def game():
 
 print(Fore.LIGHTWHITE_EX + 'Hello, it`s a nice game, luck don`t help you)')  # Отсыыыылочка
 
-game()
+if __name__ == '__main__':
+    GameApp().run()
+    game()
