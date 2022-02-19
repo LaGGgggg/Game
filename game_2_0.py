@@ -298,7 +298,7 @@ class GameApp(App):
 
         self.menu_finish_layout.add_widget(game_layout)
 
-        return self.menu_finish_layout
+        return self.menu_finish_layout, game()
 
 
 def random_artefact(map_name):
@@ -1531,6 +1531,7 @@ def game():
             # Печать характеристик игрока
 
 
+
             # Ход игрока
 
             # Движение
@@ -1816,9 +1817,5 @@ def game():
         health_regenerated = 0
         cells_passed = 0
 
-
-print(Fore.LIGHTWHITE_EX + 'Hello, it`s a nice game, luck don`t help you)')  # Отсыыыылочка
-
 if __name__ == '__main__':
     GameApp().run()
-    game()
