@@ -429,11 +429,11 @@ class GameScreen(Screen):
 
                 elif e == '  P':
 
-                    mapp += e
+                    mapp += '[color=00ff00]' + e + '[/color]'
 
                 else:
 
-                    mapp += e
+                    mapp += '[color=ff0000]' + e + '[/color]'
 
             mapp += ' |\n'
 
@@ -701,11 +701,13 @@ class GameScreen(Screen):
 
         enemy_names = []  # ?
 
+        self.ids['game_label_5'].text = ''
+
         for i in enemies_dict.values():
 
             for e in i.items():
 
-                self.ids['game_label_5'].text = '[color=ff0000][size=16]' + e[0] +\
+                self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
                                                 '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
                                                 str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
                                                 str(e[1].healing_power) +\
@@ -736,13 +738,25 @@ class GameScreen(Screen):
 
         n = 0
 
-        for i in player_artefacts.items():
+        for i in player_artefacts.player_artefacts_list.items():
 
             if i[1] != 0:
 
                 n += 1
 
-                self.ids['game_label_4'].text = i[0].replace('_', ' ') + ' ' + str(i[1])  # сделать римскую цифру через шрифт
+                k = -1
+
+                for e in i[0]:
+
+                    if e in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+
+                        break
+
+                    k += 1
+
+                self.ids['game_label_4'].text = '[size=16]You artefacts:\n[/size]' + i[0].replace('_', ' ')[:k] + \
+                                                '[font=font4.ttf]' + i[0].replace('_', ' ')[k:] + ': [/font]' +\
+                                                str(i[1])
 
         if n == 0:
             self.ids['game_label_4'].text = 'You don`t have any artefacts:(.'
