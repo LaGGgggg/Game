@@ -1,4 +1,3 @@
-import pdb
 import random
 import game_2_0_data
 import importlib
@@ -10,6 +9,8 @@ from colorama import Fore, init
 
 # kivy
 
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.lang import Builder
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
@@ -18,7 +19,6 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Line
-from kivy.core.window import Window
 
 
 init(autoreset=True)
@@ -209,75 +209,202 @@ class Artefacts:
 
 player_artefacts = Artefacts(game_2_0_data.artefact_do, game_2_0_data.start_player_artefacts)
 
-Window.size = (835, 625)
+
+kv = '''
+
+<AllLayout>
+    FloatLayout:
+        canvas:
+            Line:
+                points: 0.35 * self.width, self.height, 0.35 * self.width, 0
+                width: 2
+            Line:
+                points: 0.35 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
+                width: 2
+            Line:
+                points: 0.35 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
+                width: 2
+            Line:
+                points: 0.73 * self.width, 0.4 * self.height, 0.73 * self.width, 0
+                width: 2
+        Label:
+            text: 'Map text'
+            size_hint: .65, .43
+            pos_hint: {'x': .35, 'y': .57}
+            font_size: 18
+            markup: True
+            font_name: 'font1.ttf'
+        Label:
+            size_hint: .65, .17
+            pos_hint: {'x': .35, 'y': .4}
+            font_size: 18
+            text_size: self.width - 15, self.height - 10
+            markup: True
+            text: 'Action label'
+        Label:
+            text: 'Player characters info label'
+            size_hint: .38, .4
+            pos_hint: {'x': .35, 'y': 0}
+            markup: True
+            text_size: self.width - 15, self.height - 10
+            valign: 'top'
+            halign: 'left'
+        Label:
+            text: 'Player artefact info layout'
+            size_hint: .27, .4
+            pos_hint: {'x': .73, 'y': 0}
+            markup: True
+            text_size: self.width - 15, self.height - 10
+            valign: 'top'
+            halign: 'left'
+        Label:
+            text: 'Enemy info label'
+            markup: True
+            size_hint: .35, 1
+            pos_hint: {'x': 0, 'y': 0}
+            text_size: self.width - 10, self.height - 10
+            valign: 'top'
+            halign: 'left'
+
+    '''
+
+Builder.load_string(kv)
+
+kv = '''
+
+<MenuScreen>:
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: .6, .6
+            Label:
+                text: 'Hello, it`s a nice game, luck don`t help you:).'
+            Button:
+                text: 'Game.'
+                on_release: root.manager.current = 'game'
+            Button:
+                text: 'Customizer.'
+                on_release: root.manager.current = 'customizer'
+            Button:
+                text: 'Settings.'
+                on_release: root.manager.current = 'settings'
+
+<GameScreen>:
+    FloatLayout:
+        id: game_layout_1
+        canvas:
+            Line:
+                points: 0.35 * self.width, self.height, 0.35 * self.width, 0
+                width: 2
+            Line:
+                points: 0.35 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
+                width: 2
+            Line:
+                points: 0.35 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
+                width: 2
+            Line:
+                points: 0.73 * self.width, 0.4 * self.height, 0.73 * self.width, 0
+                width: 2
+        Label:
+            id: game_label_1
+            text: 'Map text'
+            size_hint: .65, .43
+            pos_hint: {'x': .35, 'y': .57}
+            font_size: 18
+            markup: True
+            font_name: 'font1.ttf'
+        Label:
+            id: game_label_2
+            size_hint: .65, .17
+            pos_hint: {'x': .35, 'y': .4}
+            font_size: 15
+            text_size: self.width - 15, self.height - 10
+            markup: True
+            text: 'Action label:\\n\\nDo you want to play?'
+
+        GridLayout:
+            id: game_layout_2
+            cols: 3
+            pos_hint: {'x': .85, 'y': .41}
+            size_hint: .15, .15
+            Button:
+                id: game_layout_2_button_1
+                text: 'yes'
+                on_release: root.build_game()
+            Button:
+                id: game_layout_2_button_2
+                text: 'no'
+                on_release: root.manager.current = 'menu'
+
+        Label:
+            id: game_label_3
+            text: 'Player characters info label'
+            size_hint: .38, .4
+            font_size: 14
+            pos_hint: {'x': .35, 'y': 0}
+            markup: True
+            text_size: self.width - 15, self.height - 10
+            valign: 'top'
+            halign: 'left'
+        Label:
+            id: game_label_4
+            text: 'Player artefact info layout'
+            size_hint: .27, .4
+            font_size: 14
+            pos_hint: {'x': .73, 'y': 0}
+            markup: True
+            text_size: self.width - 15, self.height - 10
+            valign: 'top'
+            halign: 'left'
+        Label:
+            id: game_label_5
+            text: 'Enemy info label'
+            markup: True
+            font_size: 14
+            size_hint: .35, 1
+            pos_hint: {'x': 0, 'y': 0}
+            text_size: self.width - 10, self.height - 10
+            valign: 'top'
+            halign: 'left'
+
+<CustomizerScreen>:
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: .6, .3
+            Label:
+                text: 'Don`t work now.'
+            Button:
+                text: 'Back to menu'
+                on_release: root.manager.current = 'menu'
+
+<SettingsScreen>:
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: .6, .3
+            Label:
+                text: 'Don`t work now'
+            Button:
+                text: 'Back to menu'
+                on_press: root.manager.current = 'menu'
+
+'''
+
+Builder.load_string(kv)
 
 
-class CanvasPaintWidget(Widget):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        size = Window.size
-
-        with self.canvas:
-            Line(points=[0.35 * size[0], size[1], 0.35 * size[0], 0], width=2)
-            Line(points=[0.35 * size[0], 0.57 * size[1], size[0], 0.57 * size[1]], width=2)
-            Line(points=[0.35 * size[0], 0.4 * size[1], size[0], 0.4 * size[1]], width=2)
-            Line(points=[0.75 * size[0], 0.4 * size[1], 0.75 * size[0], 0], width=2)
+class MenuScreen(Screen):
+    pass
 
 
-class GameApp(App):
-
-    size = Window.size
-
-    # map info label
-
-    map_label = Label(text='None', halign='center', valign='middle', size_hint=[.65, .5],
-                      pos_hint={'x': .35, 'y': .5}, font_size=18, markup=True, font_name='font1.ttf')
-
-    # action info label
-
-    action_label = Label(text='None', size_hint=[.65, .17], pos_hint={'x': .35, 'y': .4},
-                         text_size=(size[0] / 1.6, size[1] * 0.14), markup=True)
-
-    # player characters info label
-
-    player_characters_info_label = Label(text='None', size_hint=[.38, .4], pos_hint={'x': .35, 'y': 0}, markup=True)
-
-    # player artefacts info label
-
-    player_artefacts_info_label = Label(text='You don`t have any artefacts:(.', font_size=13, size_hint=[.28, .4],
-                                        pos_hint={'x': .73, 'y': 0}, valign='top', halign='center', markup=True)
-
-    # enemy info label
-
-    enemy_info_label = Label(text='None', size_hint=[.35, 1], pos_hint={'x': 0, 'y': 0}, markup=True)
-
-    # menu button
-
-    menu_button = Button(text='Click on me.')
-
-    # menu label
-
-    menu_label = Label(text='Hello, it`s a nice game, luck don`t help you)')
-
-    # menu layouts
-
-    all_layout = AnchorLayout(anchor_x='center', anchor_y='center')
-
-    menu_layout = BoxLayout(orientation='vertical', size_hint=[.6, .3])
-
-    def build(self):
-
-        self.menu_button.bind(on_press=self.build_game)
-
-        self.menu_layout.add_widget(self.menu_label)
-
-        self.menu_layout.add_widget(self.menu_button)
-
-        self.all_layout.add_widget(self.menu_layout)
-
-        return self.all_layout
+class GameScreen(Screen):
 
     def print_map(self):
 
@@ -310,9 +437,12 @@ class GameApp(App):
 
             mapp += ' |\n'
 
-        self.map_label.text = mapp
+        self.ids['game_label_1'].text = mapp
 
-    def start_game(self):
+    def build_game(self):
+
+        self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_1'])
+        self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_2'])
 
         global player_creature, player_artefacts, player_creature, now_map, difficult
 
@@ -561,7 +691,7 @@ class GameApp(App):
 
                             now_map[i][e] = choice
 
-        self.action_label.text = 'Your map difficult now: ' + difficult  # добавить равнение в лево и прокрутку
+        self.ids['game_label_2'].text += '\nYour map difficult now: ' + difficult
 
         # Печать текущей карты
 
@@ -575,51 +705,67 @@ class GameApp(App):
 
             for e in i.items():
 
-                print(Fore.LIGHTRED_EX + e[
-                    0] + Fore.LIGHTWHITE_EX + ' characters:\nHealth: ' + Fore.LIGHTGREEN_EX +
-                      str(e[1].health) + Fore.LIGHTWHITE_EX + '\nHealing power: ' + Fore.LIGHTGREEN_EX +
-                      str(e[
-                              1].healing_power) + Fore.LIGHTWHITE_EX + '\nClose fight damage: ' + Fore.LIGHTRED_EX +
-                      str(e[1].damage) + Fore.LIGHTWHITE_EX + '\nRanged combat damage: ' + Fore.LIGHTRED_EX +
-                      str(e[1].ranged_damage) + Fore.LIGHTWHITE_EX + '\nClose fight radius: ' +
-                      Fore.LIGHTMAGENTA_EX + str(e[1].close_fight_radius) + Fore.LIGHTWHITE_EX +
-                      '\nRanged combat radius: ' + Fore.LIGHTMAGENTA_EX + str(e[1].ranged_combat_radius) +
-                      Fore.LIGHTWHITE_EX + '\nMoving speed: ' + Fore.LIGHTCYAN_EX + str(
-                    e[1].moving_speed) + '\n')
+                self.ids['game_label_5'].text = '[color=ff0000][size=16]' + e[0] +\
+                                                '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
+                                                str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                                str(e[1].healing_power) +\
+                                                '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
+                                                '[/color]\nRanged combat damage: [color=ff0000]' +\
+                                                str(e[1].ranged_damage) +\
+                                                '[/color]\nClose fight radius: [color=ff00ff]' +\
+                                                str(e[1].close_fight_radius) +\
+                                                '[/color]\nRanged combat radius: [color=ff00ff]' +\
+                                                str(e[1].ranged_combat_radius) +\
+                                                '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
+                                                '[/color]\n\n'
 
-        # Печать характеристик игрока
+        # Вывод характеристик игрока
 
-    def build_game(self, instance):
+        self.ids['game_label_3'].text = '[size=16]You characters:[/size]\nHealth: [color=00ff00]' +\
+                                        str(player_creature.health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                        str(player_creature.healing_power) +\
+                                        '[/color]\nClose fight damage: [color=ff0000]' + str(player_creature.damage) +\
+                                        '[/color]\nRanged combat damage: [color=ff0000]' +\
+                                        str(player_creature.ranged_damage) +\
+                                        '[/color]\nClose fight radius: [color=ff00ff]' +\
+                                        str(player_creature.close_fight_radius) +\
+                                        '[/color]\nRanged combat radius: [color=ff00ff]' +\
+                                        str(player_creature.ranged_combat_radius) +\
+                                        '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) +\
+                                        '[/color]'
 
-        # game layout
+        n = 0
 
-        game_layout = FloatLayout()
+        for i in player_artefacts.items():
 
-        # add game widgets
+            if i[1] != 0:
 
-        game_layout.add_widget(self.map_label)
+                n += 1
 
-        game_layout.add_widget(self.action_label)
+                self.ids['game_label_4'].text = i[0].replace('_', ' ') + ' ' + str(i[1])  # сделать римскую цифру через шрифт
 
-        game_layout.add_widget(self.player_characters_info_label)
+        if n == 0:
+            self.ids['game_label_4'].text = 'You don`t have any artefacts:(.'
 
-        game_layout.add_widget(self.player_artefacts_info_label)
 
-        # color -: markup=True, '[color=ffffff]'
+class CustomizerScreen(Screen):
+    pass
 
-        game_layout.add_widget(self.enemy_info_label)
 
-        # Линии разделители между виджетами
+class SettingsScreen(Screen):
+    pass
 
-        game_layout.add_widget(CanvasPaintWidget())
 
-        # удаляем лишнее и вставляем новое
+class GameApp(App):
 
-        self.all_layout.remove_widget(self.menu_layout)
+    def build(self):
+        sm = ScreenManager()
+        sm.add_widget(MenuScreen(name='menu'))
+        sm.add_widget(GameScreen(name='game'))
+        sm.add_widget(CustomizerScreen(name='customizer'))
+        sm.add_widget(SettingsScreen(name='settings'))
 
-        self.all_layout.add_widget(game_layout)
-
-        return self.start_game()  # мб в одну?
+        return sm
 
 
 def random_artefact(map_name):
