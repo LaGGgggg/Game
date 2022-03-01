@@ -1,4 +1,3 @@
-import random
 import game_2_0_data
 import importlib
 import random
@@ -17,8 +16,9 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.anchorlayout import AnchorLayout
-from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Line
+from kivy.uix.scrollview import ScrollView
+from kivy.properties import StringProperty
 
 
 init(autoreset=True)
@@ -209,68 +209,15 @@ class Artefacts:
 
 player_artefacts = Artefacts(game_2_0_data.artefact_do, game_2_0_data.start_player_artefacts)
 
-
 kv = '''
 
-<AllLayout>
-    FloatLayout:
-        canvas:
-            Line:
-                points: 0.35 * self.width, self.height, 0.35 * self.width, 0
-                width: 2
-            Line:
-                points: 0.35 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
-                width: 2
-            Line:
-                points: 0.35 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
-                width: 2
-            Line:
-                points: 0.73 * self.width, 0.4 * self.height, 0.73 * self.width, 0
-                width: 2
-        Label:
-            text: 'Map text'
-            size_hint: .65, .43
-            pos_hint: {'x': .35, 'y': .57}
-            font_size: 18
-            markup: True
-            font_name: 'font1.ttf'
-        Label:
-            size_hint: .65, .17
-            pos_hint: {'x': .35, 'y': .4}
-            font_size: 18
-            text_size: self.width - 15, self.height - 10
-            markup: True
-            text: 'Action label'
-        Label:
-            text: 'Player characters info label'
-            size_hint: .38, .4
-            pos_hint: {'x': .35, 'y': 0}
-            markup: True
-            text_size: self.width - 15, self.height - 10
-            valign: 'top'
-            halign: 'left'
-        Label:
-            text: 'Player artefact info layout'
-            size_hint: .27, .4
-            pos_hint: {'x': .73, 'y': 0}
-            markup: True
-            text_size: self.width - 15, self.height - 10
-            valign: 'top'
-            halign: 'left'
-        Label:
-            text: 'Enemy info label'
-            markup: True
-            size_hint: .35, 1
-            pos_hint: {'x': 0, 'y': 0}
-            text_size: self.width - 10, self.height - 10
-            valign: 'top'
-            halign: 'left'
-
-    '''
-
-Builder.load_string(kv)
-
-kv = '''
+<ScrollViewLabel>:
+    Label:
+        text: root.text
+        size_hint_y: None
+        height: self.texture_size[1]
+        text_size: self.width - 15, None
+        markup: True
 
 <MenuScreen>:
     AnchorLayout:
@@ -315,13 +262,11 @@ kv = '''
             font_size: 18
             markup: True
             font_name: 'font1.ttf'
-        Label:
+        ScrollViewLabel:
             id: game_label_2
-            size_hint: .65, .17
+            size_hint: .5, .17
             pos_hint: {'x': .35, 'y': .4}
             font_size: 15
-            text_size: self.width - 15, self.height - 10
-            markup: True
             text: 'Action label:\\n\\nDo you want to play?'
 
         GridLayout:
@@ -358,16 +303,12 @@ kv = '''
             text_size: self.width - 15, self.height - 10
             valign: 'top'
             halign: 'left'
-        Label:
+        ScrollViewLabel:
             id: game_label_5
             text: 'Enemy info label'
-            markup: True
             font_size: 14
-            size_hint: .35, 1
+            size_hint: .347, 1
             pos_hint: {'x': 0, 'y': 0}
-            text_size: self.width - 10, self.height - 10
-            valign: 'top'
-            halign: 'left'
 
 <CustomizerScreen>:
     AnchorLayout:
@@ -399,6 +340,9 @@ kv = '''
 
 Builder.load_string(kv)
 
+
+class ScrollViewLabel(ScrollView):
+    text = StringProperty('')
 
 class MenuScreen(Screen):
     pass
