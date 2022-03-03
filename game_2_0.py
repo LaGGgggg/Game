@@ -264,8 +264,8 @@ kv = '''
             font_name: 'font1.ttf'
         ScrollViewLabel:
             id: game_label_2
-            size_hint: .5, .17
-            pos_hint: {'x': .35, 'y': .4}
+            size_hint: .5, .15
+            pos_hint: {'x': .35, 'y': .41}
             font_size: 15
             text: 'Action label:\\n\\nDo you want to play?'
 
@@ -344,11 +344,14 @@ Builder.load_string(kv)
 class ScrollViewLabel(ScrollView):
     text = StringProperty('')
 
+
 class MenuScreen(Screen):
     pass
 
 
 class GameScreen(Screen):
+
+    moving_points = ''
 
     def print_map(self):
 
@@ -382,6 +385,194 @@ class GameScreen(Screen):
             mapp += ' |\n'
 
         self.ids['game_label_1'].text = mapp
+
+    def player_moving_part_1(self, instance):
+
+        global now_map, correct_directions, player_position
+
+        if self.moving_points == '':
+
+            n1 = 0
+
+            for i in now_map[1:]:
+
+                n1 += 1
+                n2 = -1
+
+                for e in i:
+
+                    n2 += 1
+
+                    if e == '  P':
+                        player_position = [n1, n2]
+
+            self.moving_points = player_creature.moving_speed
+
+        if self.moving_points > 0:
+
+            # Обнуление или создание списка корректных направлений
+
+            correct_directions = []
+
+            # Проверка куда можно двигаться
+
+            global game_layout_2_button_5, game_layout_2_button_6, game_layout_2_button_7, game_layout_2_button_8,\
+                game_layout_2_button_9, game_layout_2_button_10, game_layout_2_button_11, game_layout_2_button_12,\
+                game_layout_2_button_13
+
+            # 1
+            try:
+                if now_map[player_position[0] - 1][player_position[1] - 1] == '  `':
+                    game_layout_2_button_5 = Button(text='1', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_5)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_5)
+            except (TypeError, IndexError):
+                pass
+
+            # 2
+            try:
+                if now_map[player_position[0] - 1][player_position[1]] == '  `':
+                    game_layout_2_button_6 = Button(text='2', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_6)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_6)
+            except (TypeError, IndexError):
+                pass
+
+            # 3
+            try:
+                if now_map[player_position[0] - 1][player_position[1] + 1] == '  `':
+                    game_layout_2_button_7 = Button(text='3', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_7)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_7)
+            except (TypeError, IndexError):
+                pass
+
+            # 4
+            try:
+                if now_map[player_position[0]][player_position[1] + 1] == '  `':
+                    game_layout_2_button_8 = Button(text='4', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_8)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_8)
+            except (TypeError, IndexError):
+                pass
+
+            # 5
+            try:
+                if now_map[player_position[0] + 1][player_position[1] + 1] == '  `':
+                    game_layout_2_button_9 = Button(text='5', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_9)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_9)
+            except (TypeError, IndexError):
+                pass
+
+            # 6
+            try:
+                if now_map[player_position[0] + 1][player_position[1]] == '  `':
+                    game_layout_2_button_10 = Button(text='6', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_10)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_10)
+            except (TypeError, IndexError):
+                pass
+
+            # 7
+            try:
+                if now_map[player_position[0] + 1][player_position[1] - 1] == '  `':
+                    game_layout_2_button_11 = Button(text='7', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_11)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_11)
+            except (TypeError, IndexError):
+                pass
+
+            # 8
+            try:
+                if now_map[player_position[0]][player_position[1] - 1] == '  `':
+                    game_layout_2_button_12 = Button(text='8', on_release=self.player_moving_part_2)
+                    correct_directions.append(game_layout_2_button_12)
+                    self.ids['game_layout_2'].add_widget(game_layout_2_button_12)
+            except (TypeError, IndexError):
+                pass
+
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+
+            game_layout_2_button_13 = Button(text='quit', on_release=self.player_moving_part_2)
+
+            correct_directions.append(game_layout_2_button_13)
+
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_13)
+
+            self.ids['game_label_2'].text += '\nOn why direction you want move? You moving points: ' +\
+                                             str(self.moving_points)
+
+        else:
+            self.ids['game_label_2'].text += '\nYou don`t have more moving points('
+            return self.player_turn_part_1('')
+
+    def player_moving_part_2(self, instance):
+
+        global correct_directions, player_position, now_map
+
+        direction_move = instance.text
+
+        if direction_move == 'quit':
+            self.ids['game_label_2'].text += '\nYou decided to quit from moving'
+            for i in correct_directions:
+                self.ids['game_layout_2'].remove_widget(i)
+            return self.player_turn_part_1('')
+
+        # Изменение позиции на карте
+
+        now_map[player_position[0]][player_position[1]] = '  `'
+
+        if direction_move == '1':
+            now_map[player_position[0] - 1][player_position[1] - 1] = '  P'
+            player_position[0] -= 1
+            player_position[1] -= 1
+            self.ids['game_label_2'].text += '\nYou moved on 1 direction'
+        if direction_move == '2':
+            now_map[player_position[0] - 1][player_position[1]] = '  P'
+            player_position[0] -= 1
+            self.ids['game_label_2'].text += '\nYou moved on 2 direction'
+        if direction_move == '3':
+            now_map[player_position[0] - 1][player_position[1] + 1] = '  P'
+            player_position[0] -= 1
+            player_position[1] += 1
+            self.ids['game_label_2'].text += '\nYou moved on 3 direction'
+        if direction_move == '4':
+            now_map[player_position[0]][player_position[1] + 1] = '  P'
+            player_position[1] += 1
+            self.ids['game_label_2'].text += '\nYou moved on 4 direction'
+        if direction_move == '5':
+            now_map[player_position[0] + 1][player_position[1] + 1] = '  P'
+            player_position[0] += 1
+            player_position[1] += 1
+            self.ids['game_label_2'].text += '\nYou moved on 5 direction'
+        if direction_move == '6':
+            now_map[player_position[0] + 1][player_position[1]] = '  P'
+            player_position[0] += 1
+            self.ids['game_label_2'].text += '\nYou moved on 6 direction'
+        if direction_move == '7':
+            now_map[player_position[0] + 1][player_position[1] - 1] = '  P'
+            player_position[0] += 1
+            player_position[1] -= 1
+            self.ids['game_label_2'].text += '\nYou moved on 7 direction'
+        if direction_move == '8':
+            now_map[player_position[0]][player_position[1] - 1] = '  P'
+            player_position[1] -= 1
+            self.ids['game_label_2'].text += '\nYou moved on 8 direction'
+
+        self.moving_points -= 1
+
+        self.print_map()
+
+        for i in correct_directions:
+            self.ids['game_layout_2'].remove_widget(i)
+
+        self.player_moving_part_1('')
+
+    def player_turn_part_1(self, instance):
+
+        print('ok2')
 
     def build_game(self):
 
@@ -704,6 +895,18 @@ class GameScreen(Screen):
 
         if n == 0:
             self.ids['game_label_4'].text = 'You don`t have any artefacts:(.'
+
+        # Движение
+
+        self.ids['game_label_2'].text += '\nYou need move?'
+
+        global game_layout_2_button_3, game_layout_2_button_4
+
+        game_layout_2_button_3 = Button(text='Yes', on_release=self.player_moving_part_1)
+        game_layout_2_button_4 = Button(text='No', on_release=self.player_turn_part_1)
+
+        self.ids['game_layout_2'].add_widget(game_layout_2_button_3)
+        self.ids['game_layout_2'].add_widget(game_layout_2_button_4)
 
 
 class CustomizerScreen(Screen):
