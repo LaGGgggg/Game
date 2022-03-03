@@ -353,6 +353,22 @@ class GameScreen(Screen):
 
     moving_points = ''
 
+    def enemy_turn(self):
+
+        pass
+
+    def label_6_plus(self, instance):
+
+        global game_layout_2_label_6
+
+        game_layout_2_label_6.text = str(int(game_layout_2_label_6.text) + 1)
+
+    def label_6_minus(self, instance):
+
+        global game_layout_2_label_6
+
+        game_layout_2_label_6.text = str(int(game_layout_2_label_6.text) - 1)
+
     def print_map(self):
 
         global now_map
@@ -492,9 +508,6 @@ class GameScreen(Screen):
             except (TypeError, IndexError):
                 pass
 
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
-
             game_layout_2_button_13 = Button(text='quit', on_release=self.player_moving_part_2)
 
             correct_directions.append(game_layout_2_button_13)
@@ -506,19 +519,24 @@ class GameScreen(Screen):
 
         else:
             self.ids['game_label_2'].text += '\nYou don`t have more moving points('
-            return self.player_turn_part_1('')
+            self.moving_points = ''
+            return self.player_ability_do_part_1('')
 
     def player_moving_part_2(self, instance):
 
         global correct_directions, player_position, now_map
 
+        self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
+        self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+
         direction_move = instance.text
 
         if direction_move == 'quit':
             self.ids['game_label_2'].text += '\nYou decided to quit from moving'
+            self.moving_points = ''
             for i in correct_directions:
                 self.ids['game_layout_2'].remove_widget(i)
-            return self.player_turn_part_1('')
+            return self.player_ability_do_part_1('')
 
         # Изменение позиции на карте
 
@@ -570,16 +588,211 @@ class GameScreen(Screen):
 
         self.player_moving_part_1('')
 
-    def player_turn_part_1(self, instance):
+    def player_ability_do_part_1(self, instance):
 
-        print('ok2')
+        global ability_can_list
+
+        if instance.text == 'No':
+
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+
+        # Использование способностей
+
+        ability_can_list = ['doing nothing']
+        ability_can_list_painted = ['Doing nothing']
+
+        # Health check
+
+        if player_creature.health < player_creature.max_health:
+            ability_can_list.append('heal')
+            ability_can_list_painted.append('Heal')
+
+        # Close fight check
+
+        for i in distance().items():
+
+            if player_creature.close_fight_radius >= i[1]:
+                ability_can_list.append(i[0][1:].lower() + ' close attack')
+                ability_can_list_painted.append('[color=ff0000]' + i[0][1:] + '[/color] close attack')
+
+        # Range attack check
+
+        for i in distance().items():
+
+            if player_creature.ranged_combat_radius >= i[1]:
+                ability_can_list.append(i[0][1:].lower() + ' ranged attack')
+                ability_can_list_painted.append('[color=ff0000]' + i[0][1:] + '[/color] ranged attack')
+
+        ability_can_str = '\n'
+        n = 0
+
+        for i in ability_can_list_painted:
+            n += 1
+
+            ability_can_str += str(n) + '. ' + i + '.\n'
+
+        self.ids['game_label_2'].text += '\nWhat you do?' + ability_can_str
+
+        if len(ability_can_list) > 9:
+
+            global game_layout_2_button_14, game_layout_2_label_6, game_layout_2_button_15
+
+            game_layout_2_button_14 = Button(text='+', on_release=self.label_6_plus)
+            game_layout_2_label_6 = Button(text='1')
+            game_layout_2_button_15 = Button(text='-', on_release=self.label_6_minus)
+            game_layout_2_button_16 = Button(text='Upload', on_release=self.player_ability_do_part_2)
+
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_14)
+            self.ids['game_layout_2'].add_widget(game_layout_2_label_6)
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_15)
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_16)
+
+        else:
+
+            game_layout_2_button_17 = Button(text='1', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_18 = Button(text='2', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_19 = Button(text='3', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_20 = Button(text='4', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_21 = Button(text='5', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_22 = Button(text='6', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_23 = Button(text='7', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_24 = Button(text='8', on_release=self.player_ability_do_part_2)
+            game_layout_2_button_25 = Button(text='9', on_release=self.player_ability_do_part_2)
+
+            button_list = [game_layout_2_button_17, game_layout_2_button_18, game_layout_2_button_19,
+                           game_layout_2_button_20, game_layout_2_button_21, game_layout_2_button_22,
+                           game_layout_2_button_23, game_layout_2_button_24, game_layout_2_button_25]
+
+            for i in range(len(ability_can_list)):
+
+                self.ids['game_layout_2'].add_widget(button_list[i])
+
+    def player_ability_do_part_2(self, instance):
+
+        global ability_can_list, enemies_dict, now_map
+
+        if instance.text == 'Upload':
+
+            ability_choose = game_layout_2_label_6.text
+
+        else:
+
+            ability_choose = instance.text
+
+        # Выполнение выбранной способности
+
+        # Ничего не делать
+
+        if ability_choose == '1':
+
+            self.ids['game_label_2'].text += '\nYou didn`t do anything'
+
+        # Лечение
+
+        elif ability_choose == '2' and ability_can_list[1] == 'heal':
+
+            heal_cache = player_creature.heal()
+
+            self.ids['game_label_2'].text += '\n[color=00ff00]You[/color] health: [color=00ff00]' +\
+                                             str(heal_cache[0]) + '[/color]([color=00ff00]+' + str(heal_cache[1]) +\
+                                             '[/color])'
+
+        # Ближняя и дальняя атаки
+
+        elif 'close attack' in ability_can_list[int(ability_choose) - 1] or 'ranged attack' in\
+             ability_can_list[int(ability_choose) - 1]:
+
+            if ability_choose.isnumeric():
+                ability_choose = ability_can_list[int(ability_choose) - 1]
+
+            enemy_number = ''
+
+            for i in ability_choose[1:]:
+
+                if i != ' ':
+
+                    enemy_number += i
+
+                else:
+
+                    break
+
+            for i in enemies_dict.values():
+
+                for e in i.keys():
+
+                    if e[0] == ability_choose[0].upper() and e[-1] == enemy_number:
+                        short_enemy_name = e[0]
+
+                        enemy_name = e
+
+                        break
+
+            if 'close attack' in ability_choose:
+
+                fight_cache = player_creature.close_fight(enemy_name, enemies_dict)
+
+            else:
+
+                fight_cache = player_creature.ranged_combat(enemy_name, enemies_dict)
+
+            self.ids['game_label_2'].text += '\n[color=ff0000]' + enemy_name + '[/color] health: [color=00ff00]' + \
+                                             str(fight_cache[0]) + '[/color]([color=ff0000]-' + str(fight_cache[1]) +\
+                                             '[/color])'
+
+            n = 0
+
+            for i in enemies_dict.values():
+
+                n += 1
+
+                for e in i.items():
+
+                    if e[0] == enemy_name:
+
+                        if e[1].health <= 0:
+
+                            print(Fore.LIGHTWHITE_EX + '\nYou killed ' + Fore.LIGHTRED_EX + e[0] +
+                                  Fore.LIGHTWHITE_EX + ', my congratulations')
+
+                            del enemies_dict['Enemy_' + str(n)]
+
+                            n1 = 0
+
+                            for u in now_map:
+
+                                n1 += 1
+                                n2 = 0
+
+                                for y in u:
+
+                                    n2 += 1
+
+                                    if len(short_enemy_name + enemy_number) == 2:
+
+                                        if y == ' ' + short_enemy_name + enemy_number:
+                                            now_map[n1][n2] = '  `'
+
+                                            break
+
+                                    else:
+
+                                        if y == short_enemy_name + enemy_number:
+                                            now_map[n1][n2] = '  `'
+
+                                            break
+
+            # удалить старые виджеты
+
+            self.enemy_turn()
 
     def build_game(self):
 
         self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_1'])
         self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_2'])
 
-        global player_creature, player_artefacts, player_creature, now_map, difficult
+        global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const
 
         importlib.reload(game_2_0_data)
 
@@ -903,7 +1116,7 @@ class GameScreen(Screen):
         global game_layout_2_button_3, game_layout_2_button_4
 
         game_layout_2_button_3 = Button(text='Yes', on_release=self.player_moving_part_1)
-        game_layout_2_button_4 = Button(text='No', on_release=self.player_turn_part_1)
+        game_layout_2_button_4 = Button(text='No', on_release=self.player_ability_do_part_1)
 
         self.ids['game_layout_2'].add_widget(game_layout_2_button_3)
         self.ids['game_layout_2'].add_widget(game_layout_2_button_4)
