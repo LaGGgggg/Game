@@ -1,6 +1,7 @@
 import game_2_0_data
 import importlib
 import random
+from time import sleep
 import math
 import os.path
 import saves
@@ -15,7 +16,6 @@ from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.graphics import Color, Line
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
@@ -427,7 +427,7 @@ class GameScreen(Screen):
                 enemy_position = []
                 player_position = []
 
-                while moving_points != 0:
+                while moving_points != 0 and do_points != 0:
 
                     if e[1].damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
                             e[1].close_fight_radius:
@@ -438,10 +438,7 @@ class GameScreen(Screen):
                                                          str(fight_cache[1]) + '[/color])'
                         do_points -= 1
                         if player_creature.health <= 0:
-                            self.ids['game_label_2'].text += \
-                                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]'
-                            map_go = 0
-                        break
+                            break
 
                     elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
                             e[1].ranged_combat_radius:
@@ -452,22 +449,27 @@ class GameScreen(Screen):
                                                          str(fight_cache[1]) + '[/color])'
                         do_points -= 1
                         if player_creature.health <= 0:
-                            self.ids['game_label_2'].text += \
-                                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]'
-                            map_go = 0
-                        break
+                            break
 
                     else:
                         moving_points -= 1
                         enemy_moving(e[0])
 
-                if do_points != 0 and e[1].health < e[1].max_health:
-                    heal_cache = e[1].heal()
-                    self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] health: [color=00ff00]' + \
-                                                     str(heal_cache[0]) + '[/color]([color=00ff00]+' +\
-                                                     str(heal_cache[1]) + '[/color])'
-                elif do_points != 0:
-                    self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] doing nothing.'
+                if player_creature.health > 0:
+
+                    if do_points != 0 and e[1].health < e[1].max_health:
+                        heal_cache = e[1].heal()
+                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] health: [color=00ff00]' + \
+                                                         str(heal_cache[0]) + '[/color]([color=00ff00]+' +\
+                                                         str(heal_cache[1]) + '[/color])'
+                        do_points -= 1
+                    elif do_points != 0:
+                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] doing nothing.'
+                        do_points -= 1
+
+                else:
+
+                    break
 
         # Вывод характеристик игрока
 
@@ -506,6 +508,16 @@ class GameScreen(Screen):
         damage_done = 0
         health_regenerated = 0
         cells_passed = 0
+
+        if player_creature.health <= 0:
+
+            self.ids['game_label_2'].text += \
+                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]'
+            self.end_game()
+
+        else:
+
+            self.new_turn()
 
     def player_moving_part_1(self, instance):
 
@@ -696,8 +708,6 @@ class GameScreen(Screen):
 
         self.player_moving_part_1('')
 
-        # исправить с удалением косяки
-
     def player_ability_do_part_1(self, instance):
 
         global ability_can_list
@@ -856,6 +866,7 @@ class GameScreen(Screen):
                                              '[/color])'
 
             n = 0
+            del_list = []
 
             for i in enemies_dict.values():
 
@@ -870,12 +881,14 @@ class GameScreen(Screen):
                             self.ids['game_label_2'].text += '\nYou killed [color=ff0000]' + e[0] +\
                                                              '[/color], my congratulations.'
 
+                            del_list.append(n)
+
                             n1 = 0
 
                             for u in now_map[1:]:
 
                                 n1 += 1
-                                n2 = 0
+                                n2 = -1
 
                                 for y in u:
 
@@ -884,6 +897,7 @@ class GameScreen(Screen):
                                     if len(short_enemy_name + enemy_number) == 2:
 
                                         if y == ' ' + short_enemy_name + enemy_number:
+
                                             now_map[n1][n2] = '  `'
 
                                             break
@@ -891,11 +905,18 @@ class GameScreen(Screen):
                                     else:
 
                                         if y == short_enemy_name + enemy_number:
+
                                             now_map[n1][n2] = '  `'
 
                                             break
 
-            del enemies_dict['Enemy_' + str(n)]
+            for i in del_list:
+
+                del enemies_dict['Enemy_' + str(i)]
+
+            if del_list:
+
+                self.print_map()
 
         # Печать характеристик(и) врагов(а)
 
@@ -1285,6 +1306,10 @@ class GameScreen(Screen):
         self.ids['game_layout_2'].add_widget(game_layout_2_button_3)
         self.ids['game_layout_2'].add_widget(game_layout_2_button_4)
 
+    def end_game(self):
+
+        pass
+
 
 class CustomizerScreen(Screen):
     pass
@@ -1351,72 +1376,6 @@ def random_artefact(map_name):
     print(Fore.LIGHTWHITE_EX + 'You got ' + str(received_artefact).replace('_', ' '))
 
     return received_artefact
-
-
-#def print_map():
-#
-#    global now_map
-#
-#    for i in now_map[1:]:
-#
-#        n = -1
-#        mapp = ''
-#
-#        for e in i[1:]:
-#
-#            n += 1
-#
-#            if n == 0:
-#
-#                mapp += Fore.LIGHTWHITE_EX + '|'
-#
-#            if e == '  `':
-#
-#                mapp += Fore.LIGHTWHITE_EX + e
-#
-#            elif e == '  P':
-#
-#                mapp += Fore.LIGHTGREEN_EX + e
-#
-#            else:
-#
-#                mapp += Fore.LIGHTRED_EX + e
-#
-#        print(mapp + Fore.LIGHTWHITE_EX + ' |')
-#    print()
-
-
-def print_map():
-
-    global now_map
-
-    mapp = ''
-
-    for i in now_map[1:]:
-
-        n = -1
-
-        for e in i[1:]:
-
-            n += 1
-
-            if n == 0:
-                mapp += '|'
-
-            if e == '  `':
-
-                mapp += e
-
-            elif e == '  P':
-
-                mapp += e
-
-            else:
-
-                mapp += e
-
-        mapp += ' |\n'
-    return mapp + '\n'
 
 
 def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
@@ -1642,150 +1601,6 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     except (TypeError, IndexError):
         pass
-
-
-def player_moving():
-
-    global now_map
-
-    n1 = 0
-
-    for i in now_map[1:]:
-
-        n1 += 1
-        n2 = -1
-
-        for e in i:
-
-            n2 += 1
-
-            if e == '  P':
-
-                player_position = [n1, n2]
-
-    # блок спроса пользователя
-
-    moving = 1
-
-    moving_points = player_creature.moving_speed
-
-    while moving == 1 and moving_points > 0:
-
-        # Обнуление или создание списка корректных направлений
-
-        correct_directions = ['#']
-
-        # Проверка куда можно двигаться
-
-        # 1
-        try:
-            if now_map[player_position[0] - 1][player_position[1] - 1] == '  `':
-                correct_directions.append(1)
-        except (TypeError, IndexError):
-            pass
-
-        # 2
-        try:
-            if now_map[player_position[0] - 1][player_position[1]] == '  `':
-                correct_directions.append(2)
-        except (TypeError, IndexError):
-            pass
-
-        # 3
-        try:
-            if now_map[player_position[0] - 1][player_position[1] + 1] == '  `':
-                correct_directions.append(3)
-        except (TypeError, IndexError):
-            pass
-
-        # 4
-        try:
-            if now_map[player_position[0]][player_position[1] + 1] == '  `':
-                correct_directions.append(4)
-        except (TypeError, IndexError):
-            pass
-
-        # 5
-        try:
-            if now_map[player_position[0] + 1][player_position[1] + 1] == '  `':
-                correct_directions.append(5)
-        except (TypeError, IndexError):
-            pass
-
-        # 6
-        try:
-            if now_map[player_position[0] + 1][player_position[1]] == '  `':
-                correct_directions.append(6)
-        except (TypeError, IndexError):
-            pass
-
-        # 7
-        try:
-            if now_map[player_position[0] + 1][player_position[1] - 1] == '  `':
-                correct_directions.append(7)
-        except (TypeError, IndexError):
-            pass
-
-        # 8
-        try:
-            if now_map[player_position[0]][player_position[1] - 1] == '  `':
-                correct_directions.append(8)
-        except (TypeError, IndexError):
-            pass
-
-        direction_move = int(input(Fore.LIGHTWHITE_EX + 'On why direction you want to move? You can move on ' +
-                                   str(correct_directions[1:]) + ' directions and on ' + str(moving_points) +
-                                   ' cell(s)(or 0 if you want quit)'))
-
-        if direction_move == 0:
-            moving = 0
-            break
-
-        # Проверка правильности ввода
-
-        while True:
-            if direction_move in (correct_directions[0:]):
-                break
-            print(Fore.LIGHTWHITE_EX + 'It`s incorrect value, please enter correct.')
-            direction_move = int(input(Fore.LIGHTWHITE_EX + 'You can move on ' + str(correct_directions[1:])))
-
-        # Изменение позиции на карте
-
-        now_map[player_position[0]][player_position[1]] = '  `'
-
-        if direction_move == 1:
-            now_map[player_position[0] - 1][player_position[1] - 1] = '  P'
-            player_position[0] -= 1
-            player_position[1] -= 1
-        if direction_move == 2:
-            now_map[player_position[0] - 1][player_position[1]] = '  P'
-            player_position[0] -= 1
-        if direction_move == 3:
-            now_map[player_position[0] - 1][player_position[1] + 1] = '  P'
-            player_position[0] -= 1
-            player_position[1] += 1
-        if direction_move == 4:
-            now_map[player_position[0]][player_position[1] + 1] = '  P'
-            player_position[1] += 1
-        if direction_move == 5:
-            now_map[player_position[0] + 1][player_position[1] + 1] = '  P'
-            player_position[0] += 1
-            player_position[1] += 1
-        if direction_move == 6:
-            now_map[player_position[0] + 1][player_position[1]] = '  P'
-            player_position[0] += 1
-        if direction_move == 7:
-            now_map[player_position[0] + 1][player_position[1] - 1] = '  P'
-            player_position[0] += 1
-            player_position[1] -= 1
-        if direction_move == 8:
-            now_map[player_position[0]][player_position[1] - 1] = '  P'
-            player_position[1] -= 1
-
-        moving_points -= 1
-
-        print()
-        print_map()
 
 
 def check_saves():
@@ -2074,6 +1889,10 @@ def distance():
             break
 
         i += 1
+
+        if i == len(now_map):
+
+            break
 
         for e in range(len(now_map[i])):
 
