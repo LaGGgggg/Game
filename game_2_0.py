@@ -398,8 +398,19 @@ class GameScreen(Screen):
 
         self.ids['game_label_1'].text = mapp
 
-    def save_game(self):
-        pass
+    def new_turn(self):
+
+        # Движение
+
+        self.ids['game_label_2'].text += '\nYou need move?'
+
+        global game_layout_2_button_3, game_layout_2_button_4
+
+        game_layout_2_button_3 = Button(text='Yes', on_release=self.player_moving_part_1)
+        game_layout_2_button_4 = Button(text='No', on_release=self.player_ability_do_part_1)
+
+        self.ids['game_layout_2'].add_widget(game_layout_2_button_3)
+        self.ids['game_layout_2'].add_widget(game_layout_2_button_4)
 
     def enemy_turn(self):
 
@@ -448,7 +459,7 @@ class GameScreen(Screen):
 
                     else:
                         moving_points -= 1
-                        enemy_moving(e[0])  # чекнуть функцию
+                        enemy_moving(e[0])
 
                 if do_points != 0 and e[1].health < e[1].max_health:
                     heal_cache = e[1].heal()
@@ -458,7 +469,43 @@ class GameScreen(Screen):
                 elif do_points != 0:
                     self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] doing nothing.'
 
-        self.save_game()
+        # Вывод характеристик игрока
+
+        self.ids['game_label_3'].text = '[size=16]You characters:[/size]\nHealth: [color=00ff00]' +\
+                                        str(player_creature.health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                        str(player_creature.healing_power) +\
+                                        '[/color]\nClose fight damage: [color=ff0000]' + str(player_creature.damage) +\
+                                        '[/color]\nRanged combat damage: [color=ff0000]' +\
+                                        str(player_creature.ranged_damage) +\
+                                        '[/color]\nClose fight radius: [color=ff00ff]' +\
+                                        str(player_creature.close_fight_radius) +\
+                                        '[/color]\nRanged combat radius: [color=ff00ff]' +\
+                                        str(player_creature.ranged_combat_radius) +\
+                                        '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) +\
+                                        '[/color]'
+
+        # Вывод карты
+
+        self.print_map()
+
+        # Автосохранение после конца карты
+
+        global difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
+
+        end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                    cells_passed, enemies_dict)
+
+        # Сброс локальной статистики
+
+        the_map_passed = {}
+        for i in game_2_0_data.difficult_list:
+            the_map_passed[i] = 0
+        get_artifacts = 0
+        enemies_killed = 0
+        damage_received = 0
+        damage_done = 0
+        health_regenerated = 0
+        cells_passed = 0
 
     def player_moving_part_1(self, instance):
 
@@ -649,6 +696,8 @@ class GameScreen(Screen):
 
         self.player_moving_part_1('')
 
+        # исправить с удалением косяки
+
     def player_ability_do_part_1(self, instance):
 
         global ability_can_list
@@ -818,10 +867,8 @@ class GameScreen(Screen):
 
                         if e[1].health <= 0:
 
-                            print(Fore.LIGHTWHITE_EX + '\nYou killed ' + Fore.LIGHTRED_EX + e[0] +
-                                  Fore.LIGHTWHITE_EX + ', my congratulations')
-
-                            del enemies_dict['Enemy_' + str(n)]
+                            self.ids['game_label_2'].text += '\nYou killed [color=ff0000]' + e[0] +\
+                                                             '[/color], my congratulations.'
 
                             n1 = 0
 
@@ -848,6 +895,36 @@ class GameScreen(Screen):
 
                                             break
 
+            del enemies_dict['Enemy_' + str(n)]
+
+        # Печать характеристик(и) врагов(а)
+
+        enemy_names = []  # ?
+
+        self.ids['game_label_5'].text = ''
+
+        for i in enemies_dict.values():
+
+            for e in i.items():
+
+                if e[1].health > 0:
+
+                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
+                                                    '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
+                                                    str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                                    str(e[1].healing_power) +\
+                                                    '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
+                                                    '[/color]\nRanged combat damage: [color=ff0000]' +\
+                                                    str(e[1].ranged_damage) +\
+                                                    '[/color]\nClose fight radius: [color=ff00ff]' +\
+                                                    str(e[1].close_fight_radius) +\
+                                                    '[/color]\nRanged combat radius: [color=ff00ff]' +\
+                                                    str(e[1].ranged_combat_radius) +\
+                                                    '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
+                                                    '[/color]\n\n'
+
+        # Удаление уже лишних виджетов
+
         if instance.text == 'Upload':
 
             self.ids['game_layout_2'].remove_widget(game_layout_2_button_14)
@@ -868,7 +945,9 @@ class GameScreen(Screen):
         self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_1'])
         self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_2'])
 
-        global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const
+        global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const,\
+               difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,\
+               cells_passed, enemies_dict
 
         importlib.reload(game_2_0_data)
 
@@ -1131,19 +1210,21 @@ class GameScreen(Screen):
 
             for e in i.items():
 
-                self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
-                                                '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
-                                                str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                                str(e[1].healing_power) +\
-                                                '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
-                                                '[/color]\nRanged combat damage: [color=ff0000]' +\
-                                                str(e[1].ranged_damage) +\
-                                                '[/color]\nClose fight radius: [color=ff00ff]' +\
-                                                str(e[1].close_fight_radius) +\
-                                                '[/color]\nRanged combat radius: [color=ff00ff]' +\
-                                                str(e[1].ranged_combat_radius) +\
-                                                '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
-                                                '[/color]\n\n'
+                if e[1].health > 0:
+
+                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
+                                                    '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
+                                                    str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                                    str(e[1].healing_power) +\
+                                                    '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
+                                                    '[/color]\nRanged combat damage: [color=ff0000]' +\
+                                                    str(e[1].ranged_damage) +\
+                                                    '[/color]\nClose fight radius: [color=ff00ff]' +\
+                                                    str(e[1].close_fight_radius) +\
+                                                    '[/color]\nRanged combat radius: [color=ff00ff]' +\
+                                                    str(e[1].ranged_combat_radius) +\
+                                                    '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
+                                                    '[/color]\n\n'
 
         # Вывод характеристик игрока
 
@@ -1162,7 +1243,14 @@ class GameScreen(Screen):
 
         n = 0
 
-        for i in player_artefacts.player_artefacts_list.items():
+        if type(player_artefacts) == dict:
+
+            p = player_artefacts
+        else:
+
+            p = player_artefacts.player_artefacts_list
+
+        for i in p.items():
 
             if i[1] != 0:
 
@@ -1209,6 +1297,7 @@ class SettingsScreen(Screen):
 class GameApp(App):
 
     def build(self):
+
         sm = ScreenManager()
         sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(GameScreen(name='game'))
