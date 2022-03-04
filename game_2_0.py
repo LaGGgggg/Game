@@ -64,17 +64,17 @@ class EnemyCreature:
         return player_creature.health, self.ranged_damage
 
 
-Baron = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_1 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_2 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_3 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_4 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_5 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_6 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_7 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_8 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_9 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
-Baron_10 = EnemyCreature(10, 1, 1, 1, 1, 1, 1, 10)
+Baron = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_1 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_2 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_3 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_4 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_5 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_6 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_7 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_8 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_9 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
+Baron_10 = EnemyCreature(11, 1, 1, 1, 1, 1, 1, 10)
 Elsa = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 Elsa_1 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
 Elsa_2 = EnemyCreature(200, 1, 2, 1, 1, 1, 1, 200)
@@ -353,10 +353,6 @@ class GameScreen(Screen):
 
     moving_points = ''
 
-    def enemy_turn(self):
-
-        pass
-
     def label_6_plus(self, instance):
 
         global game_layout_2_label_6
@@ -402,9 +398,74 @@ class GameScreen(Screen):
 
         self.ids['game_label_1'].text = mapp
 
+    def save_game(self):
+        pass
+
+    def enemy_turn(self):
+
+        # Ход врага
+
+        global enemies_dict
+
+        for i in enemies_dict.values():
+
+            for e in i.items():
+
+                moving_points = e[1].moving_speed
+                do_points = 1
+                enemy_position = []
+                player_position = []
+
+                while moving_points != 0:
+
+                    if e[1].damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
+                            e[1].close_fight_radius:
+                        fight_cache = e[1].close_fight()
+                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] +\
+                                                         '[/color] close attack you, your health: [color=00ff00]' + \
+                                                         str(fight_cache[0]) + '[/color]([color=ff0000]-' + \
+                                                         str(fight_cache[1]) + '[/color])'
+                        do_points -= 1
+                        if player_creature.health <= 0:
+                            self.ids['game_label_2'].text += \
+                                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]'
+                            map_go = 0
+                        break
+
+                    elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
+                            e[1].ranged_combat_radius:
+                        fight_cache = e[1].ranged_combat()
+                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] +\
+                                                         '[/color] ranged attack you, your health: [color=00ff00]' + \
+                                                         str(fight_cache[0]) + '[/color]([color=ff0000]-' + \
+                                                         str(fight_cache[1]) + '[/color])'
+                        do_points -= 1
+                        if player_creature.health <= 0:
+                            self.ids['game_label_2'].text += \
+                                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]'
+                            map_go = 0
+                        break
+
+                    else:
+                        moving_points -= 1
+                        enemy_moving(e[0])  # чекнуть функцию
+
+                if do_points != 0 and e[1].health < e[1].max_health:
+                    heal_cache = e[1].heal()
+                    self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] health: [color=00ff00]' + \
+                                                     str(heal_cache[0]) + '[/color]([color=00ff00]+' +\
+                                                     str(heal_cache[1]) + '[/color])'
+                elif do_points != 0:
+                    self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] doing nothing.'
+
+        self.save_game()
+
     def player_moving_part_1(self, instance):
 
         global now_map, correct_directions, player_position
+
+        self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
+        self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
 
         if self.moving_points == '':
 
@@ -592,10 +653,12 @@ class GameScreen(Screen):
 
         global ability_can_list
 
-        if instance.text == 'No':
+        if instance != '':
 
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+            if instance.text == 'No':
+
+                self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
+                self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
 
         # Использование способностей
 
@@ -636,10 +699,10 @@ class GameScreen(Screen):
 
         if len(ability_can_list) > 9:
 
-            global game_layout_2_button_14, game_layout_2_label_6, game_layout_2_button_15
+            global game_layout_2_button_14, game_layout_2_label_6, game_layout_2_button_15, game_layout_2_button_16
 
             game_layout_2_button_14 = Button(text='+', on_release=self.label_6_plus)
-            game_layout_2_label_6 = Button(text='1')
+            game_layout_2_label_6 = Label(text='1')
             game_layout_2_button_15 = Button(text='-', on_release=self.label_6_minus)
             game_layout_2_button_16 = Button(text='Upload', on_release=self.player_ability_do_part_2)
 
@@ -660,6 +723,8 @@ class GameScreen(Screen):
             game_layout_2_button_24 = Button(text='8', on_release=self.player_ability_do_part_2)
             game_layout_2_button_25 = Button(text='9', on_release=self.player_ability_do_part_2)
 
+            global button_list
+
             button_list = [game_layout_2_button_17, game_layout_2_button_18, game_layout_2_button_19,
                            game_layout_2_button_20, game_layout_2_button_21, game_layout_2_button_22,
                            game_layout_2_button_23, game_layout_2_button_24, game_layout_2_button_25]
@@ -670,7 +735,7 @@ class GameScreen(Screen):
 
     def player_ability_do_part_2(self, instance):
 
-        global ability_can_list, enemies_dict, now_map
+        global ability_can_list, enemies_dict, now_map, button_list
 
         if instance.text == 'Upload':
 
@@ -760,7 +825,7 @@ class GameScreen(Screen):
 
                             n1 = 0
 
-                            for u in now_map:
+                            for u in now_map[1:]:
 
                                 n1 += 1
                                 n2 = 0
@@ -783,9 +848,20 @@ class GameScreen(Screen):
 
                                             break
 
-            # удалить старые виджеты
+        if instance.text == 'Upload':
 
-            self.enemy_turn()
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_14)
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_15)
+            self.ids['game_layout_2'].remove_widget(game_layout_2_button_16)
+            self.ids['game_layout_2'].remove_widget(game_layout_2_label_6)
+
+        else:
+
+            for i in range(len(ability_can_list)):
+
+                self.ids['game_layout_2'].remove_widget(button_list[i])
+
+        self.enemy_turn()
 
     def build_game(self):
 
