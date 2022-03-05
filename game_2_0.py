@@ -23,9 +23,9 @@ from kivy.properties import StringProperty
 
 init(autoreset=True)
 
-difficult_list = game_2_0_data.difficult_list
-difficult_weights = game_2_0_data.difficult_weights
-all_maps_const = game_2_0_data.all_maps
+difficult_list = game_2_0_data.difficult_list.copy()
+difficult_weights = game_2_0_data.difficult_weights.copy()
+all_maps_const = game_2_0_data.all_maps.copy()
 
 
 class EnemyCreature:
@@ -256,7 +256,7 @@ kv = '''
                 width: 2
         Label:
             id: game_label_1
-            text: 'Map text'
+            text: 'Map label'
             size_hint: .65, .43
             pos_hint: {'x': .35, 'y': .57}
             font_size: 18
@@ -276,11 +276,11 @@ kv = '''
             size_hint: .15, .15
             Button:
                 id: game_layout_2_button_1
-                text: 'yes'
-                on_release: root.build_game()
+                text: 'Yes'
+                on_release: root.build_game('')
             Button:
                 id: game_layout_2_button_2
-                text: 'no'
+                text: 'No'
                 on_release: root.manager.current = 'menu'
 
         Label:
@@ -295,7 +295,7 @@ kv = '''
             halign: 'left'
         Label:
             id: game_label_4
-            text: 'Player artefact info layout'
+            text: 'Player artefact info label'
             size_hint: .27, .4
             font_size: 14
             pos_hint: {'x': .73, 'y': 0}
@@ -305,7 +305,7 @@ kv = '''
             halign: 'left'
         ScrollViewLabel:
             id: game_label_5
-            text: 'Enemy info label'
+            text: 'Enemy characters info label'
             font_size: 14
             size_hint: .347, 1
             pos_hint: {'x': 0, 'y': 0}
@@ -335,6 +335,20 @@ kv = '''
             Button:
                 text: 'Back to menu'
                 on_press: root.manager.current = 'menu'
+
+<StatisticScreen>
+    on_enter: root.build()
+    FloatLayout:
+        id: statistic_layout_1
+        Label:
+            size_hint: .7, .8
+            id: statistic_label_1
+            text: ''
+        Button:
+            size_hint: .3, .2
+            id: statistic_button_1
+            text: 'Go to menu'
+            on_release: root.manager.current = 'menu'
 
 '''
 
@@ -398,13 +412,47 @@ class GameScreen(Screen):
 
         self.ids['game_label_1'].text = mapp
 
+    def go_menu(self, instance):
+
+        # go to menu
+
+        global sm
+
+        sm.current = 'menu'
+
+        # clear game_screen
+
+        self.ids['game_label_1'].text = 'Map label'
+        self.ids['game_label_2'].text = 'Action label:'
+        self.ids['game_label_3'].text = 'Player characters info label'
+        self.ids['game_label_4'].text = 'Player artefact info layout'
+        self.ids['game_label_5'].text = 'Enemy characters info label'
+
+        self.ids['game_layout_2'].clear_widgets()
+
+    def go_statistic(self, instance):
+
+        # go to statistic
+
+        global sm
+
+        sm.current = 'statistic'
+
+        # clear game_screen
+
+        self.ids['game_label_1'].text = 'Map label'
+        self.ids['game_label_2'].text = 'Action label:'
+        self.ids['game_label_3'].text = 'Player characters info label'
+        self.ids['game_label_4'].text = 'Player artefact info layout'
+        self.ids['game_label_5'].text = 'Enemy characters info label'
+
+        self.ids['game_layout_2'].clear_widgets()
+
     def new_turn(self):
 
         # Движение
 
         self.ids['game_label_2'].text += '\nYou need move?'
-
-        global game_layout_2_button_3, game_layout_2_button_4
 
         game_layout_2_button_3 = Button(text='Yes', on_release=self.player_moving_part_1)
         game_layout_2_button_4 = Button(text='No', on_release=self.player_ability_do_part_1)
@@ -512,8 +560,45 @@ class GameScreen(Screen):
         if player_creature.health <= 0:
 
             self.ids['game_label_2'].text += \
-                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]'
-            self.end_game()
+                '\n[color=ff0000]You died, AHAHAHAHAHAHAHAHAHAHAHAHAHAHAH![/color]\n\nYou want watch statistic or exit?'
+
+            # end game
+
+            game_layout_2_button_26 = Button(text='Go to menu.', on_release=self.go_menu)
+            game_layout_2_button_27 = Button(text='Go to statistic', on_release=self.go_statistic)
+
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_26)
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_27)
+
+            # save statistics in .txt
+
+            # read from .py
+
+            data = open('saves.py', 'r')
+
+            old_data = data.readlines()
+
+            data.close()
+
+            new_data = ''
+
+            for i in old_data[20:]:
+
+                new_data += i
+
+            # clear .py file
+
+            data = open('saves.py', 'w')
+
+            data.close()
+
+            # create and write in .txt
+
+            data = open('saves.txt', 'w')
+
+            data.write(new_data.replace('_', ' '))
+
+            data.close()
 
         else:
 
@@ -523,8 +608,7 @@ class GameScreen(Screen):
 
         global now_map, correct_directions, player_position
 
-        self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
-        self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+        self.ids['game_layout_2'].clear_widgets()
 
         if self.moving_points == '':
 
@@ -646,16 +730,13 @@ class GameScreen(Screen):
 
         global correct_directions, player_position, now_map
 
-        self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
-        self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+        self.ids['game_layout_2'].clear_widgets()
 
         direction_move = instance.text
 
         if direction_move == 'quit':
             self.ids['game_label_2'].text += '\nYou decided to quit from moving'
             self.moving_points = ''
-            for i in correct_directions:
-                self.ids['game_layout_2'].remove_widget(i)
             return self.player_ability_do_part_1('')
 
         # Изменение позиции на карте
@@ -703,8 +784,7 @@ class GameScreen(Screen):
 
         self.print_map()
 
-        for i in correct_directions:
-            self.ids['game_layout_2'].remove_widget(i)
+        self.ids['game_layout_2'].clear_widgets()
 
         self.player_moving_part_1('')
 
@@ -716,8 +796,7 @@ class GameScreen(Screen):
 
             if instance.text == 'No':
 
-                self.ids['game_layout_2'].remove_widget(game_layout_2_button_3)
-                self.ids['game_layout_2'].remove_widget(game_layout_2_button_4)
+                self.ids['game_layout_2'].clear_widgets()
 
         # Использование способностей
 
@@ -878,8 +957,8 @@ class GameScreen(Screen):
 
                         if e[1].health <= 0:
 
-                            self.ids['game_label_2'].text += '\nYou killed [color=ff0000]' + e[0] +\
-                                                             '[/color], my congratulations.'
+                            self.ids['game_label_2'].text += '\n\nYou killed [color=ff0000]' + e[0] +\
+                                                             '[/color], my congratulations.\n'
 
                             del_list.append(n)
 
@@ -918,9 +997,9 @@ class GameScreen(Screen):
 
                 self.print_map()
 
-        # Печать характеристик(и) врагов(а)
+        enemy_names = []
 
-        enemy_names = []  # ?
+        # Выводим характеристик(и) врагов(а)
 
         self.ids['game_label_5'].text = ''
 
@@ -929,39 +1008,69 @@ class GameScreen(Screen):
             for e in i.items():
 
                 if e[1].health > 0:
+                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] + \
+                                                     '[/color] characters:[/size]\nHealth: [color=00ff00]' + \
+                                                     str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                                     str(e[1].healing_power) + \
+                                                     '[/color]\nClose fight damage: [color=ff0000]' + str(
+                        e[1].damage) + \
+                                                     '[/color]\nRanged combat damage: [color=ff0000]' + \
+                                                     str(e[1].ranged_damage) + \
+                                                     '[/color]\nClose fight radius: [color=ff00ff]' + \
+                                                     str(e[1].close_fight_radius) + \
+                                                     '[/color]\nRanged combat radius: [color=ff00ff]' + \
+                                                     str(e[1].ranged_combat_radius) + \
+                                                     '[/color]\nMoving speed: [color=00ffff]' + str(
+                        e[1].moving_speed) + \
+                                                     '[/color]\n\n'
 
-                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
-                                                    '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
-                                                    str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                                    str(e[1].healing_power) +\
-                                                    '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
-                                                    '[/color]\nRanged combat damage: [color=ff0000]' +\
-                                                    str(e[1].ranged_damage) +\
-                                                    '[/color]\nClose fight radius: [color=ff00ff]' +\
-                                                    str(e[1].close_fight_radius) +\
-                                                    '[/color]\nRanged combat radius: [color=ff00ff]' +\
-                                                    str(e[1].ranged_combat_radius) +\
-                                                    '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
-                                                    '[/color]\n\n'
+        if not enemies_dict:
+
+            self.ids['game_label_5'].text = 'All clear.'
+
+            self.ids['game_label_2'].text += '\n\nYou kill all enemies! You complete this map!\n'
+
+            # save game
+
+            global get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
+
+            end_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                        cells_passed, enemies_dict)
+
+            # Сброс локальной статистики
+
+            the_map_passed = {}
+            for i in game_2_0_data.difficult_list:
+                the_map_passed[i] = 0
+            get_artifacts = 0
+            enemies_killed = 0
+            damage_received = 0
+            damage_done = 0
+            health_regenerated = 0
+            cells_passed = 0
+
+            # start new map
+
+            self.ids['game_layout_2'].clear_widgets()
+
+            self.ids['game_label_2'].text += '\n\nClick to push your [color=ff00ff]luck[/color].'
+
+            game_layout_2_button_28 = Button(text='[color=ff00ff]Luck test.[/color]', markup=True,
+                                             on_release=self.build_game)
+
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_28)
+
+            return
 
         # Удаление уже лишних виджетов
 
-        if instance.text == 'Upload':
-
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_14)
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_15)
-            self.ids['game_layout_2'].remove_widget(game_layout_2_button_16)
-            self.ids['game_layout_2'].remove_widget(game_layout_2_label_6)
-
-        else:
-
-            for i in range(len(ability_can_list)):
-
-                self.ids['game_layout_2'].remove_widget(button_list[i])
+        self.ids['game_layout_2'].clear_widgets()
 
         self.enemy_turn()
 
-    def build_game(self):
+    def build_game(self, instance):
+
+        self.ids['game_layout_2'].clear_widgets()
 
         self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_1'])
         self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_2'])
@@ -1018,7 +1127,7 @@ class GameScreen(Screen):
 
                 difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
-                now_map = all_maps_const[difficult]
+                now_map = all_maps_const[difficult].copy()
 
                 # Определяем позиции(ю) врагов(а) на карте
 
@@ -1118,7 +1227,7 @@ class GameScreen(Screen):
         else:
             difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
-            now_map = all_maps_const[difficult]
+            now_map = all_maps_const[difficult].copy()
 
             # Определяем позиции(ю) врагов(а) на карте
 
@@ -1215,15 +1324,15 @@ class GameScreen(Screen):
 
                             now_map[i][e] = choice
 
+        enemy_names = []
+
         self.ids['game_label_2'].text += '\nYour map difficult now: ' + difficult
 
-        # Печать текущей карты
+        # Выводим текущую карту
 
         self.print_map()
 
-        # Печать характеристик(и) врагов(а)
-
-        enemy_names = []  # ?
+        # Выводим характеристик(и) врагов(а)
 
         self.ids['game_label_5'].text = ''
 
@@ -1298,17 +1407,11 @@ class GameScreen(Screen):
 
         self.ids['game_label_2'].text += '\nYou need move?'
 
-        global game_layout_2_button_3, game_layout_2_button_4
-
         game_layout_2_button_3 = Button(text='Yes', on_release=self.player_moving_part_1)
         game_layout_2_button_4 = Button(text='No', on_release=self.player_ability_do_part_1)
 
         self.ids['game_layout_2'].add_widget(game_layout_2_button_3)
         self.ids['game_layout_2'].add_widget(game_layout_2_button_4)
-
-    def end_game(self):
-
-        pass
 
 
 class CustomizerScreen(Screen):
@@ -1319,15 +1422,49 @@ class SettingsScreen(Screen):
     pass
 
 
+class StatisticScreen(Screen):
+
+    def build(self):
+
+        data = open('saves.py', 'r')
+
+        old_data = data.readlines()
+
+        data.close()
+
+        data = ''
+
+        for i in old_data[20:]:
+
+            data += i
+
+        global game_label_7
+
+        self.ids['statistic_label_1'].text = data.replace('_', ' ')
+
+        # выровнять кнопки в меню и в статистику
+        # выровнять вывод на статистике
+        # победа игрока
+
+
+        # чекнуть check_saves
+
+
+        # статистика на врагов по отдельности
+
+
 class GameApp(App):
 
     def build(self):
+
+        global sm
 
         sm = ScreenManager()
         sm.add_widget(MenuScreen(name='menu'))
         sm.add_widget(GameScreen(name='game'))
         sm.add_widget(CustomizerScreen(name='customizer'))
         sm.add_widget(SettingsScreen(name='settings'))
+        sm.add_widget(StatisticScreen(name='statistic'))
 
         return sm
 
