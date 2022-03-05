@@ -230,13 +230,36 @@ kv = '''
                 text: 'Hello, it`s a nice game, luck don`t help you:).'
             Button:
                 text: 'Game.'
-                on_release: root.manager.current = 'game'
+                on_release: root.manager.current = 'save_choose'
             Button:
                 text: 'Customizer.'
                 on_release: root.manager.current = 'customizer'
             Button:
                 text: 'Settings.'
                 on_release: root.manager.current = 'settings'
+
+<SaveChooseScreen>:
+    on_enter: root.build()
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: .6, .6
+            Label:
+                text: 'Choose current save or create new.'
+            Button:
+                id: save_choose_button_1
+                text: 'None'
+                on_release: root.new_save('')
+            Button:
+                id: save_choose_button_2
+                text: 'None'
+                on_release: root.new_save('')
+            Button:
+                id: save_choose_button_3
+                text: 'None'
+                on_release: root.new_save('')
 
 <GameScreen>:
     FloatLayout:
@@ -361,6 +384,31 @@ class ScrollViewLabel(ScrollView):
 
 class MenuScreen(Screen):
     pass
+
+
+class SaveChooseScreen(Screen):
+
+    def go_game(self, instance):
+
+        global sm
+
+        sm.current = 'game'
+
+    def new_save(self, instance):
+
+        pass
+
+    def build(self):
+
+        if os.path.exists('save_1.py'):
+            self.ids['save_choose_button_1'].text = 'Save 1'
+            self.ids['save_choose_button_1'].bind(on_release=self.go_game)
+        if os.path.exists('save_2.py'):
+            self.ids['save_choose_button_1'].text = 'Save 2'
+            self.ids['save_choose_button_1'].bind(on_release=self.go_game)
+        if os.path.exists('save_3.py'):
+            self.ids['save_choose_button_1'].text = 'Save 3'
+            self.ids['save_choose_button_1'].bind(on_release=self.go_game)
 
 
 class GameScreen(Screen):
@@ -1442,16 +1490,6 @@ class StatisticScreen(Screen):
 
         self.ids['statistic_label_1'].text = data.replace('_', ' ')
 
-        # выровнять кнопки в меню и в статистику
-        # выровнять вывод на статистике
-        # победа игрока
-
-
-        # чекнуть check_saves
-
-
-        # статистика на врагов по отдельности
-
 
 class GameApp(App):
 
@@ -1465,6 +1503,7 @@ class GameApp(App):
         sm.add_widget(CustomizerScreen(name='customizer'))
         sm.add_widget(SettingsScreen(name='settings'))
         sm.add_widget(StatisticScreen(name='statistic'))
+        sm.add_widget(SaveChooseScreen(name='save_choose'))
 
         return sm
 
@@ -1771,19 +1810,36 @@ def check_saves():
 
         data.close()
 
-        stat_chek = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
+        data = open('saves.py', 'r')
+
+        old_data_str = data.read()
+
+        data.close()
+
+        stat_check = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
                      'health_regenerated = 0\n', 'cells_passed = 0\n']
+        stat_check_str = ''
 
         n = 0
 
         for i in game_2_0_data.difficult_list:
-            stat_chek.insert(n, i + '_passed = 0' + '\n')
+            stat_check.insert(n, i + '_passed = 0\n')
+
+            stat_check_str += i + '_passed = 0\n'
 
             n += 1
 
-        if len(old_data) != 26 + len(game_2_0_data.difficult_list) or old_data[
+        if old_data_str == '0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё Р' \
+                           'ёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n# РЎС‚Р°С‚РёСЃС' \
+                           '‚РёРєР°:\n\n' + stat_check_str + 'get_artifacts = 0\nenemies_killed = 0\ndamage_received ' \
+                                                             '= 0\ndamage_done = 0\nhealth_regenerated = 0\n' \
+                                                             'cells_passed = 0\n':
+
+            return False
+
+        elif len(old_data) != 26 + len(game_2_0_data.difficult_list) or old_data[
                                                                       20:26 + len(game_2_0_data.difficult_list)] \
-                != stat_chek:
+                != stat_check:
 
             data = open('saves.py', 'w+')
 
@@ -1805,7 +1861,9 @@ def check_saves():
             data.close()
 
             return False
+
         else:
+
             return True
 
 
@@ -1861,33 +1919,40 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     numbers_of_enemies = 0
 
-    for i in enemies_dict.items():
-        for e in i[1].items():
+    if enemies_dict:
 
-            if numbers_of_enemies == 0:
-                numbers_of_enemies += 1
-                part_1 = 'enemies_dict = {"Enemy_' + str(numbers_of_enemies) + '": {'
-                old_data[16] = part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health, e[1].damage,
-                                                                                        e[1].ranged_damage,
-                                                                                        e[1].close_fight_radius,
-                                                                                        e[1].ranged_combat_radius,
-                                                                                        e[1].moving_speed,
-                                                                                        e[1].healing_power,
-                                                                                        e[1].max_health)
-                old_data[16] += '}'
-            else:
-                numbers_of_enemies += 1
-                part_1 = ', "Enemy_' + str(numbers_of_enemies) + '": {'
-                old_data[16] += part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health,
-                                                                                           e[1].damage,
-                                                                                           e[1].ranged_damage,
-                                                                                           e[1].close_fight_radius,
-                                                                                           e[1].ranged_combat_radius,
-                                                                                           e[1].moving_speed,
-                                                                                           e[1].healing_power,
-                                                                                           e[1].max_health)
-                old_data[16] += '}'
-    old_data[16] += '}\n'
+        for i in enemies_dict.items():
+            for e in i[1].items():
+
+                if numbers_of_enemies == 0:
+                    numbers_of_enemies += 1
+                    part_1 = 'enemies_dict = {"Enemy_' + str(numbers_of_enemies) + '": {'
+                    old_data[16] = part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health, e[1].damage,
+                                                                                            e[1].ranged_damage,
+                                                                                            e[1].close_fight_radius,
+                                                                                            e[1].ranged_combat_radius,
+                                                                                            e[1].moving_speed,
+                                                                                            e[1].healing_power,
+                                                                                            e[1].max_health)
+                    old_data[16] += '}'
+                else:
+                    numbers_of_enemies += 1
+                    part_1 = ', "Enemy_' + str(numbers_of_enemies) + '": {'
+                    old_data[16] += part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health,
+                                                                                               e[1].damage,
+                                                                                               e[1].ranged_damage,
+                                                                                               e[1].close_fight_radius,
+                                                                                               e[1].ranged_combat_radius,
+                                                                                               e[1].moving_speed,
+                                                                                               e[1].healing_power,
+                                                                                               e[1].max_health)
+                    old_data[16] += '}'
+
+        old_data[16] += '}\n'
+
+    else:
+
+        old_data[16] = 'enemies_dict = {}'
 
     # Заносим статистику
 
