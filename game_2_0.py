@@ -4,7 +4,7 @@ import random
 from time import sleep
 import math
 import os.path
-import saves
+
 from colorama import Fore, init
 
 # kivy
@@ -251,15 +251,15 @@ kv = '''
             Button:
                 id: save_choose_button_1
                 text: 'None'
-                on_release: root.new_save('')
+                on_release: root.go_game()
             Button:
                 id: save_choose_button_2
                 text: 'None'
-                on_release: root.new_save('')
+                on_release: root.go_game()
             Button:
                 id: save_choose_button_3
                 text: 'None'
-                on_release: root.new_save('')
+                on_release: root.go_game()
 
 <GameScreen>:
     FloatLayout:
@@ -394,21 +394,38 @@ class SaveChooseScreen(Screen):
 
         sm.current = 'game'
 
-    def new_save(self, instance):
+        if instance.text in ['1', '2', '3']:
 
-        pass
+            GameScreen.new_save(self, instance)
+
+        else:
+            if instance.text == 'Save 1':
+                instance = 'save_1.py'
+            elif instance.text == 'Save 2':
+                instance = 'save_2.py'
+            elif instance.text == 'Save 3':
+                instance = 'save_3.py'
+
+            GameScreen.build_game(self, instance)
 
     def build(self):
 
+        global saves_list
+
+        saves_list = []
+
         if os.path.exists('save_1.py'):
+            saves_list.append('save_1.py')
             self.ids['save_choose_button_1'].text = 'Save 1'
             self.ids['save_choose_button_1'].bind(on_release=self.go_game)
         if os.path.exists('save_2.py'):
-            self.ids['save_choose_button_1'].text = 'Save 2'
-            self.ids['save_choose_button_1'].bind(on_release=self.go_game)
+            saves_list.append('save_2.py')
+            self.ids['save_choose_button_2'].text = 'Save 2'
+            self.ids['save_choose_button_2'].bind(on_release=self.go_game)
         if os.path.exists('save_3.py'):
-            self.ids['save_choose_button_1'].text = 'Save 3'
-            self.ids['save_choose_button_1'].bind(on_release=self.go_game)
+            saves_list.append('save_3.py')
+            self.ids['save_choose_button_3'].text = 'Save 3'
+            self.ids['save_choose_button_3'].bind(on_release=self.go_game)
 
 
 class GameScreen(Screen):
@@ -495,6 +512,16 @@ class GameScreen(Screen):
         self.ids['game_label_5'].text = 'Enemy characters info label'
 
         self.ids['game_layout_2'].clear_widgets()
+
+    def new_save(self, instance):
+
+        global saves_list, sm, current_save
+
+        saves_list.append('save_' + instance + '.py')
+
+        check_saves('save_' + instance + '.py')
+
+        current_save = 'save_' + instance + '.py'
 
     def new_turn(self):
 
@@ -1118,10 +1145,28 @@ class GameScreen(Screen):
 
     def build_game(self, instance):
 
-        self.ids['game_layout_2'].clear_widgets()
+        global saves, current_save
 
-        self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_1'])
-        self.ids['game_layout_2'].remove_widget(self.ids['game_layout_2_button_2'])
+        print(self.ids) # обновить ids
+
+        try:
+
+            current_save
+
+        except NameError:
+
+            current_save = instance
+
+        if current_save == 'save_1.py':
+            import save_1 as saves
+
+        elif current_save == 'save_2.py':
+            import save_2 as saves
+
+        elif current_save == 'save_3.py':
+            import save_3 as saves
+
+        self.ids['game_layout_2'].clear_widgets()
 
         global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const,\
                difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,\
@@ -1141,7 +1186,7 @@ class GameScreen(Screen):
 
         # Проверка saves
 
-        if check_saves():
+        if check_saves(current_save):
 
             # импорт данных из saves
 
@@ -1779,10 +1824,10 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         pass
 
 
-def check_saves():
+def check_saves(save_name):
 
-    if not os.path.exists('saves.py'):
-        data = open('saves.py', 'w+')
+    if not os.path.exists(save_name):
+        data = open(save_name, 'w+')
 
         data.write('0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё '
                    'РёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n'
@@ -1804,13 +1849,13 @@ def check_saves():
         return False
 
     else:
-        data = open('saves.py', 'r')
+        data = open(save_name, 'r')
 
         old_data = data.readlines()
 
         data.close()
 
-        data = open('saves.py', 'r')
+        data = open(save_name, 'r')
 
         old_data_str = data.read()
 
@@ -1841,7 +1886,7 @@ def check_saves():
                                                                       20:26 + len(game_2_0_data.difficult_list)] \
                 != stat_check:
 
-            data = open('saves.py', 'w+')
+            data = open(save_name, 'w+')
 
             data.write('0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё '
                        'РёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n'
@@ -1870,7 +1915,7 @@ def check_saves():
 def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
                 enemies_dict):
 
-    global player_artefacts, now_map
+    global player_artefacts, now_map, current_save
 
     # статус это название карты или in_hub
 
@@ -1880,11 +1925,11 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     importlib.reload(saves)
 
-    check_saves()
+    check_saves(current_save)
 
     # Открываем и читаем файл
 
-    data = open('saves.py', 'r')
+    data = open(current_save, 'r')
 
     old_data = data.readlines()
 
@@ -1982,7 +2027,7 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     # Записываем всё в файл
 
-    new_data = open('saves.py', 'w')
+    new_data = open(current_save, 'w')
 
     for i in old_data:
 
