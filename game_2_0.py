@@ -4,7 +4,6 @@ import random
 from time import sleep
 import math
 import os.path
-
 from colorama import Fore, init
 
 # kivy
@@ -17,6 +16,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Line
+from kivy.clock import Clock
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 
@@ -239,7 +239,7 @@ kv = '''
                 on_release: root.manager.current = 'settings'
 
 <SaveChooseScreen>:
-    on_enter: root.build()
+    on_pre_enter: root.build()
     AnchorLayout:
         anchor_x: 'center'
         anchor_y: 'center'
@@ -251,15 +251,21 @@ kv = '''
             Button:
                 id: save_choose_button_1
                 text: 'None'
-                on_release: root.go_game()
+                on_release: 
+                    root.manager.current = 'game'
+                    root.manager.screens[1].new_save('save_1.py')
             Button:
                 id: save_choose_button_2
                 text: 'None'
-                on_release: root.go_game()
+                on_release: 
+                    root.manager.current = 'game'
+                    root.manager.screens[1].new_save('save_2.py')
             Button:
                 id: save_choose_button_3
                 text: 'None'
-                on_release: root.go_game()
+                on_release: 
+                    root.manager.current = 'game'
+                    root.manager.screens[1].new_save('save_3.py')
 
 <GameScreen>:
     FloatLayout:
@@ -360,7 +366,7 @@ kv = '''
                 on_press: root.manager.current = 'menu'
 
 <StatisticScreen>
-    on_enter: root.build()
+    on_pre_enter: root.build()
     FloatLayout:
         id: statistic_layout_1
         Label:
@@ -375,8 +381,6 @@ kv = '''
 
 '''
 
-Builder.load_string(kv)
-
 
 class ScrollViewLabel(ScrollView):
     text = StringProperty('')
@@ -388,26 +392,6 @@ class MenuScreen(Screen):
 
 class SaveChooseScreen(Screen):
 
-    def go_game(self, instance):
-
-        global sm
-
-        sm.current = 'game'
-
-        if instance.text in ['1', '2', '3']:
-
-            GameScreen.new_save(self, instance)
-
-        else:
-            if instance.text == 'Save 1':
-                instance = 'save_1.py'
-            elif instance.text == 'Save 2':
-                instance = 'save_2.py'
-            elif instance.text == 'Save 3':
-                instance = 'save_3.py'
-
-            GameScreen.build_game(self, instance)
-
     def build(self):
 
         global saves_list
@@ -417,15 +401,12 @@ class SaveChooseScreen(Screen):
         if os.path.exists('save_1.py'):
             saves_list.append('save_1.py')
             self.ids['save_choose_button_1'].text = 'Save 1'
-            self.ids['save_choose_button_1'].bind(on_release=self.go_game)
         if os.path.exists('save_2.py'):
             saves_list.append('save_2.py')
             self.ids['save_choose_button_2'].text = 'Save 2'
-            self.ids['save_choose_button_2'].bind(on_release=self.go_game)
         if os.path.exists('save_3.py'):
             saves_list.append('save_3.py')
             self.ids['save_choose_button_3'].text = 'Save 3'
-            self.ids['save_choose_button_3'].bind(on_release=self.go_game)
 
 
 class GameScreen(Screen):
@@ -515,13 +496,21 @@ class GameScreen(Screen):
 
     def new_save(self, instance):
 
-        global saves_list, sm, current_save
+        global saves_list, saves_list, sm, current_save
 
-        saves_list.append('save_' + instance + '.py')
+        if instance in saves_list:
 
-        check_saves('save_' + instance + '.py')
+            current_save = instance
 
-        current_save = 'save_' + instance + '.py'
+            return self.build_game(instance)
+
+        else:
+
+            saves_list.append(instance)
+
+            check_saves(instance)
+
+            current_save = instance
 
     def new_turn(self):
 
@@ -1147,8 +1136,6 @@ class GameScreen(Screen):
 
         global saves, current_save
 
-        print(self.ids) # обновить ids
-
         try:
 
             current_save
@@ -1539,6 +1526,8 @@ class StatisticScreen(Screen):
 class GameApp(App):
 
     def build(self):
+
+        Builder.load_string(kv)
 
         global sm
 
