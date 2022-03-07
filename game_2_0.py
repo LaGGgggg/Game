@@ -1179,9 +1179,9 @@ class GameScreen(Screen):
 
             difficult = saves.status
             player_artefacts = saves.player_artefacts
-            now_map = saves.now_map
 
             if difficult != 'in_hub':
+                now_map = saves.now_map
                 player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1],
                                                  saves.player_creature[2], saves.player_creature[3],
                                                  saves.player_creature[4], saves.player_creature[5],
