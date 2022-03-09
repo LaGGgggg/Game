@@ -1,4 +1,4 @@
-import game_2_0_data
+import game_3_0_data
 import importlib
 import copy
 import math
@@ -22,9 +22,9 @@ from kivy.properties import StringProperty
 
 init(autoreset=True)
 
-difficult_list = copy.deepcopy(game_2_0_data.difficult_list)
-difficult_weights = copy.deepcopy(game_2_0_data.difficult_weights)
-all_maps_const = copy.deepcopy(game_2_0_data.all_maps)
+difficult_list = copy.deepcopy(game_3_0_data.difficult_list)
+difficult_weights = copy.deepcopy(game_3_0_data.difficult_weights)
+all_maps_const = copy.deepcopy(game_3_0_data.all_maps)
 
 
 class EnemyCreature:
@@ -206,7 +206,7 @@ class Artefacts:
                     player_creature.healing_power -= self.artefact_do_list[name][2]
 
 
-player_artefacts = Artefacts(game_2_0_data.artefact_do, game_2_0_data.start_player_artefacts)
+player_artefacts = Artefacts(game_3_0_data.artefact_do, game_3_0_data.start_player_artefacts)
 
 kv = '''
 
@@ -611,7 +611,7 @@ class GameScreen(Screen):
         # Сброс локальной статистики
 
         the_map_passed = {}
-        for i in game_2_0_data.difficult_list:
+        for i in game_3_0_data.difficult_list:
             the_map_passed[i] = 0
         get_artifacts = 0
         enemies_killed = 0
@@ -1103,7 +1103,7 @@ class GameScreen(Screen):
             # Сброс локальной статистики
 
             the_map_passed = {}
-            for i in game_2_0_data.difficult_list:
+            for i in game_3_0_data.difficult_list:
                 the_map_passed[i] = 0
             get_artifacts = 0
             enemies_killed = 0
@@ -1158,10 +1158,10 @@ class GameScreen(Screen):
                difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,\
                cells_passed, enemies_dict
 
-        importlib.reload(game_2_0_data)
+        importlib.reload(game_3_0_data)
 
         the_map_passed = {}
-        for i in game_2_0_data.difficult_list:
+        for i in game_3_0_data.difficult_list:
             the_map_passed[i] = 0
         get_artifacts = 0
         enemies_killed = 0
@@ -1216,7 +1216,7 @@ class GameScreen(Screen):
 
                 crop_number = round(len(now_map) / 2)
 
-                enemies_number = game_2_0_data.max_map_enemies[difficult]
+                enemies_number = game_3_0_data.max_map_enemies[difficult]
 
                 enemies_dict = {}
                 enemies_numbers = {}
@@ -1317,7 +1317,7 @@ class GameScreen(Screen):
 
             crop_number = round(len(now_map) / 2)
 
-            enemies_number = game_2_0_data.max_map_enemies[difficult]
+            enemies_number = game_3_0_data.max_map_enemies[difficult]
 
             enemies_dict = {}
             enemies_numbers = {}
@@ -1550,7 +1550,7 @@ def random_artefact(map_name):
 
     # Открываем и забираем данные из файла
 
-    data = open('game_2_0_data.py', 'r')
+    data = open('game_3_0_data.py', 'r')
 
     old_data = data.readlines()
 
@@ -1558,7 +1558,7 @@ def random_artefact(map_name):
 
     # Берём нужную строку с данными карты по артефактам
 
-    old_data_map_string = old_data[game_2_0_data.map_indexes[map_name]]
+    old_data_map_string = old_data[game_3_0_data.map_indexes[map_name]]
 
     n = 0
 
@@ -1828,7 +1828,7 @@ def check_saves(save_name):
 
         n = 20
 
-        for i in game_2_0_data.difficult_list:
+        for i in game_3_0_data.difficult_list:
             data.write(i + '_passed = 0' + '\n')
 
             n += 1
@@ -1860,7 +1860,7 @@ def check_saves(save_name):
 
         n = 0
 
-        for i in game_2_0_data.difficult_list:
+        for i in game_3_0_data.difficult_list:
 
             stat_check.insert(n, i + '_passed = 0\n')
 
@@ -1876,8 +1876,8 @@ def check_saves(save_name):
 
             return False
 
-        elif len(old_data) != 26 + len(game_2_0_data.difficult_list) or old_data[
-                                                                      20:26 + len(game_2_0_data.difficult_list)] \
+        elif len(old_data) != 26 + len(game_3_0_data.difficult_list) or old_data[
+                                                                      20:26 + len(game_3_0_data.difficult_list)] \
                 != stat_check:
 
             data = open(save_name, 'w+')
@@ -1888,7 +1888,7 @@ def check_saves(save_name):
 
             n = 20
 
-            for i in game_2_0_data.difficult_list:
+            for i in game_3_0_data.difficult_list:
                 data.write(i + '_passed = 0' + '\n')
 
                 n += 1
@@ -2005,7 +2005,7 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     importlib.reload(saves)
 
-    for i in game_2_0_data.difficult_list:
+    for i in game_3_0_data.difficult_list:
 
         k = old_data[n][len(i) + 10:-1]
 
@@ -2129,7 +2129,7 @@ def distance():
 
     for i in range(len(now_map)):
 
-        if len(enemies_positions_list) == game_2_0_data.max_map_enemies[difficult] and player_position != []:
+        if len(enemies_positions_list) == game_3_0_data.max_map_enemies[difficult] and player_position != []:
             break
 
         if i == len(now_map):
@@ -2152,7 +2152,7 @@ def distance():
 
                 player_position = [i, e]
 
-            if len(enemies_positions_list) == game_2_0_data.max_map_enemies[difficult] and player_position != []:
+            if len(enemies_positions_list) == game_3_0_data.max_map_enemies[difficult] and player_position != []:
 
                 break
 

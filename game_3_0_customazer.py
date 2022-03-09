@@ -1,11 +1,11 @@
 import importlib
-import game_2_0_data
+import game_3_0_data
 
 
 def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list, map_artefacts_chances,
              map_enemies_list, max_enemies_on_map):
 
-    importlib.reload(game_2_0_data)
+    importlib.reload(game_3_0_data)
 
     n = 1
     all_y = [i for i in range(lines + 1)]  # 101 --> line + 1
@@ -26,7 +26,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     # открываем, читаем и записываем файл
 
-    data = open('game_2_0_data.py', 'r')
+    data = open('game_3_0_data.py', 'r')
 
     old_data = data.readlines()
 
@@ -51,7 +51,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     # Добавление артефактов к карте
 
-    new_map_index = str(max(game_2_0_data.map_indexes.values()) + 1)
+    new_map_index = str(max(game_3_0_data.map_indexes.values()) + 1)
 
     if old_data[4] == 'map_indexes = {}':
         old_data[4] = old_data[4][:-2] + '"' + map_difficult + '": ' + new_map_index + '}\n'
@@ -76,12 +76,12 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     old_data[new_map_index] = old_data[new_map_index] + '}\n'
 
-    p = game_2_0_data.max_map_enemies
+    p = game_3_0_data.max_map_enemies
     p[map_difficult] = max_enemies_on_map
 
     old_data[10] = old_data[10][:19] + str(p)[1:] + '\n'
 
-    data = open('game_2_0.py', 'r', encoding='UTF-8')
+    data = open('game_3_0.py', 'r', encoding='UTF-8')
 
     old_data_2 = data.readlines()
 
@@ -89,13 +89,13 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     # Добавляем новых врагов
 
-    line = max(game_2_0_data.enemies_indexes.values())
+    line = max(game_3_0_data.enemies_indexes.values())
 
     for i in map_enemies_list:
 
         n = 0
 
-        k = game_2_0_data.enemies_indexes[i]
+        k = game_3_0_data.enemies_indexes[i]
 
         number_str = str(int(old_data_2[k][len(i) + 1:len(i) + 2]) + 1)
 
@@ -119,7 +119,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
             number_str = str(int(number_str) + 1)
 
-        p = game_2_0_data.enemies_indexes
+        p = game_3_0_data.enemies_indexes
 
         j = 0
 
@@ -135,9 +135,9 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
         old_data[5] = old_data[5][:18] + str(p) + '\n'
 
-    # Записываем всё в файл game_2_0_data.py
+    # Записываем всё в файл game_3_0_data.py
 
-    data = open('game_2_0_data.py', 'w')
+    data = open('game_3_0_data.py', 'w')
 
     for i in old_data:
 
@@ -159,7 +159,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     old_data_2[line + 1] = old_data_2[line + 1][:-2] + ', "' + map_difficult + '": [' + p + ']}\n'
 
-    data = open('game_2_0.py', 'w', encoding='UTF-8')
+    data = open('game_3_0.py', 'w', encoding='UTF-8')
 
     for i in old_data_2:
 
@@ -177,13 +177,13 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
                                                                       ranged_combat_radius, moving_speed, healing_power,
                                                                       max_health)
 
-    importlib.reload(game_2_0_data)
+    importlib.reload(game_3_0_data)
 
     # изменяем кол-во врагов:
 
     # открываем и читаем
 
-    data = open('game_2_0_data.py', 'r')
+    data = open('game_3_0_data.py', 'r')
 
     old_data = data.readlines()
 
@@ -191,16 +191,16 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # узнаём новый индекс врага
 
-    line = max(game_2_0_data.enemies_indexes.values())
+    line = max(game_3_0_data.enemies_indexes.values())
 
     # добавляем новый индекс для нового врага
 
-    old_data[5] = old_data[5][:-2] + ', "' + enemy_name + '": ' + str(line + game_2_0_data.max_map_enemies[
+    old_data[5] = old_data[5][:-2] + ', "' + enemy_name + '": ' + str(line + game_3_0_data.max_map_enemies[
         enemy_difficult] + 1) + '}\n'
 
     # записываем нужные данные
 
-    data = open('game_2_0_data.py', 'w')
+    data = open('game_3_0_data.py', 'w')
 
     for i in old_data:
 
@@ -210,7 +210,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # читаем файл
 
-    data = open('game_2_0.py', 'r', encoding='UTF-8')
+    data = open('game_3_0.py', 'r', encoding='UTF-8')
 
     old_data = data.readlines()
 
@@ -218,7 +218,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # добавляем нового врага
 
-    for i in range(game_2_0_data.max_map_enemies[enemy_difficult] + 1):  # need test/check
+    for i in range(game_3_0_data.max_map_enemies[enemy_difficult] + 1):  # need test/check
 
         if i != 0:
 
@@ -265,7 +265,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # Добавляем врага в enemies_dict_names
 
-    for i in range(game_2_0_data.max_map_enemies[enemy_difficult] + 1):
+    for i in range(game_3_0_data.max_map_enemies[enemy_difficult] + 1):
 
         if i != 0:
 
@@ -291,7 +291,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # Записываем всё в файл
 
-    data = open('game_2_0.py', 'w', encoding='UTF-8')
+    data = open('game_3_0.py', 'w', encoding='UTF-8')
 
     for i in old_data:
 
@@ -305,11 +305,11 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 def made_artefact(name, plus_or_minus, how_many_do, how_many_on_start, artefact_chance, artefact_map, what_do):
     # what_do списком
 
-    importlib.reload(game_2_0_data)
+    importlib.reload(game_3_0_data)
 
     # открываем, читаем и записываем файл
 
-    data = open('game_2_0_data.py', 'r')
+    data = open('game_3_0_data.py', 'r')
 
     old_data = data.readlines()
 
@@ -331,7 +331,7 @@ def made_artefact(name, plus_or_minus, how_many_do, how_many_on_start, artefact_
         old_data[8] = old_data[8][:-2] + ', "' + name + '": ["' + plus_or_minus + '", ' + str(what_do) + ', ' \
                        + str(how_many_do) + ']}\n'
 
-    line = game_2_0_data.map_indexes[artefact_map]
+    line = game_3_0_data.map_indexes[artefact_map]
 
     if old_data[line] == artefact_map + '_map_artefact_chances = {}\n':
         old_data[line] = old_data[line][:-2] + '"' + name + '": ' + str(artefact_chance) + '}\n'
@@ -341,7 +341,7 @@ def made_artefact(name, plus_or_minus, how_many_do, how_many_on_start, artefact_
 
     # записываем нужные данные
 
-    data = open('game_2_0_data.py', 'w')
+    data = open('game_3_0_data.py', 'w')
 
     for i in old_data:
         data.write(i)
