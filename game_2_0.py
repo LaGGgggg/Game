@@ -1,9 +1,9 @@
 import game_2_0_data
 import importlib
-import random
-from time import sleep
+import copy
 import math
 import os.path
+import random
 from colorama import Fore, init
 
 # kivy
@@ -14,7 +14,6 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Line
 from kivy.clock import Clock
 from kivy.uix.scrollview import ScrollView
@@ -23,9 +22,9 @@ from kivy.properties import StringProperty
 
 init(autoreset=True)
 
-difficult_list = game_2_0_data.difficult_list.copy()
-difficult_weights = game_2_0_data.difficult_weights.copy()
-all_maps_const = game_2_0_data.all_maps.copy()
+difficult_list = copy.deepcopy(game_2_0_data.difficult_list)
+difficult_weights = copy.deepcopy(game_2_0_data.difficult_weights)
+all_maps_const = copy.deepcopy(game_2_0_data.all_maps)
 
 
 class EnemyCreature:
@@ -1177,10 +1176,14 @@ class GameScreen(Screen):
 
             # импорт данных из saves
 
+            importlib.reload(saves)
+
             difficult = saves.status
+
             player_artefacts = saves.player_artefacts
 
             if difficult != 'in_hub':
+
                 now_map = saves.now_map
                 player_creature = PlayerCreature(saves.player_creature[0], saves.player_creature[1],
                                                  saves.player_creature[2], saves.player_creature[3],
@@ -1192,7 +1195,7 @@ class GameScreen(Screen):
                     number_of_enemy += 1
                     for e in i.keys():
                         enemies_dict['Enemy_' + str(number_of_enemy)] = {}
-                        enemies_dict['Enemy_' + str(number_of_enemy)][e] = enemies_dict_names[e]
+                        enemies_dict['Enemy_' + str(number_of_enemy)][e] = copy.deepcopy(enemies_dict_names[e])
                 for i in saves.enemies_dict.items():
                     for e in i[1].items():
                         enemies_dict[i[0]][e[0]].health = e[1][0]
@@ -1207,7 +1210,7 @@ class GameScreen(Screen):
 
                 difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
-                now_map = all_maps_const[difficult].copy()
+                now_map = copy.deepcopy(all_maps_const[difficult])
 
                 # Определяем позиции(ю) врагов(а) на карте
 
@@ -1254,16 +1257,16 @@ class GameScreen(Screen):
                                     enemies_numbers[choice] += 1
 
                                     enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                        choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[
-                                            choice + ' ' + str(enemies_numbers[choice])]}
+                                        choice + ' ' + str(enemies_numbers[choice]):
+                                        copy.deepcopy(enemies_dict_names[choice + ' ' + str(enemies_numbers[choice])])}
 
                                 else:
 
                                     enemies_numbers[choice] = 1
 
                                     enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                        choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[
-                                            choice + ' ' + str(enemies_numbers[choice])]}
+                                        choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                                            choice + ' ' + str(enemies_numbers[choice])])}
 
                                 c = all_choices.count(choice) + 1
 
@@ -1305,9 +1308,10 @@ class GameScreen(Screen):
                                 now_map[i][e] = choice
 
         else:
+
             difficult = ''.join(random.choices(difficult_list, weights=difficult_weights, k=1))
 
-            now_map = all_maps_const[difficult].copy()
+            now_map = copy.deepcopy(all_maps_const[difficult])
 
             # Определяем позиции(ю) врагов(а) на карте
 
@@ -1354,16 +1358,16 @@ class GameScreen(Screen):
                                 enemies_numbers[choice] += 1
 
                                 enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                    choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[
-                                        choice + ' ' + str(enemies_numbers[choice])]}
+                                    choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                                        choice + ' ' + str(enemies_numbers[choice])])}
 
                             else:
 
                                 enemies_numbers[choice] = 1
 
                                 enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                    choice + ' ' + str(enemies_numbers[choice]): enemies_dict_names[
-                                        choice + ' ' + str(enemies_numbers[choice])]}
+                                    choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                                        choice + ' ' + str(enemies_numbers[choice])])}
 
                             c = all_choices.count(choice) + 1
 
@@ -1646,11 +1650,11 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # Делаем сэйв позиции
 
-    enemy_position_save = enemy_position.copy()
+    enemy_position_save = copy.deepcopy(enemy_position)
 
     # 1 направление
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1671,7 +1675,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 2
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1691,7 +1695,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 3
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1712,7 +1716,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 4
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1732,7 +1736,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 5
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1753,7 +1757,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 6
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1773,7 +1777,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 7
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1794,7 +1798,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
     # 8
 
-    enemy_position = enemy_position_save.copy()
+    enemy_position = copy.deepcopy(enemy_position_save)
 
     try:
 
@@ -1857,6 +1861,7 @@ def check_saves(save_name):
         n = 0
 
         for i in game_2_0_data.difficult_list:
+
             stat_check.insert(n, i + '_passed = 0\n')
 
             stat_check_str += i + '_passed = 0\n'
@@ -1930,7 +1935,13 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     # Заносим карту
 
-    old_data[4] = 'now_map = ' + str(now_map) + '\n'
+    if status != 'in_hub':
+
+        old_data[4] = 'now_map = ' + str(now_map) + '\n'
+
+    else:
+
+        old_data[4] = 'now_map = {}\n'
 
     # Заносим характеристики игрока
 
@@ -1986,7 +1997,7 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     else:
 
-        old_data[16] = 'enemies_dict = {}'
+        old_data[16] = 'enemies_dict = {}\n'
 
     # Заносим статистику
 
