@@ -2,7 +2,7 @@ import game_3_0_data
 import importlib
 import copy
 import math
-import os.path
+from os import path, remove
 import random
 from colorama import Fore, init
 
@@ -11,11 +11,9 @@ from colorama import Fore, init
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
 from kivy.app import App
-from kivy.uix.widget import Widget
+from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.graphics import Color, Line
-from kivy.clock import Clock
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 
@@ -25,6 +23,8 @@ init(autoreset=True)
 difficult_list = copy.deepcopy(game_3_0_data.difficult_list)
 difficult_weights = copy.deepcopy(game_3_0_data.difficult_weights)
 all_maps_const = copy.deepcopy(game_3_0_data.all_maps)
+
+number_of_save = game_3_0_data.number_of_save
 
 
 class EnemyCreature:
@@ -271,13 +271,13 @@ kv = '''
         id: game_layout_1
         canvas:
             Line:
-                points: 0.35 * self.width, self.height, 0.35 * self.width, 0
+                points: 0.31 * self.width, self.height, 0.31 * self.width, 0
                 width: 2
             Line:
-                points: 0.35 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
+                points: 0.31 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
                 width: 2
             Line:
-                points: 0.35 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
+                points: 0.31 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
                 width: 2
             Line:
                 points: 0.73 * self.width, 0.4 * self.height, 0.73 * self.width, 0
@@ -285,8 +285,8 @@ kv = '''
         Label:
             id: game_label_1
             text: 'Map label'
-            size_hint: .65, .43
-            pos_hint: {'x': .35, 'y': .57}
+            size_hint: .69, .43
+            pos_hint: {'x': .31, 'y': .57}
             font_size: 18
             markup: True
             font_name: 'font1.ttf'
@@ -296,7 +296,6 @@ kv = '''
             pos_hint: {'x': .35, 'y': .41}
             font_size: 15
             text: 'Action label:\\n\\nDo you want to play?'
-
         GridLayout:
             id: game_layout_2
             cols: 3
@@ -310,7 +309,6 @@ kv = '''
                 id: game_layout_2_button_2
                 text: 'No'
                 on_release: root.manager.current = 'menu'
-
         Label:
             id: game_label_3
             text: 'Player characters info label'
@@ -335,7 +333,7 @@ kv = '''
             id: game_label_5
             text: 'Enemy characters info label'
             font_size: 14
-            size_hint: .347, 1
+            size_hint: .306, 1
             pos_hint: {'x': 0, 'y': 0}
 
 <CustomizerScreen>:
@@ -397,13 +395,13 @@ class SaveChooseScreen(Screen):
 
         saves_list = []
 
-        if os.path.exists('save_1.py'):
+        if path.exists('save_1.py'):
             saves_list.append('save_1.py')
             self.ids['save_choose_button_1'].text = 'Save 1'
-        if os.path.exists('save_2.py'):
+        if path.exists('save_2.py'):
             saves_list.append('save_2.py')
             self.ids['save_choose_button_2'].text = 'Save 2'
-        if os.path.exists('save_3.py'):
+        if path.exists('save_3.py'):
             saves_list.append('save_3.py')
             self.ids['save_choose_button_3'].text = 'Save 3'
 
@@ -411,6 +409,8 @@ class SaveChooseScreen(Screen):
 class GameScreen(Screen):
 
     moving_points = ''
+
+    current_save = ''
 
     def label_6_plus(self, instance):
 
@@ -457,6 +457,10 @@ class GameScreen(Screen):
 
         self.ids['game_label_1'].text = mapp
 
+    def go_menu_now(self, instance):
+
+        sm.current = 'menu'
+
     def go_menu(self, instance):
 
         # go to menu
@@ -475,15 +479,21 @@ class GameScreen(Screen):
 
         self.ids['game_layout_2'].clear_widgets()
 
+        game_layout_button_1 = Button(text='Yes', on_release=self.build_game)
+        game_layout_button_2 = Button(text='No', on_release=self.go_menu_now)
+
+        self.ids['game_layout_2'].add_widget(game_layout_button_1)
+        self.ids['game_layout_2'].add_widget(game_layout_button_2)
+
     def go_statistic(self, instance):
 
-        # go to statistic
+        # go to statistic screen
 
         global sm
 
         sm.current = 'statistic'
 
-        # clear game_screen
+        # prepare game_screen to the next game
 
         self.ids['game_label_1'].text = 'Map label'
         self.ids['game_label_2'].text = 'Action label:'
@@ -493,13 +503,19 @@ class GameScreen(Screen):
 
         self.ids['game_layout_2'].clear_widgets()
 
+        game_layout_button_1 = Button(text='Yes', on_release=self.build_game)
+        game_layout_button_2 = Button(text='No', on_release=self.go_menu_now)
+
+        self.ids['game_layout_2'].add_widget(game_layout_button_1)
+        self.ids['game_layout_2'].add_widget(game_layout_button_2)
+
     def new_save(self, instance):
 
-        global saves_list, saves_list, sm, current_save
+        global saves_list, saves_list, sm
 
         if instance in saves_list:
 
-            current_save = instance
+            self.current_save = instance
 
             return self.build_game(instance)
 
@@ -507,9 +523,7 @@ class GameScreen(Screen):
 
             saves_list.append(instance)
 
-            check_saves(instance)
-
-            current_save = instance
+            self.current_save = instance
 
     def new_turn(self):
 
@@ -606,7 +620,7 @@ class GameScreen(Screen):
         global difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
 
         end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                    cells_passed, enemies_dict)
+                    cells_passed, enemies_dict, self.current_save)
 
         # Сброс локальной статистики
 
@@ -637,7 +651,7 @@ class GameScreen(Screen):
 
             # read from .py
 
-            data = open('saves.py', 'r')
+            data = open(self.current_save, 'r')
 
             old_data = data.readlines()
 
@@ -649,19 +663,41 @@ class GameScreen(Screen):
 
                 new_data += i
 
-            # clear .py file
+            # delete .py file
 
-            data = open('saves.py', 'w')
-
-            data.close()
+            remove(self.current_save)
 
             # create and write in .txt
 
-            data = open('saves.txt', 'w')
+            data = open(str(number_of_save) + '_save.txt', 'w')
 
             data.write(new_data.replace('_', ' '))
 
             data.close()
+
+            # +1 to number_of_save in game_3_0_data.py
+
+            data = open('game_3_0_data.py', 'r')
+
+            old_data = data.readlines()
+
+            data.close()
+
+            old_data[12] = 'number_of_save = ' + str(int(old_data[12][17:-1]) + 1) + '\n'
+
+            data = open('game_3_0_data.py', 'w')
+
+            for i in old_data:
+
+                data.write(i)
+
+            data.close()
+
+            saves_list.remove(self.current_save)
+
+            # reload save_choose screen
+
+            SaveChooseScreen.build(self)
 
         else:
 
@@ -1098,7 +1134,7 @@ class GameScreen(Screen):
             global get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
 
             end_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                        cells_passed, enemies_dict)
+                        cells_passed, enemies_dict, self.current_save)
 
             # Сброс локальной статистики
 
@@ -1123,6 +1159,10 @@ class GameScreen(Screen):
 
             self.ids['game_layout_2'].add_widget(game_layout_2_button_28)
 
+            # heal player(not in label)
+
+            player_creature.health = 100
+
             return
 
         # Удаление уже лишних виджетов
@@ -1133,23 +1173,27 @@ class GameScreen(Screen):
 
     def build_game(self, instance):
 
-        global saves, current_save
+        # create new save file if not exist
 
-        try:
+        if not path.exists(self.current_save):
 
-            current_save
+            check_saves(self.current_save)
 
-        except NameError:
+        # import current save as "saves" for more comfort code work
 
-            current_save = instance
+        global saves
 
-        if current_save == 'save_1.py':
+        if self.current_save in ['', 'Yes']:
+
+            self.current_save = instance
+
+        elif self.current_save == 'save_1.py':
             import save_1 as saves
 
-        elif current_save == 'save_2.py':
+        elif self.current_save == 'save_2.py':
             import save_2 as saves
 
-        elif current_save == 'save_3.py':
+        elif self.current_save == 'save_3.py':
             import save_3 as saves
 
         self.ids['game_layout_2'].clear_widgets()
@@ -1172,7 +1216,7 @@ class GameScreen(Screen):
 
         # Проверка saves
 
-        if check_saves(current_save):
+        if check_saves(self.current_save):
 
             # импорт данных из saves
 
@@ -1510,15 +1554,19 @@ class StatisticScreen(Screen):
 
     def build(self):
 
-        data = open('saves.py', 'r')
+        global number_of_save
+
+        data = open(str(number_of_save) + '_save.txt', 'r')
 
         old_data = data.readlines()
 
         data.close()
 
+        number_of_save += 1
+
         data = ''
 
-        for i in old_data[20:]:
+        for i in old_data:
 
             data += i
 
@@ -1532,6 +1580,13 @@ class GameApp(App):
     def build(self):
 
         Builder.load_string(kv)
+
+        # Set minimum window size
+
+        Window.minimum_width = Window.size[0]
+        Window.minimum_height = Window.size[1]
+
+        # Make ScreenManager
 
         global sm
 
@@ -1819,7 +1874,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
 
 def check_saves(save_name):
 
-    if not os.path.exists(save_name):
+    if not path.exists(save_name):
         data = open(save_name, 'w+')
 
         data.write('0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё '
@@ -1907,9 +1962,9 @@ def check_saves(save_name):
 
 
 def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
-                enemies_dict):
+                enemies_dict, current_save):
 
-    global player_artefacts, now_map, current_save
+    global player_artefacts, now_map
 
     # статус это название карты или in_hub
 
