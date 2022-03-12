@@ -277,10 +277,13 @@ kv = '''
                 points: 0.31 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
                 width: 2
             Line:
-                points: 0.31 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
+                points: 0.585 * self.width, 0.4 * self.height, 0.745 * self.width, 0.4 * self.height
                 width: 2
             Line:
-                points: 0.73 * self.width, 0.4 * self.height, 0.73 * self.width, 0
+                points: 0.585 * self.width, 0.57 * self.height, 0.585 * self.width, 0
+                width: 2
+            Line:
+                points: 0.745 * self.width, 0.57 * self.height, 0.745 * self.width, 0
                 width: 2
         Label:
             id: game_label_1
@@ -292,14 +295,14 @@ kv = '''
             font_name: 'font1.ttf'
         ScrollViewLabel:
             id: game_label_2
-            size_hint: .5, .15
-            pos_hint: {'x': .35, 'y': .41}
+            size_hint: .27, .55
+            pos_hint: {'x': .31, 'y': .014}
             font_size: 15
             text: 'Action label:\\n\\nDo you want to play?'
         GridLayout:
             id: game_layout_2
             cols: 3
-            pos_hint: {'x': .85, 'y': .41}
+            pos_hint: {'x': .59, 'y': .41}
             size_hint: .15, .15
             Button:
                 id: game_layout_2_button_1
