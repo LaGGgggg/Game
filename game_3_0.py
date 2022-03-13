@@ -158,52 +158,59 @@ class Artefacts:
         self.artefact_do_list = artefact_do_list
 
     def use_artefact(self, name):
-        self.player_artefacts_list[name] -= 1
 
-        for i in self.artefact_do_list[name][1]:
+        if type(player_artefacts) == dict:
+
+            p = copy.deepcopy(game_3_0_data.artefact_do)
+
+        else:
+
+            p = self.artefact_do_list
+
+        for i in p[name][1]:
 
             if i == 'health':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.health += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.health += p[name][2]
 
                 else:
-                    player_creature.health -= self.artefact_do_list[name][2]
+                    player_creature.health -= p[name][2]
             elif i == 'damage':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.damage += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.damage += p[name][2]
 
                 else:
-                    player_creature.damage -= self.artefact_do_list[name][2]
+                    player_creature.damage -= p[name][2]
             elif i == 'ranged_damage':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.ranged_damage += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.ranged_damage += p[name][2]
 
                 else:
-                    player_creature.ranged_damage -= self.artefact_do_list[name][2]
+                    player_creature.ranged_damage -= p[name][2]
             elif i == 'close_fight_radius':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.close_fight_radius += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.close_fight_radius += p[name][2]
 
                 else:
-                    player_creature.close_fight_radius -= self.artefact_do_list[name][2]
+                    player_creature.close_fight_radius -= p[name][2]
             elif i == 'ranged_combat_radius':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.ranged_combat_radius += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.ranged_combat_radius += p[name][2]
 
                 else:
-                    player_creature.ranged_combat_radius -= self.artefact_do_list[name][2]
+                    player_creature.ranged_combat_radius -= p[name][2]
             elif i == 'moving_speed':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.moving_speed += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.moving_speed += p[name][2]
 
                 else:
-                    player_creature.moving_speed -= self.artefact_do_list[name][2]
+                    player_creature.moving_speed -= p[name][2]
             elif i == 'healing_power':
-                if self.artefact_do_list[name][0] == '+':
-                    player_creature.healing_power += self.artefact_do_list[name][2]
+                if p[name][0] == '+':
+                    player_creature.healing_power += p[name][2]
 
                 else:
-                    player_creature.healing_power -= self.artefact_do_list[name][2]
+                    player_creature.healing_power -= p[name][2]
 
 
 player_artefacts = Artefacts(game_3_0_data.artefact_do, game_3_0_data.start_player_artefacts)
@@ -344,10 +351,12 @@ kv = '''
                     root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_1'])
                     root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_2'])
                     
+                    root.ids['game_layout_4'].pos_hint = {'x': .845, 'y': .237}
+                    
         # here, because need to hide this button
         
         Button:
-            pos: 50000, 50000
+            pos_hint: {'x': 15, 'y': 15}
             id: game_layout_3_button_2
             text: 'Characters.'
             font_size: 13
@@ -356,6 +365,8 @@ kv = '''
                 root.ids['game_label_4'].size_hint = (0, 0)
                 root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_2'])
                 root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_1'])
+                
+                root.ids['game_layout_4'].pos_hint = {'x': 15, 'y': 15}
         Label:
             id: game_label_3
             text: 'Player characters info label'
@@ -378,23 +389,21 @@ kv = '''
             halign: 'left'
         GridLayout:
             id: game_layout_4
-            cols: 1
-            row_force_default: True
-            
-            # TODO del this and do через size_hint
-            row_default_height: self.height * 0.1
-            row_default_width: self.height * 0.1
-            
-            size_hint: .057, .39
-            pos_hint: {'x': .94, 'y': 0}
-            
-            
+            cols: 3
+            size_hint: .15, .15
+            pos_hint: {'x': 15, 'y': 15}
             Button:
                 text: '+'
+                on_release: root.ids['game_layout_4_label_1'].text = str(int(root.ids['game_layout_4_label_1'].text) + 1)
+            Label:
+                id: game_layout_4_label_1
+                text: '1'
             Button:
-                text: '+'
-                
-                
+                text: '-'
+                on_release: root.ids['game_layout_4_label_1'].text = str(int(root.ids['game_layout_4_label_1'].text) - 1)
+            Button:
+                text: 'Upload.'
+                on_release: root.use_artefact()
         ScrollViewLabel:
             id: game_label_5
             text: 'Enemy characters info label'
@@ -477,6 +486,120 @@ class GameScreen(Screen):
     moving_points = ''
 
     current_save = ''
+
+    def print_player_characters(self):
+
+        self.ids['game_label_3'].text = '[size=16]You characters:[/size]\nHealth: [color=00ff00]' + \
+                                        str(player_creature.health) + '[/color]\nHealing power: [color=00ff00]' + \
+                                        str(player_creature.healing_power) + \
+                                        '[/color]\nClose fight damage: [color=ff0000]' + str(player_creature.damage) + \
+                                        '[/color]\nRanged combat damage: [color=ff0000]' + \
+                                        str(player_creature.ranged_damage) + \
+                                        '[/color]\nClose fight radius: [color=ff00ff]' + \
+                                        str(player_creature.close_fight_radius) + \
+                                        '[/color]\nRanged combat radius: [color=ff00ff]' + \
+                                        str(player_creature.ranged_combat_radius) + \
+                                        '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) + \
+                                        '[/color]'
+
+    def print_artefacts(self):
+
+        if type(player_artefacts) == dict:
+
+            p = player_artefacts
+
+        else:
+
+            p = player_artefacts.player_artefacts_list
+
+        n = 0
+
+        self.ids['game_label_4'].text = '[size=16]You artefacts:[/size]'
+
+        for i in p.items():
+
+            if i[1] != 0:
+
+                n += 1
+
+                k = -1
+
+                for e in i[0]:
+
+                    if e in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+                        break
+
+                    k += 1
+
+                self.ids['game_label_4'].text += '\n' + i[0].replace('_', ' ')[:k] + '[font=font4.ttf]' + \
+                                                 i[0].replace('_', ' ')[k:] + ': [/font]' + str(i[1])
+
+        if n == 0:
+            self.ids['game_label_4'].text = 'You don`t have any artefacts:(.'
+
+    def print_enemies_characters(self):
+
+        self.ids['game_label_5'].text = ''
+
+        for i in enemies_dict.values():
+
+            for e in i.items():
+
+                if e[1].health > 0:
+
+                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
+                                                    '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
+                                                    str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
+                                                    str(e[1].healing_power) +\
+                                                    '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
+                                                    '[/color]\nRanged combat damage: [color=ff0000]' +\
+                                                    str(e[1].ranged_damage) +\
+                                                    '[/color]\nClose fight radius: [color=ff00ff]' +\
+                                                    str(e[1].close_fight_radius) +\
+                                                    '[/color]\nRanged combat radius: [color=ff00ff]' +\
+                                                    str(e[1].ranged_combat_radius) +\
+                                                    '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
+                                                    '[/color]\n\n'
+
+    def use_artefact(self):
+
+        if type(player_artefacts) == dict:
+
+            p = player_artefacts
+
+        else:
+
+            p = player_artefacts.player_artefacts_list
+
+        n = 0
+
+        number_of_artefact = int(self.ids['game_layout_4_label_1'].text)
+
+        for i in p.items():
+
+            if i[1] != 0:
+
+                n += 1
+
+                if n == number_of_artefact:
+
+                    if type(player_artefacts) == dict:
+
+                        Artefacts.use_artefact(self, i[0])
+
+                        player_artefacts[i[0]] -= 1
+
+                    else:
+
+                        player_artefacts.use_artefact(i[0])
+
+                        player_artefacts.player_artefacts_list[i[0]] -= 1
+
+                    self.print_artefacts()
+
+                    self.print_player_characters()
+
+                    break
 
     def label_6_plus(self, instance):
 
@@ -1166,28 +1289,7 @@ class GameScreen(Screen):
 
         # Выводим характеристик(и) врагов(а)
 
-        self.ids['game_label_5'].text = ''
-
-        for i in enemies_dict.values():
-
-            for e in i.items():
-
-                if e[1].health > 0:
-                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] + \
-                                                     '[/color] characters:[/size]\nHealth: [color=00ff00]' + \
-                                                     str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                                     str(e[1].healing_power) + \
-                                                     '[/color]\nClose fight damage: [color=ff0000]' + str(
-                        e[1].damage) + \
-                                                     '[/color]\nRanged combat damage: [color=ff0000]' + \
-                                                     str(e[1].ranged_damage) + \
-                                                     '[/color]\nClose fight radius: [color=ff00ff]' + \
-                                                     str(e[1].close_fight_radius) + \
-                                                     '[/color]\nRanged combat radius: [color=ff00ff]' + \
-                                                     str(e[1].ranged_combat_radius) + \
-                                                     '[/color]\nMoving speed: [color=00ffff]' + str(
-                        e[1].moving_speed) + \
-                                                     '[/color]\n\n'
+        self.print_enemies_characters()
 
         if not enemies_dict:
 
@@ -1528,77 +1630,15 @@ class GameScreen(Screen):
 
         # Выводим характеристик(и) врагов(а)
 
-        self.ids['game_label_5'].text = ''
-
-        for i in enemies_dict.values():
-
-            for e in i.items():
-
-                if e[1].health > 0:
-
-                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
-                                                    '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
-                                                    str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                                    str(e[1].healing_power) +\
-                                                    '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
-                                                    '[/color]\nRanged combat damage: [color=ff0000]' +\
-                                                    str(e[1].ranged_damage) +\
-                                                    '[/color]\nClose fight radius: [color=ff00ff]' +\
-                                                    str(e[1].close_fight_radius) +\
-                                                    '[/color]\nRanged combat radius: [color=ff00ff]' +\
-                                                    str(e[1].ranged_combat_radius) +\
-                                                    '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
-                                                    '[/color]\n\n'
+        self.print_enemies_characters()
 
         # Вывод характеристик игрока
 
-        self.ids['game_label_3'].text = '[size=16]You characters:[/size]\nHealth: [color=00ff00]' +\
-                                        str(player_creature.health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                        str(player_creature.healing_power) +\
-                                        '[/color]\nClose fight damage: [color=ff0000]' + str(player_creature.damage) +\
-                                        '[/color]\nRanged combat damage: [color=ff0000]' +\
-                                        str(player_creature.ranged_damage) +\
-                                        '[/color]\nClose fight radius: [color=ff00ff]' +\
-                                        str(player_creature.close_fight_radius) +\
-                                        '[/color]\nRanged combat radius: [color=ff00ff]' +\
-                                        str(player_creature.ranged_combat_radius) +\
-                                        '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) +\
-                                        '[/color]'
+        self.print_player_characters()
 
         # Выводим артефакты
 
-        n = 0
-
-        if type(player_artefacts) == dict:
-
-            p = player_artefacts
-        else:
-
-            p = player_artefacts.player_artefacts_list
-
-        self.ids['game_label_4'].text = '[size=16]You artefacts:[/size]'
-
-        for i in p.items():
-
-            if i[1] != 0:
-
-                n += 1
-
-                k = -1
-
-                for e in i[0]:
-
-                    if e in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-
-                        break
-
-                    k += 1
-
-                self.ids['game_label_4'].text += '\n' + i[0].replace('_', ' ')[:k] + '[font=font4.ttf]' +\
-                                                 i[0].replace('_', ' ')[k:] + ': [/font]' + str(i[1])
-
-        if n == 0:
-            self.ids['game_label_4'].text = 'You don`t have any artefacts:(.'
+        self.print_artefacts()
 
         # Движение
 
