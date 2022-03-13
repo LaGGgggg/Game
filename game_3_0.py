@@ -1331,6 +1331,22 @@ class GameScreen(Screen):
 
             player_creature.health = 100
 
+            # give random artefact
+
+            if type(player_artefacts) == dict:
+
+                p = player_artefacts
+
+            else:
+
+                p = player_artefacts.player_artefacts_list
+
+            received_artefact = random_artefact(difficult)
+
+            p[received_artefact] += 1
+
+            self.ids['game_label_2'].text += '\nYou received' + received_artefact.replace('_', ' ')
+
             return
 
         # Удаление уже лишних виджетов
@@ -1349,7 +1365,7 @@ class GameScreen(Screen):
 
         # import current save as "saves" for more comfort code work
 
-        global saves
+        global saves, difficult
 
         if self.current_save in ['', 'Yes']:
 
