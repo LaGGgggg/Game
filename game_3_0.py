@@ -277,13 +277,13 @@ kv = '''
                 points: 0.31 * self.width, 0.57 * self.height, self.width, 0.57 * self.height
                 width: 2
             Line:
-                points: 0.585 * self.width, 0.4 * self.height, 0.745 * self.width, 0.4 * self.height
+                points: 0.585 * self.width, 0.4 * self.height, self.width, 0.4 * self.height
                 width: 2
             Line:
                 points: 0.585 * self.width, 0.57 * self.height, 0.585 * self.width, 0
                 width: 2
             Line:
-                points: 0.745 * self.width, 0.57 * self.height, 0.745 * self.width, 0
+                points: 0.745 * self.width, 0.57 * self.height, 0.745 * self.width, 0.4 * self.height
                 width: 2
         Label:
             id: game_label_1
@@ -299,6 +299,9 @@ kv = '''
             pos_hint: {'x': .31, 'y': .014}
             font_size: 15
             text: 'Action label:\\n\\nDo you want to play?'
+            
+        # player choose layout(move direction and ability choose)
+        
         GridLayout:
             id: game_layout_2
             cols: 3
@@ -312,12 +315,53 @@ kv = '''
                 id: game_layout_2_button_2
                 text: 'No'
                 on_release: root.manager.current = 'menu'
+                
+        # system buttons layout(quit, settings and etc.)
+        
+        GridLayout:
+            id: game_layout_3
+            rows: 1
+            orientation: 'rl-tb'
+            pos_hint: {'x': .751, 'y': .41}
+            size_hint: .247, .15
+            Button:
+                id: game_layout_3_button_4
+                text: 'Quit.'
+            Button:
+                id: game_layout_3_button_3
+                text: 'Settings.'
+            Button:
+                id: game_layout_3_button_1
+                text: 'Inventory.'
+                font_size: 13
+                on_release: 
+                
+                    # remove, because button exist for the first time
+                    
+                    root.ids['game_layout_1'].remove_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_label_3'].size_hint = (0, 0)
+                    root.ids['game_label_4'].size_hint = (.415, .4)
+                    root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_1'])
+                    root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_2'])
+                    
+        # here, because need to hide this button
+        
+        Button:
+            pos: 50000, 50000
+            id: game_layout_3_button_2
+            text: 'Characters.'
+            font_size: 13
+            on_release: 
+                root.ids['game_label_3'].size_hint = (.415, .4)
+                root.ids['game_label_4'].size_hint = (0, 0)
+                root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_2'])
+                root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_1'])
         Label:
             id: game_label_3
             text: 'Player characters info label'
-            size_hint: .38, .4
+            size_hint: .415, .4
             font_size: 14
-            pos_hint: {'x': .35, 'y': 0}
+            pos_hint: {'x': .585, 'y': 0}
             markup: True
             text_size: self.width - 15, self.height - 10
             valign: 'top'
@@ -325,13 +369,32 @@ kv = '''
         Label:
             id: game_label_4
             text: 'Player artefact info label'
-            size_hint: .27, .4
+            size_hint: 0, 0
             font_size: 14
-            pos_hint: {'x': .73, 'y': 0}
+            pos_hint: {'x': .585, 'y': 0}
             markup: True
             text_size: self.width - 15, self.height - 10
             valign: 'top'
             halign: 'left'
+        GridLayout:
+            id: game_layout_4
+            cols: 1
+            row_force_default: True
+            
+            # TODO del this and do через size_hint
+            row_default_height: self.height * 0.1
+            row_default_width: self.height * 0.1
+            
+            size_hint: .057, .39
+            pos_hint: {'x': .94, 'y': 0}
+            
+            
+            Button:
+                text: '+'
+            Button:
+                text: '+'
+                
+                
         ScrollViewLabel:
             id: game_label_5
             text: 'Enemy characters info label'
@@ -365,7 +428,7 @@ kv = '''
                 text: 'Back to menu'
                 on_press: root.manager.current = 'menu'
 
-<StatisticScreen>
+<StatisticScreen>:
     on_pre_enter: root.build()
     FloatLayout:
         id: statistic_layout_1
@@ -1502,6 +1565,8 @@ class GameScreen(Screen):
                                         '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) +\
                                         '[/color]'
 
+        # Выводим артефакты
+
         n = 0
 
         if type(player_artefacts) == dict:
@@ -1510,6 +1575,8 @@ class GameScreen(Screen):
         else:
 
             p = player_artefacts.player_artefacts_list
+
+        self.ids['game_label_4'].text = '[size=16]You artefacts:[/size]'
 
         for i in p.items():
 
@@ -1527,9 +1594,8 @@ class GameScreen(Screen):
 
                     k += 1
 
-                self.ids['game_label_4'].text = '[size=16]You artefacts:\n[/size]' + i[0].replace('_', ' ')[:k] + \
-                                                '[font=font4.ttf]' + i[0].replace('_', ' ')[k:] + ': [/font]' +\
-                                                str(i[1])
+                self.ids['game_label_4'].text += '\n' + i[0].replace('_', ' ')[:k] + '[font=font4.ttf]' +\
+                                                 i[0].replace('_', ' ')[k:] + ': [/font]' + str(i[1])
 
         if n == 0:
             self.ids['game_label_4'].text = 'You don`t have any artefacts:(.'
