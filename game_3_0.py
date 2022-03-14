@@ -172,7 +172,6 @@ class Artefacts:
             if i == 'health':
                 if p[name][0] == '+':
                     player_creature.health += p[name][2]
-                    player_creature.max_health += p[name][2]
 
                 else:
                     player_creature.health -= p[name][2]
@@ -324,7 +323,7 @@ kv = '''
                 text: 'No'
                 on_release: root.manager.current = 'menu'
                 
-        # system buttons layout(quit, switch.)
+        # system buttons layout(quit, settings and etc.)
         
         GridLayout:
             id: game_layout_3
@@ -335,10 +334,13 @@ kv = '''
             Button:
                 id: game_layout_3_button_4
                 text: 'Quit.'
-                on_release: app.get_running_app().stop()
+            Button:
+                id: game_layout_3_button_3
+                text: 'Settings.'
             Button:
                 id: game_layout_3_button_1
                 text: 'Inventory.'
+                font_size: 13
                 on_release: 
                 
                     # remove, because button exist for the first time
@@ -357,6 +359,7 @@ kv = '''
             pos_hint: {'x': 15, 'y': 15}
             id: game_layout_3_button_2
             text: 'Characters.'
+            font_size: 13
             on_release: 
                 root.ids['game_label_3'].size_hint = (.415, .4)
                 root.ids['game_label_4'].size_hint = (0, 0)
@@ -436,18 +439,15 @@ kv = '''
 
 <StatisticScreen>:
     on_pre_enter: root.build()
-    AnchorLayout:
-        anchor_x: 'center'
-        anchor_y: 'center'
+    FloatLayout:
+        id: statistic_layout_1
         Label:
             size_hint: .7, .8
             id: statistic_label_1
             text: ''
-    AnchorLayout:
-        anchor_x: 'left'
-        anchor_y: 'bottom'
         Button:
             size_hint: .3, .2
+            id: statistic_button_1
             text: 'Go to menu'
             on_release: root.manager.current = 'menu'
 
@@ -562,8 +562,6 @@ class GameScreen(Screen):
                                                     '[/color]\n\n'
 
     def use_artefact(self):
-
-        global player_artefacts
 
         if type(player_artefacts) == dict:
 
@@ -732,7 +730,7 @@ class GameScreen(Screen):
 
         # Ход врага
 
-        global enemies_dict, damage_received, enemies_killed
+        global enemies_dict
 
         for i in enemies_dict.values():
 
@@ -753,9 +751,6 @@ class GameScreen(Screen):
                                                          str(fight_cache[0]) + '[/color]([color=ff0000]-' + \
                                                          str(fight_cache[1]) + '[/color])'
                         do_points -= 1
-
-                        damage_received += fight_cache[1]
-
                         if player_creature.health <= 0:
                             break
 
@@ -767,9 +762,6 @@ class GameScreen(Screen):
                                                          str(fight_cache[0]) + '[/color]([color=ff0000]-' + \
                                                          str(fight_cache[1]) + '[/color])'
                         do_points -= 1
-
-                        damage_received += fight_cache[1]
-
                         if player_creature.health <= 0:
                             break
 
@@ -814,10 +806,10 @@ class GameScreen(Screen):
 
         # Автосохранение после конца карты
 
-        global difficult, get_artifacts, damage_done, health_regenerated, cells_passed
+        global difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
 
-        save_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                     cells_passed, enemies_dict, self.current_save)
+        end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                    cells_passed, enemies_dict, self.current_save)
 
         # Сброс локальной статистики
 
@@ -838,8 +830,8 @@ class GameScreen(Screen):
 
             # end game
 
-            game_layout_2_button_26 = Button(text='Go to\nmenu.', on_release=self.go_menu, font_size=13)
-            game_layout_2_button_27 = Button(text='Go to\nstatistic.', on_release=self.go_statistic, font_size=13)
+            game_layout_2_button_26 = Button(text='Go to menu.', on_release=self.go_menu)
+            game_layout_2_button_27 = Button(text='Go to statistic', on_release=self.go_statistic)
 
             self.ids['game_layout_2'].add_widget(game_layout_2_button_26)
             self.ids['game_layout_2'].add_widget(game_layout_2_button_27)
@@ -1076,10 +1068,6 @@ class GameScreen(Screen):
             player_position[1] -= 1
             self.ids['game_label_2'].text += '\nYou moved on 8 direction'
 
-        global cells_passed
-
-        cells_passed += 1
-
         self.moving_points -= 1
 
         self.print_map()
@@ -1173,8 +1161,7 @@ class GameScreen(Screen):
 
     def player_ability_do_part_2(self, instance):
 
-        global ability_can_list, enemies_dict, now_map, button_list, player_artefacts, enemies_killed, damage_done, \
-            health_regenerated
+        global ability_can_list, enemies_dict, now_map, button_list
 
         if instance.text == 'Upload':
 
@@ -1201,10 +1188,6 @@ class GameScreen(Screen):
             self.ids['game_label_2'].text += '\n[color=00ff00]You[/color] health: [color=00ff00]' +\
                                              str(heal_cache[0]) + '[/color]([color=00ff00]+' + str(heal_cache[1]) +\
                                              '[/color])'
-
-            global health_regenerated
-
-            health_regenerated += heal_cache[1]
 
         # Ближняя и дальняя атаки
 
@@ -1248,10 +1231,6 @@ class GameScreen(Screen):
             self.ids['game_label_2'].text += '\n[color=ff0000]' + enemy_name + '[/color] health: [color=00ff00]' + \
                                              str(fight_cache[0]) + '[/color]([color=ff0000]-' + str(fight_cache[1]) +\
                                              '[/color])'
-
-            global damage_done
-
-            damage_done += fight_cache[1]
 
             n = 0
             del_list = []
@@ -1302,33 +1281,9 @@ class GameScreen(Screen):
 
                 del enemies_dict['Enemy_' + str(i)]
 
-            # after delete dictionary can look like {'Enemy_1': enemy_1, 'Enemy_3': enemy_3}, it will cause
-            # iteration error in further code. For prevent this we do 'Enemy_3; -> 'Enemy_2' in dictionary.
-
             if del_list:
 
-                global enemies_killed
-
-                enemies_killed += 1
-
                 self.print_map()
-
-                n = 0
-                new_enemies_dict = {}
-
-                for i in enemies_dict.items():
-
-                    n += 1
-
-                    if i[0][6:] != str(n):
-
-                        new_enemies_dict['Enemy_' + str(n)] = enemies_dict[i[0]]
-
-                    else:
-
-                        new_enemies_dict[i[0]] = i[1]
-
-                enemies_dict = copy.deepcopy(new_enemies_dict)
 
         enemy_names = []
 
@@ -1344,14 +1299,10 @@ class GameScreen(Screen):
 
             # save game
 
-            global get_artifacts, damage_received, cells_passed, the_map_passed, difficult
+            global get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
 
-            get_artifacts += 1
-
-            the_map_passed[difficult] += 1
-
-            save_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                         cells_passed, enemies_dict, self.current_save)
+            end_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                        cells_passed, enemies_dict, self.current_save)
 
             # Сброс локальной статистики
 
@@ -1364,6 +1315,21 @@ class GameScreen(Screen):
             damage_done = 0
             health_regenerated = 0
             cells_passed = 0
+
+            # start new map
+
+            self.ids['game_layout_2'].clear_widgets()
+
+            self.ids['game_label_2'].text += '\n\nClick to push your [color=ff00ff]luck[/color].'
+
+            game_layout_2_button_28 = Button(text='[color=ff00ff]Luck test.[/color]', markup=True,
+                                             on_release=self.build_game)
+
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_28)
+
+            # heal player(not in label)
+
+            player_creature.health = 100
 
             # give random artefact
 
@@ -1379,27 +1345,7 @@ class GameScreen(Screen):
 
             p[received_artefact] += 1
 
-            self.ids['game_label_2'].text += '\nYou received ' + \
-                                             received_artefact.replace('_', ' ')[:len(received_artefact) - 1] + \
-                                             '[font=font4.ttf]' + received_artefact[len(received_artefact) - 1:] + \
-                                             '[/font]'
-
-            self.print_artefacts()
-
-            # start new map
-
-            self.ids['game_layout_2'].clear_widgets()
-
-            self.ids['game_label_2'].text += '\n\nClick to push your [color=ff00ff]luck[/color].'
-
-            game_layout_2_button_28 = Button(text='[color=ff00ff]Luck test.[/color]', markup=True,
-                                             on_release=self.build_game)
-
-            self.ids['game_layout_2'].add_widget(game_layout_2_button_28)
-
-            # heal player(not in label)
-
-            player_creature.health = player_creature.max_health
+            self.ids['game_label_2'].text += '\nYou received' + received_artefact.replace('_', ' ')
 
             return
 
@@ -1415,7 +1361,7 @@ class GameScreen(Screen):
 
         if not path.exists(self.current_save):
 
-            check_save(self.current_save)
+            check_saves(self.current_save)
 
         # import current save as "saves" for more comfort code work
 
@@ -1438,7 +1384,7 @@ class GameScreen(Screen):
 
         global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const,\
                difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,\
-               cells_passed, enemies_dict, the_map_passed
+               cells_passed, enemies_dict
 
         importlib.reload(game_3_0_data)
 
@@ -1454,7 +1400,7 @@ class GameScreen(Screen):
 
         # Проверка saves
 
-        if check_save(self.current_save):
+        if check_saves(self.current_save):
 
             # импорт данных из saves
 
@@ -1751,7 +1697,7 @@ class StatisticScreen(Screen):
 
         global game_label_7
 
-        self.ids['statistic_label_1'].text = 'You died:(((((\n\n' + data.replace('_', ' ').replace(' =', ':')
+        self.ids['statistic_label_1'].text = data.replace('_', ' ')
 
 
 class GameApp(App):
@@ -1820,6 +1766,8 @@ def random_artefact(map_name):
     weights_list = list(map_dict.values())
 
     received_artefact = ''.join(random.choices(artefacts_names_list, weights=weights_list, k=1))
+
+    print(Fore.LIGHTWHITE_EX + 'You got ' + str(received_artefact).replace('_', ' '))
 
     return received_artefact
 
@@ -2049,7 +1997,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         pass
 
 
-def check_save(save_name):
+def check_saves(save_name):
 
     if not path.exists(save_name):
         data = open(save_name, 'w+')
@@ -2138,10 +2086,10 @@ def check_save(save_name):
             return True
 
 
-def save_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
-                 enemies_dict, current_save):
+def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
+                enemies_dict, current_save):
 
-    global player_artefacts, now_map, the_map_passed
+    global player_artefacts, now_map
 
     # статус это название карты или in_hub
 
@@ -2151,7 +2099,7 @@ def save_session(status, get_artifacts, enemies_killed, damage_received, damage_
 
     importlib.reload(saves)
 
-    check_save(current_save)
+    check_saves(current_save)
 
     # Открываем и читаем файл
 
@@ -2241,7 +2189,7 @@ def save_session(status, get_artifacts, enemies_killed, damage_received, damage_
 
         k = old_data[n][len(i) + 10:-1]
 
-        old_data[n] = i + '_passed = ' + str(int(k) + the_map_passed[i]) + '\n'
+        old_data[n] = i + '_passed = ' + str(k) + '\n'
 
         n += 1
 
