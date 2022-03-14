@@ -17,7 +17,6 @@ from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 
-
 init(autoreset=True)
 
 difficult_list = copy.deepcopy(game_3_0_data.difficult_list)
@@ -97,7 +96,14 @@ Lucius_8 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
 Lucius_9 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
 Lucius_10 = EnemyCreature(100, 10, 0, 2, 0, 2, 20, 100)
 enemies_dict_const = {"easy": ["Baron"], "medium": ["Elsa"], "hard": ["Elsa", "Baron", "Lucius"]}
-enemies_dict_names = {"Baron": Baron, "Baron 1": Baron_1, "Elsa": Elsa, "Elsa 1": Elsa_1, "Elsa 2": Elsa_2, "Elsa 3": Elsa_3, "Elsa 4": Elsa_4, "Elsa 5": Elsa_5, "Elsa 6": Elsa_6, "Elsa 7": Elsa_7, "Elsa 8": Elsa_8, "Elsa 9": Elsa_9, "Elsa 10": Elsa_10, "Baron 2": Baron_2, "Baron 3": Baron_3, "Baron 4": Baron_4, "Baron 5": Baron_5, "Baron 6": Baron_6, "Baron 7": Baron_7, "Baron 8": Baron_8, "Baron 9": Baron_9, "Baron 10": Baron_10, "Lucius": Lucius, "Lucius 1": Lucius_1, "Lucius 2": Lucius_2, "Lucius 3": Lucius_3, "Lucius 4": Lucius_4, "Lucius 5": Lucius_5, "Lucius 6": Lucius_6, "Lucius 7": Lucius_7, "Lucius 8": Lucius_8, "Lucius 9": Lucius_9, "Lucius 10": Lucius_10}
+enemies_dict_names = {"Baron": Baron, "Baron 1": Baron_1, "Elsa": Elsa, "Elsa 1": Elsa_1, "Elsa 2": Elsa_2,
+                      "Elsa 3": Elsa_3, "Elsa 4": Elsa_4, "Elsa 5": Elsa_5, "Elsa 6": Elsa_6, "Elsa 7": Elsa_7,
+                      "Elsa 8": Elsa_8, "Elsa 9": Elsa_9, "Elsa 10": Elsa_10, "Baron 2": Baron_2, "Baron 3": Baron_3,
+                      "Baron 4": Baron_4, "Baron 5": Baron_5, "Baron 6": Baron_6, "Baron 7": Baron_7,
+                      "Baron 8": Baron_8, "Baron 9": Baron_9, "Baron 10": Baron_10, "Lucius": Lucius,
+                      "Lucius 1": Lucius_1, "Lucius 2": Lucius_2, "Lucius 3": Lucius_3, "Lucius 4": Lucius_4,
+                      "Lucius 5": Lucius_5, "Lucius 6": Lucius_6, "Lucius 7": Lucius_7, "Lucius 8": Lucius_8,
+                      "Lucius 9": Lucius_9, "Lucius 10": Lucius_10}
 
 
 class PlayerCreature:
@@ -120,7 +126,6 @@ class PlayerCreature:
             for e in i.items():
 
                 if e[0] == creature_name:
-
                     e[1].health -= self.damage
 
                     return e[1].health, self.damage
@@ -142,7 +147,6 @@ class PlayerCreature:
             for e in i.items():
 
                 if e[0] == creature_name:
-
                     e[1].health -= self.ranged_damage
 
                     return e[1].health, self.ranged_damage
@@ -172,6 +176,7 @@ class Artefacts:
             if i == 'health':
                 if p[name][0] == '+':
                     player_creature.health += p[name][2]
+                    player_creature.max_health += p[name][2]
 
                 else:
                     player_creature.health -= p[name][2]
@@ -216,7 +221,6 @@ class Artefacts:
 player_artefacts = Artefacts(game_3_0_data.artefact_do, game_3_0_data.start_player_artefacts)
 
 kv = '''
-
 <ScrollViewLabel>:
     Label:
         text: root.text
@@ -224,7 +228,6 @@ kv = '''
         height: self.texture_size[1]
         text_size: self.width - 15, None
         markup: True
-
 <MenuScreen>:
     AnchorLayout:
         anchor_x: 'center'
@@ -243,7 +246,6 @@ kv = '''
             Button:
                 text: 'Settings.'
                 on_release: root.manager.current = 'settings'
-
 <SaveChooseScreen>:
     on_pre_enter: root.build()
     AnchorLayout:
@@ -272,7 +274,6 @@ kv = '''
                 on_release: 
                     root.manager.current = 'game'
                     root.manager.screens[1].new_save('save_3.py')
-
 <GameScreen>:
     FloatLayout:
         id: game_layout_1
@@ -306,9 +307,9 @@ kv = '''
             pos_hint: {'x': .31, 'y': .014}
             font_size: 15
             text: 'Action label:\\n\\nDo you want to play?'
-            
+
         # player choose layout(move direction and ability choose)
-        
+
         GridLayout:
             id: game_layout_2
             cols: 3
@@ -322,9 +323,9 @@ kv = '''
                 id: game_layout_2_button_2
                 text: 'No'
                 on_release: root.manager.current = 'menu'
-                
-        # system buttons layout(quit, settings and etc.)
-        
+
+        # system buttons layout(quit, switch.)
+
         GridLayout:
             id: game_layout_3
             rows: 1
@@ -334,38 +335,34 @@ kv = '''
             Button:
                 id: game_layout_3_button_4
                 text: 'Quit.'
-            Button:
-                id: game_layout_3_button_3
-                text: 'Settings.'
+                on_release: app.get_running_app().stop()
             Button:
                 id: game_layout_3_button_1
                 text: 'Inventory.'
-                font_size: 13
                 on_release: 
-                
+
                     # remove, because button exist for the first time
-                    
+
                     root.ids['game_layout_1'].remove_widget(root.ids['game_layout_3_button_2'])
                     root.ids['game_label_3'].size_hint = (0, 0)
                     root.ids['game_label_4'].size_hint = (.415, .4)
                     root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_1'])
                     root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_2'])
-                    
+
                     root.ids['game_layout_4'].pos_hint = {'x': .845, 'y': .237}
-                    
+
         # here, because need to hide this button
-        
+
         Button:
             pos_hint: {'x': 15, 'y': 15}
             id: game_layout_3_button_2
             text: 'Characters.'
-            font_size: 13
             on_release: 
                 root.ids['game_label_3'].size_hint = (.415, .4)
                 root.ids['game_label_4'].size_hint = (0, 0)
                 root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_2'])
                 root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_1'])
-                
+
                 root.ids['game_layout_4'].pos_hint = {'x': 15, 'y': 15}
         Label:
             id: game_label_3
@@ -410,7 +407,6 @@ kv = '''
             font_size: 14
             size_hint: .306, 1
             pos_hint: {'x': 0, 'y': 0}
-
 <CustomizerScreen>:
     AnchorLayout:
         anchor_x: 'center'
@@ -423,7 +419,6 @@ kv = '''
             Button:
                 text: 'Back to menu'
                 on_release: root.manager.current = 'menu'
-
 <SettingsScreen>:
     AnchorLayout:
         anchor_x: 'center'
@@ -436,21 +431,22 @@ kv = '''
             Button:
                 text: 'Back to menu'
                 on_press: root.manager.current = 'menu'
-
 <StatisticScreen>:
     on_pre_enter: root.build()
-    FloatLayout:
-        id: statistic_layout_1
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
         Label:
             size_hint: .7, .8
             id: statistic_label_1
             text: ''
+    AnchorLayout:
+        anchor_x: 'left'
+        anchor_y: 'bottom'
         Button:
             size_hint: .3, .2
-            id: statistic_button_1
             text: 'Go to menu'
             on_release: root.manager.current = 'menu'
-
 '''
 
 
@@ -482,7 +478,6 @@ class SaveChooseScreen(Screen):
 
 
 class GameScreen(Screen):
-
     moving_points = ''
 
     current_save = ''
@@ -546,22 +541,23 @@ class GameScreen(Screen):
             for e in i.items():
 
                 if e[1].health > 0:
-
-                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] +\
-                                                    '[/color] characters:[/size]\nHealth: [color=00ff00]' +\
-                                                    str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                                    str(e[1].healing_power) +\
-                                                    '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) +\
-                                                    '[/color]\nRanged combat damage: [color=ff0000]' +\
-                                                    str(e[1].ranged_damage) +\
-                                                    '[/color]\nClose fight radius: [color=ff00ff]' +\
-                                                    str(e[1].close_fight_radius) +\
-                                                    '[/color]\nRanged combat radius: [color=ff00ff]' +\
-                                                    str(e[1].ranged_combat_radius) +\
-                                                    '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) +\
-                                                    '[/color]\n\n'
+                    self.ids['game_label_5'].text += '[color=ff0000][size=16]' + e[0] + \
+                                                     '[/color] characters:[/size]\nHealth: [color=00ff00]' + \
+                                                     str(e[1].health) + '[/color]\nHealing power: [color=00ff00]' + \
+                                                     str(e[1].healing_power) + \
+                                                     '[/color]\nClose fight damage: [color=ff0000]' + str(e[1].damage) + \
+                                                     '[/color]\nRanged combat damage: [color=ff0000]' + \
+                                                     str(e[1].ranged_damage) + \
+                                                     '[/color]\nClose fight radius: [color=ff00ff]' + \
+                                                     str(e[1].close_fight_radius) + \
+                                                     '[/color]\nRanged combat radius: [color=ff00ff]' + \
+                                                     str(e[1].ranged_combat_radius) + \
+                                                     '[/color]\nMoving speed: [color=00ffff]' + str(e[1].moving_speed) + \
+                                                     '[/color]\n\n'
 
     def use_artefact(self):
+
+        global player_artefacts
 
         if type(player_artefacts) == dict:
 
@@ -730,7 +726,7 @@ class GameScreen(Screen):
 
         # Ход врага
 
-        global enemies_dict
+        global enemies_dict, damage_received, enemies_killed
 
         for i in enemies_dict.values():
 
@@ -746,22 +742,28 @@ class GameScreen(Screen):
                     if e[1].damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
                             e[1].close_fight_radius:
                         fight_cache = e[1].close_fight()
-                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] +\
+                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + \
                                                          '[/color] close attack you, your health: [color=00ff00]' + \
                                                          str(fight_cache[0]) + '[/color]([color=ff0000]-' + \
                                                          str(fight_cache[1]) + '[/color])'
                         do_points -= 1
+
+                        damage_received += fight_cache[1]
+
                         if player_creature.health <= 0:
                             break
 
                     elif e[1].ranged_damage != 0 and enemy_distance(e[0], enemy_position, player_position) <= \
                             e[1].ranged_combat_radius:
                         fight_cache = e[1].ranged_combat()
-                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] +\
+                        self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + \
                                                          '[/color] ranged attack you, your health: [color=00ff00]' + \
                                                          str(fight_cache[0]) + '[/color]([color=ff0000]-' + \
                                                          str(fight_cache[1]) + '[/color])'
                         do_points -= 1
+
+                        damage_received += fight_cache[1]
+
                         if player_creature.health <= 0:
                             break
 
@@ -774,7 +776,7 @@ class GameScreen(Screen):
                     if do_points != 0 and e[1].health < e[1].max_health:
                         heal_cache = e[1].heal()
                         self.ids['game_label_2'].text += '\n[color=ff0000]' + e[0] + '[/color] health: [color=00ff00]' + \
-                                                         str(heal_cache[0]) + '[/color]([color=00ff00]+' +\
+                                                         str(heal_cache[0]) + '[/color]([color=00ff00]+' + \
                                                          str(heal_cache[1]) + '[/color])'
                         do_points -= 1
                     elif do_points != 0:
@@ -787,17 +789,17 @@ class GameScreen(Screen):
 
         # Вывод характеристик игрока
 
-        self.ids['game_label_3'].text = '[size=16]You characters:[/size]\nHealth: [color=00ff00]' +\
-                                        str(player_creature.health) + '[/color]\nHealing power: [color=00ff00]' +\
-                                        str(player_creature.healing_power) +\
-                                        '[/color]\nClose fight damage: [color=ff0000]' + str(player_creature.damage) +\
-                                        '[/color]\nRanged combat damage: [color=ff0000]' +\
-                                        str(player_creature.ranged_damage) +\
-                                        '[/color]\nClose fight radius: [color=ff00ff]' +\
-                                        str(player_creature.close_fight_radius) +\
-                                        '[/color]\nRanged combat radius: [color=ff00ff]' +\
-                                        str(player_creature.ranged_combat_radius) +\
-                                        '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) +\
+        self.ids['game_label_3'].text = '[size=16]You characters:[/size]\nHealth: [color=00ff00]' + \
+                                        str(player_creature.health) + '[/color]\nHealing power: [color=00ff00]' + \
+                                        str(player_creature.healing_power) + \
+                                        '[/color]\nClose fight damage: [color=ff0000]' + str(player_creature.damage) + \
+                                        '[/color]\nRanged combat damage: [color=ff0000]' + \
+                                        str(player_creature.ranged_damage) + \
+                                        '[/color]\nClose fight radius: [color=ff00ff]' + \
+                                        str(player_creature.close_fight_radius) + \
+                                        '[/color]\nRanged combat radius: [color=ff00ff]' + \
+                                        str(player_creature.ranged_combat_radius) + \
+                                        '[/color]\nMoving speed: [color=00ffff]' + str(player_creature.moving_speed) + \
                                         '[/color]'
 
         # Вывод карты
@@ -806,10 +808,10 @@ class GameScreen(Screen):
 
         # Автосохранение после конца карты
 
-        global difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
+        global difficult, get_artifacts, damage_done, health_regenerated, cells_passed
 
-        end_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                    cells_passed, enemies_dict, self.current_save)
+        save_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                     cells_passed, enemies_dict, self.current_save)
 
         # Сброс локальной статистики
 
@@ -830,8 +832,8 @@ class GameScreen(Screen):
 
             # end game
 
-            game_layout_2_button_26 = Button(text='Go to menu.', on_release=self.go_menu)
-            game_layout_2_button_27 = Button(text='Go to statistic', on_release=self.go_statistic)
+            game_layout_2_button_26 = Button(text='Go to\nmenu.', on_release=self.go_menu, font_size=13)
+            game_layout_2_button_27 = Button(text='Go to\nstatistic.', on_release=self.go_statistic, font_size=13)
 
             self.ids['game_layout_2'].add_widget(game_layout_2_button_26)
             self.ids['game_layout_2'].add_widget(game_layout_2_button_27)
@@ -849,7 +851,6 @@ class GameScreen(Screen):
             new_data = ''
 
             for i in old_data[20:]:
-
                 new_data += i
 
             # delete .py file
@@ -877,7 +878,6 @@ class GameScreen(Screen):
             data = open('game_3_0_data.py', 'w')
 
             for i in old_data:
-
                 data.write(i)
 
             data.close()
@@ -924,8 +924,8 @@ class GameScreen(Screen):
 
             # Проверка куда можно двигаться
 
-            global game_layout_2_button_5, game_layout_2_button_6, game_layout_2_button_7, game_layout_2_button_8,\
-                game_layout_2_button_9, game_layout_2_button_10, game_layout_2_button_11, game_layout_2_button_12,\
+            global game_layout_2_button_5, game_layout_2_button_6, game_layout_2_button_7, game_layout_2_button_8, \
+                game_layout_2_button_9, game_layout_2_button_10, game_layout_2_button_11, game_layout_2_button_12, \
                 game_layout_2_button_13
 
             # 1
@@ -1006,7 +1006,7 @@ class GameScreen(Screen):
 
             self.ids['game_layout_2'].add_widget(game_layout_2_button_13)
 
-            self.ids['game_label_2'].text += '\nOn why direction you want move? You moving points: ' +\
+            self.ids['game_label_2'].text += '\nOn why direction you want move? You moving points: ' + \
                                              str(self.moving_points)
 
         else:
@@ -1068,6 +1068,10 @@ class GameScreen(Screen):
             player_position[1] -= 1
             self.ids['game_label_2'].text += '\nYou moved on 8 direction'
 
+        global cells_passed
+
+        cells_passed += 1
+
         self.moving_points -= 1
 
         self.print_map()
@@ -1083,7 +1087,6 @@ class GameScreen(Screen):
         if instance != '':
 
             if instance.text == 'No':
-
                 self.ids['game_layout_2'].clear_widgets()
 
         # Использование способностей
@@ -1156,12 +1159,12 @@ class GameScreen(Screen):
                            game_layout_2_button_23, game_layout_2_button_24, game_layout_2_button_25]
 
             for i in range(len(ability_can_list)):
-
                 self.ids['game_layout_2'].add_widget(button_list[i])
 
     def player_ability_do_part_2(self, instance):
 
-        global ability_can_list, enemies_dict, now_map, button_list
+        global ability_can_list, enemies_dict, now_map, button_list, player_artefacts, enemies_killed, damage_done, \
+            health_regenerated
 
         if instance.text == 'Upload':
 
@@ -1185,14 +1188,18 @@ class GameScreen(Screen):
 
             heal_cache = player_creature.heal()
 
-            self.ids['game_label_2'].text += '\n[color=00ff00]You[/color] health: [color=00ff00]' +\
-                                             str(heal_cache[0]) + '[/color]([color=00ff00]+' + str(heal_cache[1]) +\
+            self.ids['game_label_2'].text += '\n[color=00ff00]You[/color] health: [color=00ff00]' + \
+                                             str(heal_cache[0]) + '[/color]([color=00ff00]+' + str(heal_cache[1]) + \
                                              '[/color])'
+
+            global health_regenerated
+
+            health_regenerated += heal_cache[1]
 
         # Ближняя и дальняя атаки
 
-        elif 'close attack' in ability_can_list[int(ability_choose) - 1] or 'ranged attack' in\
-             ability_can_list[int(ability_choose) - 1]:
+        elif 'close attack' in ability_can_list[int(ability_choose) - 1] or 'ranged attack' in \
+                ability_can_list[int(ability_choose) - 1]:
 
             if ability_choose.isnumeric():
                 ability_choose = ability_can_list[int(ability_choose) - 1]
@@ -1229,8 +1236,12 @@ class GameScreen(Screen):
                 fight_cache = player_creature.ranged_combat(enemy_name, enemies_dict)
 
             self.ids['game_label_2'].text += '\n[color=ff0000]' + enemy_name + '[/color] health: [color=00ff00]' + \
-                                             str(fight_cache[0]) + '[/color]([color=ff0000]-' + str(fight_cache[1]) +\
+                                             str(fight_cache[0]) + '[/color]([color=ff0000]-' + str(fight_cache[1]) + \
                                              '[/color])'
+
+            global damage_done
+
+            damage_done += fight_cache[1]
 
             n = 0
             del_list = []
@@ -1245,7 +1256,7 @@ class GameScreen(Screen):
 
                         if e[1].health <= 0:
 
-                            self.ids['game_label_2'].text += '\n\nYou killed [color=ff0000]' + e[0] +\
+                            self.ids['game_label_2'].text += '\n\nYou killed [color=ff0000]' + e[0] + \
                                                              '[/color], my congratulations.\n'
 
                             del_list.append(n)
@@ -1264,7 +1275,6 @@ class GameScreen(Screen):
                                     if len(short_enemy_name + enemy_number) == 2:
 
                                         if y == ' ' + short_enemy_name + enemy_number:
-
                                             now_map[n1][n2] = '  `'
 
                                             break
@@ -1272,18 +1282,40 @@ class GameScreen(Screen):
                                     else:
 
                                         if y == short_enemy_name + enemy_number:
-
                                             now_map[n1][n2] = '  `'
 
                                             break
 
             for i in del_list:
-
                 del enemies_dict['Enemy_' + str(i)]
+
+            # after delete dictionary can look like {'Enemy_1': enemy_1, 'Enemy_3': enemy_3}, it will cause
+            # iteration error in further code. For prevent this we do 'Enemy_3; -> 'Enemy_2' in dictionary.
 
             if del_list:
 
+                global enemies_killed
+
+                enemies_killed += 1
+
                 self.print_map()
+
+                n = 0
+                new_enemies_dict = {}
+
+                for i in enemies_dict.items():
+
+                    n += 1
+
+                    if i[0][6:] != str(n):
+
+                        new_enemies_dict['Enemy_' + str(n)] = enemies_dict[i[0]]
+
+                    else:
+
+                        new_enemies_dict[i[0]] = i[1]
+
+                enemies_dict = copy.deepcopy(new_enemies_dict)
 
         enemy_names = []
 
@@ -1299,10 +1331,14 @@ class GameScreen(Screen):
 
             # save game
 
-            global get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed
+            global get_artifacts, damage_received, cells_passed, the_map_passed, difficult
 
-            end_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
-                        cells_passed, enemies_dict, self.current_save)
+            get_artifacts += 1
+
+            the_map_passed[difficult] += 1
+
+            save_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
+                         cells_passed, enemies_dict, self.current_save)
 
             # Сброс локальной статистики
 
@@ -1315,21 +1351,6 @@ class GameScreen(Screen):
             damage_done = 0
             health_regenerated = 0
             cells_passed = 0
-
-            # start new map
-
-            self.ids['game_layout_2'].clear_widgets()
-
-            self.ids['game_label_2'].text += '\n\nClick to push your [color=ff00ff]luck[/color].'
-
-            game_layout_2_button_28 = Button(text='[color=ff00ff]Luck test.[/color]', markup=True,
-                                             on_release=self.build_game)
-
-            self.ids['game_layout_2'].add_widget(game_layout_2_button_28)
-
-            # heal player(not in label)
-
-            player_creature.health = 100
 
             # give random artefact
 
@@ -1345,7 +1366,27 @@ class GameScreen(Screen):
 
             p[received_artefact] += 1
 
-            self.ids['game_label_2'].text += '\nYou received' + received_artefact.replace('_', ' ')
+            self.ids['game_label_2'].text += '\nYou received ' + \
+                                             received_artefact.replace('_', ' ')[:len(received_artefact) - 1] + \
+                                             '[font=font4.ttf]' + received_artefact[len(received_artefact) - 1:] + \
+                                             '[/font]'
+
+            self.print_artefacts()
+
+            # start new map
+
+            self.ids['game_layout_2'].clear_widgets()
+
+            self.ids['game_label_2'].text += '\n\nClick to push your [color=ff00ff]luck[/color].'
+
+            game_layout_2_button_28 = Button(text='[color=ff00ff]Luck test.[/color]', markup=True,
+                                             on_release=self.build_game)
+
+            self.ids['game_layout_2'].add_widget(game_layout_2_button_28)
+
+            # heal player(not in label)
+
+            player_creature.health = player_creature.max_health
 
             return
 
@@ -1360,8 +1401,7 @@ class GameScreen(Screen):
         # create new save file if not exist
 
         if not path.exists(self.current_save):
-
-            check_saves(self.current_save)
+            check_save(self.current_save)
 
         # import current save as "saves" for more comfort code work
 
@@ -1382,9 +1422,9 @@ class GameScreen(Screen):
 
         self.ids['game_layout_2'].clear_widgets()
 
-        global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const,\
-               difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,\
-               cells_passed, enemies_dict
+        global player_creature, player_artefacts, player_creature, now_map, difficult, enemies_dict, all_map_const, \
+            difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, \
+            cells_passed, enemies_dict, the_map_passed
 
         importlib.reload(game_3_0_data)
 
@@ -1400,7 +1440,7 @@ class GameScreen(Screen):
 
         # Проверка saves
 
-        if check_saves(self.current_save):
+        if check_save(self.current_save):
 
             # импорт данных из saves
 
@@ -1486,7 +1526,8 @@ class GameScreen(Screen):
 
                                     enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
                                         choice + ' ' + str(enemies_numbers[choice]):
-                                        copy.deepcopy(enemies_dict_names[choice + ' ' + str(enemies_numbers[choice])])}
+                                            copy.deepcopy(
+                                                enemies_dict_names[choice + ' ' + str(enemies_numbers[choice])])}
 
                                 else:
 
@@ -1494,7 +1535,9 @@ class GameScreen(Screen):
 
                                     enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
                                         choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
-                                            choice + ' ' + str(enemies_numbers[choice])])}
+                                                                                                       choice + ' ' + str(
+                                                                                                           enemies_numbers[
+                                                                                                               choice])])}
 
                                 c = all_choices.count(choice) + 1
 
@@ -1587,7 +1630,9 @@ class GameScreen(Screen):
 
                                 enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
                                     choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
-                                        choice + ' ' + str(enemies_numbers[choice])])}
+                                                                                                   choice + ' ' + str(
+                                                                                                       enemies_numbers[
+                                                                                                           choice])])}
 
                             else:
 
@@ -1595,7 +1640,9 @@ class GameScreen(Screen):
 
                                 enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
                                     choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
-                                        choice + ' ' + str(enemies_numbers[choice])])}
+                                                                                                   choice + ' ' + str(
+                                                                                                       enemies_numbers[
+                                                                                                           choice])])}
 
                             c = all_choices.count(choice) + 1
 
@@ -1678,7 +1725,6 @@ class SettingsScreen(Screen):
 class StatisticScreen(Screen):
 
     def build(self):
-
         global number_of_save
 
         data = open(str(number_of_save) + '_save.txt', 'r')
@@ -1692,18 +1738,16 @@ class StatisticScreen(Screen):
         data = ''
 
         for i in old_data:
-
             data += i
 
         global game_label_7
 
-        self.ids['statistic_label_1'].text = data.replace('_', ' ')
+        self.ids['statistic_label_1'].text = 'You died:(((((\n\n' + data.replace('_', ' ').replace(' =', ':')
 
 
 class GameApp(App):
 
     def build(self):
-
         Builder.load_string(kv)
 
         # Set minimum window size
@@ -1727,7 +1771,6 @@ class GameApp(App):
 
 
 def random_artefact(map_name):
-
     # Открываем и забираем данные из файла
 
     data = open('game_3_0_data.py', 'r')
@@ -1767,13 +1810,10 @@ def random_artefact(map_name):
 
     received_artefact = ''.join(random.choices(artefacts_names_list, weights=weights_list, k=1))
 
-    print(Fore.LIGHTWHITE_EX + 'You got ' + str(received_artefact).replace('_', ' '))
-
     return received_artefact
 
 
 def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
-
     global now_map
 
     # Если нужно, определяем позицию игрока
@@ -1792,7 +1832,6 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
                 n2 += 1
 
                 if e == '  P':
-
                     player_position = [n1, n2]
 
     # Если нужно, определяем позицию врага
@@ -1842,10 +1881,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[1] -= 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1862,10 +1900,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[0] -= 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1883,10 +1920,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[1] += 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1903,10 +1939,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[1] += 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1924,10 +1959,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[1] += 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1944,10 +1978,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[0] += 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1965,10 +1998,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[1] -= 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1985,10 +2017,9 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         enemy_position[1] -= 1
 
         if now_map[enemy_position[0]][enemy_position[1]] == '  `' and \
-            enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
-                                                                                         enemy_position_save,
-                                                                                         player_position):
-
+                enemy_distance(enemy_name, enemy_position, player_position) < enemy_distance(enemy_name,
+                                                                                             enemy_position_save,
+                                                                                             player_position):
             now_map[enemy_position_save[0]][enemy_position_save[1]] = '  `'
             now_map[enemy_position[0]][enemy_position[1]] = ' ' + enemy_name[0].upper() + enemy_number
             return enemy_position, player_position
@@ -1997,8 +2028,7 @@ def enemy_moving(enemy_name, enemy_position=[], player_position=[]):
         pass
 
 
-def check_saves(save_name):
-
+def check_save(save_name):
     if not path.exists(save_name):
         data = open(save_name, 'w+')
 
@@ -2035,13 +2065,12 @@ def check_saves(save_name):
         data.close()
 
         stat_check = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
-                     'health_regenerated = 0\n', 'cells_passed = 0\n']
+                      'health_regenerated = 0\n', 'cells_passed = 0\n']
         stat_check_str = ''
 
         n = 0
 
         for i in game_3_0_data.difficult_list:
-
             stat_check.insert(n, i + '_passed = 0\n')
 
             stat_check_str += i + '_passed = 0\n'
@@ -2057,7 +2086,7 @@ def check_saves(save_name):
             return False
 
         elif len(old_data) != 26 + len(game_3_0_data.difficult_list) or old_data[
-                                                                      20:26 + len(game_3_0_data.difficult_list)] \
+                                                                        20:26 + len(game_3_0_data.difficult_list)] \
                 != stat_check:
 
             data = open(save_name, 'w+')
@@ -2086,10 +2115,9 @@ def check_saves(save_name):
             return True
 
 
-def end_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
-                enemies_dict, current_save):
-
-    global player_artefacts, now_map
+def save_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
+                 enemies_dict, current_save):
+    global player_artefacts, now_map, the_map_passed
 
     # статус это название карты или in_hub
 
@@ -2099,7 +2127,7 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
 
     importlib.reload(saves)
 
-    check_saves(current_save)
+    check_save(current_save)
 
     # Открываем и читаем файл
 
@@ -2152,7 +2180,8 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
                 if numbers_of_enemies == 0:
                     numbers_of_enemies += 1
                     part_1 = 'enemies_dict = {"Enemy_' + str(numbers_of_enemies) + '": {'
-                    old_data[16] = part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health, e[1].damage,
+                    old_data[16] = part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health,
+                                                                                            e[1].damage,
                                                                                             e[1].ranged_damage,
                                                                                             e[1].close_fight_radius,
                                                                                             e[1].ranged_combat_radius,
@@ -2164,13 +2193,13 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
                     numbers_of_enemies += 1
                     part_1 = ', "Enemy_' + str(numbers_of_enemies) + '": {'
                     old_data[16] += part_1 + '"{}": [{}, {}, {}, {}, {}, {}, {}, {}]'.format(e[0], e[1].health,
-                                                                                               e[1].damage,
-                                                                                               e[1].ranged_damage,
-                                                                                               e[1].close_fight_radius,
-                                                                                               e[1].ranged_combat_radius,
-                                                                                               e[1].moving_speed,
-                                                                                               e[1].healing_power,
-                                                                                               e[1].max_health)
+                                                                                             e[1].damage,
+                                                                                             e[1].ranged_damage,
+                                                                                             e[1].close_fight_radius,
+                                                                                             e[1].ranged_combat_radius,
+                                                                                             e[1].moving_speed,
+                                                                                             e[1].healing_power,
+                                                                                             e[1].max_health)
                     old_data[16] += '}'
 
         old_data[16] += '}\n'
@@ -2186,10 +2215,9 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
     importlib.reload(saves)
 
     for i in game_3_0_data.difficult_list:
-
         k = old_data[n][len(i) + 10:-1]
 
-        old_data[n] = i + '_passed = ' + str(k) + '\n'
+        old_data[n] = i + '_passed = ' + str(int(k) + the_map_passed[i]) + '\n'
 
         n += 1
 
@@ -2210,14 +2238,12 @@ def end_session(status, get_artifacts, enemies_killed, damage_received, damage_d
     new_data = open(current_save, 'w')
 
     for i in old_data:
-
         new_data.write(str(i))
 
     new_data.close()
 
 
 def enemy_distance(enemy_name, enemy_position=[], player_position=[]):
-
     global now_map, difficult
 
     enemy_number = ''
@@ -2225,7 +2251,6 @@ def enemy_distance(enemy_name, enemy_position=[], player_position=[]):
     for i in enemy_name:
 
         if i.isnumeric():
-
             enemy_number += i
 
     for i in range(len(now_map)):
@@ -2245,13 +2270,11 @@ def enemy_distance(enemy_name, enemy_position=[], player_position=[]):
                 if now_map[i][e][0] == ' ':
 
                     if now_map[i][e][1:] == enemy_name[0].upper() + enemy_number:
-
                         enemy_position = [i, e]
 
                 else:
 
                     if now_map[i][e][1:] == enemy_name[0].upper() + enemy_number:
-
                         enemy_position = [i, e]
 
             if enemy_position != [] and player_position != []:
@@ -2260,7 +2283,6 @@ def enemy_distance(enemy_name, enemy_position=[], player_position=[]):
             if not player_position:
 
                 if now_map[i][e] == '  P':
-
                     player_position = [i, e]
 
             if enemy_position != [] and player_position != []:
@@ -2300,7 +2322,6 @@ def enemy_distance(enemy_name, enemy_position=[], player_position=[]):
 
 
 def distance():
-
     global now_map, difficult
 
     enemies_positions_list = []
@@ -2318,22 +2339,18 @@ def distance():
         i += 1
 
         if i == len(now_map):
-
             break
 
         for e in range(len(now_map[i])):
 
             if now_map[i][e] != '  `' and now_map[i][e] != '  P' and now_map[i][e] != '#':
-
                 enemies_positions_list.append([i, e])
                 enemies_distance[now_map[i][e]] = 0
 
             if now_map[i][e] == '  P':
-
                 player_position = [i, e]
 
             if len(enemies_positions_list) == game_3_0_data.max_map_enemies[difficult] and player_position != []:
-
                 break
 
     n = -1
