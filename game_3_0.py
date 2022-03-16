@@ -478,6 +478,7 @@ class SaveChooseScreen(Screen):
 
 
 class GameScreen(Screen):
+
     moving_points = ''
 
     current_save = ''
@@ -557,6 +558,12 @@ class GameScreen(Screen):
 
     def use_artefact(self):
 
+        if difficult == 'in_hub':
+
+            self.ids['game_label_2'].text += '\nTEST YOUR [color=ff00ff]LUCK[/color]!!!'
+
+            return
+
         global player_artefacts
 
         if type(player_artefacts) == dict:
@@ -594,6 +601,9 @@ class GameScreen(Screen):
                     self.print_artefacts()
 
                     self.print_player_characters()
+
+                    self.ids['game_label_2'].text += '\nYou use ' + i[0].replace('_', ' ')[:len(i[0]) - 1] + \
+                                                     '[font=font4.ttf]' + i[0][len(i[0]) - 1:] + '[/font]'
 
                     break
 
@@ -726,7 +736,8 @@ class GameScreen(Screen):
 
         # Ход врага
 
-        global enemies_dict, damage_received, enemies_killed
+        global enemies_dict, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, \
+            cells_passed, enemies_dict, the_map_passed
 
         for i in enemies_dict.values():
 
@@ -808,8 +819,6 @@ class GameScreen(Screen):
 
         # Автосохранение после конца карты
 
-        global difficult, get_artifacts, damage_done, health_regenerated, cells_passed
-
         save_session(difficult, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
                      cells_passed, enemies_dict, self.current_save)
 
@@ -837,6 +846,11 @@ class GameScreen(Screen):
 
             self.ids['game_layout_2'].add_widget(game_layout_2_button_26)
             self.ids['game_layout_2'].add_widget(game_layout_2_button_27)
+
+            # heal player(not in label)(need because if player start new game in current window session, player
+            # characters not update to default
+
+            player_creature.health = player_creature.max_health
 
             # save statistics in .txt
 
@@ -883,10 +897,6 @@ class GameScreen(Screen):
             data.close()
 
             saves_list.remove(self.current_save)
-
-            # reload save_choose screen
-
-            SaveChooseScreen.build(self)
 
         else:
 
@@ -1163,12 +1173,34 @@ class GameScreen(Screen):
 
     def player_ability_do_part_2(self, instance):
 
-        global ability_can_list, enemies_dict, now_map, button_list, player_artefacts, enemies_killed, damage_done, \
-            health_regenerated
+        global ability_can_list, enemies_dict, now_map, button_list, player_artefacts, get_artifacts, enemies_killed, \
+            damage_received, damage_done, health_regenerated, cells_passed, enemies_dict, the_map_passed
+
+        # clear label if too many symbols
+
+        if len(self.ids['game_label_2'].text) >= 1400:
+
+            n = 0
+
+            for i in self.ids['game_label_2'].text[:1000]:
+
+                if i == '\n':
+
+                    self.ids['game_label_2'].text = self.ids['game_label_2'].text[1000 + n:]
+
+                    break
+
+                n += 1
 
         if instance.text == 'Upload':
 
             ability_choose = game_layout_2_label_6.text
+
+            if int(ability_choose) not in [i for i in range(len(ability_can_list))]:
+
+                self.ids['game_label_2'].text += '\nWrong number!!! Try again.'
+
+                return
 
         else:
 
@@ -1191,8 +1223,6 @@ class GameScreen(Screen):
             self.ids['game_label_2'].text += '\n[color=00ff00]You[/color] health: [color=00ff00]' + \
                                              str(heal_cache[0]) + '[/color]([color=00ff00]+' + str(heal_cache[1]) + \
                                              '[/color])'
-
-            global health_regenerated
 
             health_regenerated += heal_cache[1]
 
@@ -1238,8 +1268,6 @@ class GameScreen(Screen):
             self.ids['game_label_2'].text += '\n[color=ff0000]' + enemy_name + '[/color] health: [color=00ff00]' + \
                                              str(fight_cache[0]) + '[/color]([color=ff0000]-' + str(fight_cache[1]) + \
                                              '[/color])'
-
-            global damage_done
 
             damage_done += fight_cache[1]
 
@@ -1294,8 +1322,6 @@ class GameScreen(Screen):
 
             if del_list:
 
-                global enemies_killed
-
                 enemies_killed += 1
 
                 self.print_map()
@@ -1329,13 +1355,36 @@ class GameScreen(Screen):
 
             self.ids['game_label_2'].text += '\n\nYou kill all enemies! You complete this map!\n'
 
-            # save game
+            # give random artefact
 
-            global get_artifacts, damage_received, cells_passed, the_map_passed, difficult
+            if type(player_artefacts) == dict:
+
+                p = player_artefacts
+
+            else:
+
+                p = player_artefacts.player_artefacts_list
+
+            global difficult
+
+            received_artefact = random_artefact(difficult)
+
+            p[received_artefact] += 1
+
+            self.ids['game_label_2'].text += '\nYou received ' + \
+                                             received_artefact.replace('_', ' ')[:len(received_artefact) - 1] + \
+                                             '[font=font4.ttf]' + received_artefact[len(received_artefact) - 1:] + \
+                                             '[/font]'
+
+            self.print_artefacts()
+
+            # save game
 
             get_artifacts += 1
 
             the_map_passed[difficult] += 1
+
+            difficult = 'in_hub'
 
             save_session('in_hub', get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated,
                          cells_passed, enemies_dict, self.current_save)
@@ -1351,27 +1400,6 @@ class GameScreen(Screen):
             damage_done = 0
             health_regenerated = 0
             cells_passed = 0
-
-            # give random artefact
-
-            if type(player_artefacts) == dict:
-
-                p = player_artefacts
-
-            else:
-
-                p = player_artefacts.player_artefacts_list
-
-            received_artefact = random_artefact(difficult)
-
-            p[received_artefact] += 1
-
-            self.ids['game_label_2'].text += '\nYou received ' + \
-                                             received_artefact.replace('_', ' ')[:len(received_artefact) - 1] + \
-                                             '[font=font4.ttf]' + received_artefact[len(received_artefact) - 1:] + \
-                                             '[/font]'
-
-            self.print_artefacts()
 
             # start new map
 
@@ -1489,6 +1517,7 @@ class GameScreen(Screen):
                 enemies_dict = {}
                 enemies_numbers = {}
                 enemy_names = []
+                enemies_list = []
                 all_choices = []
                 numbers_of_enemies = 0
 
@@ -1515,29 +1544,31 @@ class GameScreen(Screen):
                             choice = ''.join(random.choices(['Go', ''], [1, 99], k=1))
 
                             if choice == 'Go':
-
                                 choice = ''.join(random.choices(enemy_names, k=1))
 
-                                numbers_of_enemies += 1
+                                # numbers_of_enemies += 1
 
-                                if choice in enemies_numbers.keys():
+                                enemies_list.append(choice)
 
-                                    enemies_numbers[choice] += 1
+                                # if choice in enemies_numbers.keys():
 
-                                    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                        choice + ' ' + str(enemies_numbers[choice]):
-                                            copy.deepcopy(
-                                                enemies_dict_names[choice + ' ' + str(enemies_numbers[choice])])}
+                                #    enemies_numbers[choice] += 1
 
-                                else:
+                                #    #enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                                #    #    choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                                #    #                                                                   choice + ' ' + str(
+                                #    #                                                                       enemies_numbers[
+                                #    #                                                                           choice])])}
 
-                                    enemies_numbers[choice] = 1
+                                # else:
 
-                                    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                        choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
-                                                                                                       choice + ' ' + str(
-                                                                                                           enemies_numbers[
-                                                                                                               choice])])}
+                                #    enemies_numbers[choice] = 1
+
+                                #    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                                #        choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                                #                                                                       choice + ' ' + str(
+                                #                                                                           enemies_numbers[
+                                #                                                                               choice])])}
 
                                 c = all_choices.count(choice) + 1
 
@@ -1549,6 +1580,30 @@ class GameScreen(Screen):
 
                                 now_map[i][e] = choice
 
+                enemies_list.sort()
+
+                for i in enemies_list:
+
+                    numbers_of_enemies += 1
+
+                    if i in enemies_numbers.keys():
+
+                        enemies_numbers[i] += 1
+
+                        enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                            i + ' ' + str(enemies_numbers[i]): copy.deepcopy(enemies_dict_names[
+                                                                                 i + ' ' + str(
+                                                                                     enemies_numbers[
+                                                                                         i])])}
+                    else:
+
+                        enemies_numbers[i] = 1
+
+                        enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                            i + ' ' + str(enemies_numbers[i]): copy.deepcopy(enemies_dict_names[
+                                                                                 i + ' ' + str(
+                                                                                     enemies_numbers[
+                                                                                         i])])}
                 # Определяем позицию игрока
 
                 player_number = 1
@@ -1593,6 +1648,7 @@ class GameScreen(Screen):
             enemies_dict = {}
             enemies_numbers = {}
             enemy_names = []
+            enemies_list = []
             all_choices = []
             numbers_of_enemies = 0
 
@@ -1622,27 +1678,29 @@ class GameScreen(Screen):
 
                             choice = ''.join(random.choices(enemy_names, k=1))
 
-                            numbers_of_enemies += 1
+                            #numbers_of_enemies += 1
 
-                            if choice in enemies_numbers.keys():
+                            enemies_list.append(choice)
 
-                                enemies_numbers[choice] += 1
+                            #if choice in enemies_numbers.keys():
 
-                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                    choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
-                                                                                                   choice + ' ' + str(
-                                                                                                       enemies_numbers[
-                                                                                                           choice])])}
+                            #    enemies_numbers[choice] += 1
 
-                            else:
+                            #    #enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                            #    #    choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                            #    #                                                                   choice + ' ' + str(
+                            #    #                                                                       enemies_numbers[
+                            #    #                                                                           choice])])}
 
-                                enemies_numbers[choice] = 1
+                            #else:
 
-                                enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
-                                    choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
-                                                                                                   choice + ' ' + str(
-                                                                                                       enemies_numbers[
-                                                                                                           choice])])}
+                            #    enemies_numbers[choice] = 1
+
+                            #    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                            #        choice + ' ' + str(enemies_numbers[choice]): copy.deepcopy(enemies_dict_names[
+                            #                                                                       choice + ' ' + str(
+                            #                                                                           enemies_numbers[
+                            #                                                                               choice])])}
 
                             c = all_choices.count(choice) + 1
 
@@ -1653,6 +1711,31 @@ class GameScreen(Screen):
                             enemies_number -= 1
 
                             now_map[i][e] = choice
+
+            enemies_list.sort()
+
+            for i in enemies_list:
+
+                numbers_of_enemies += 1
+
+                if i in enemies_numbers.keys():
+
+                    enemies_numbers[i] += 1
+
+                    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                        i + ' ' + str(enemies_numbers[i]): copy.deepcopy(enemies_dict_names[
+                                                                                     i + ' ' + str(
+                                                                                        enemies_numbers[
+                                                                                              i])])}
+                else:
+
+                    enemies_numbers[i] = 1
+
+                    enemies_dict['Enemy_' + str(numbers_of_enemies)] = {
+                        i + ' ' + str(enemies_numbers[i]): copy.deepcopy(enemies_dict_names[
+                                                                                   i + ' ' + str(
+                                                                                       enemies_numbers[
+                                                                                           i])])}
 
             # Определяем позицию игрока
 
@@ -2064,18 +2147,32 @@ def check_save(save_name):
 
         data.close()
 
-        stat_check = ['get_artifacts = 0\n', 'enemies_killed = 0\n', 'damage_received = 0\n', 'damage_done = 0\n',
-                      'health_regenerated = 0\n', 'cells_passed = 0\n']
+        stat_check = ['get_artifacts = \n', 'enemies_killed = \n', 'damage_received = \n', 'damage_done = \n',
+                      'health_regenerated = \n', 'cells_passed = \n']
         stat_check_str = ''
 
         n = 0
 
         for i in game_3_0_data.difficult_list:
-            stat_check.insert(n, i + '_passed = 0\n')
+            stat_check.insert(n, i + '_passed = \n')
 
             stat_check_str += i + '_passed = 0\n'
 
             n += 1
+
+        old_data_stat = []
+
+        # replace all numbers on '' for check statistic
+
+        for i in range(len(old_data[20:26 + len(game_3_0_data.difficult_list)])):
+
+            old_data_stat_cache = old_data[20:26 + len(game_3_0_data.difficult_list)][i]
+
+            for e in [str(i) for i in range(0, 10)]:
+
+                old_data_stat_cache = old_data_stat_cache.replace(e, '')
+
+            old_data_stat.append(old_data_stat_cache)
 
         if old_data_str == '0\n\n# РљР°СЂС‚Р°:\n\n0\n\n# РђСЂС‚РµС„Р°РєС‚С‹:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё Р' \
                            'ёРіСЂРѕРєР°:\n\n0\n\n# РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РІСЂР°РіРѕРІ:\n\n0\n\n# РЎС‚Р°С‚РёСЃС' \
@@ -2085,9 +2182,7 @@ def check_save(save_name):
 
             return False
 
-        elif len(old_data) != 26 + len(game_3_0_data.difficult_list) or old_data[
-                                                                        20:26 + len(game_3_0_data.difficult_list)] \
-                != stat_check:
+        elif len(old_data) != 26 + len(game_3_0_data.difficult_list) or old_data_stat != stat_check:
 
             data = open(save_name, 'w+')
 
@@ -2117,6 +2212,7 @@ def check_save(save_name):
 
 def save_session(status, get_artifacts, enemies_killed, damage_received, damage_done, health_regenerated, cells_passed,
                  enemies_dict, current_save):
+
     global player_artefacts, now_map, the_map_passed
 
     # статус это название карты или in_hub
@@ -2211,8 +2307,6 @@ def save_session(status, get_artifacts, enemies_killed, damage_received, damage_
     # Заносим статистику
 
     n = 20
-
-    importlib.reload(saves)
 
     for i in game_3_0_data.difficult_list:
         k = old_data[n][len(i) + 10:-1]
