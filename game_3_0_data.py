@@ -10,7 +10,7 @@ artefact_do = {'sharpening_stone_1': ['+', ['ranged_damage', 'damage'], 5], 'sha
 
 max_map_enemies = {'easy': 1, 'medium': 2, 'hard': 10}
 
-number_of_save = 37
+number_of_save = 45
 
 easy_map_artefact_chances = {'sharpening_stone_1': 35, 'hard_skin_potion_1': 40, 'turkey_plumage_1': 25}
 medium_map_artefact_chances = {'sharpening_stone_1': 20, 'sharpening_stone_2': 10, 'hard_skin_potion_1': 35, 'hard_skin_potion_2': 20, 'turkey_plumage_1': 10, 'turkey_plumage_2': 5}

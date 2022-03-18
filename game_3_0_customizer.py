@@ -8,7 +8,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
     importlib.reload(game_3_0_data)
 
     n = 1
-    all_y = [i for i in range(lines + 1)]  # 101 --> line + 1
+    all_y = [i for i in range(lines + 1)]
 
     for _ in range(int(lines)):
         line_ = ['  `' for _ in range(0, int(cells_in_line) + 1)]
@@ -81,7 +81,7 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     old_data[10] = old_data[10][:19] + str(p)[1:] + '\n'
 
-    data = open('game_3_0.py', 'r', encoding='UTF-8')
+    data = open('game_3_0_enemies.py', 'r', encoding='UTF-8')
 
     old_data_2 = data.readlines()
 
@@ -159,15 +159,13 @@ def made_map(map_difficult, map_weight, lines, cells_in_line, map_artefacts_list
 
     old_data_2[line + 1] = old_data_2[line + 1][:-2] + ', "' + map_difficult + '": [' + p + ']}\n'
 
-    data = open('game_3_0.py', 'w', encoding='UTF-8')
+    data = open('game_3_0_enemies.py', 'w', encoding='UTF-8')
 
     for i in old_data_2:
 
         data.write(i)
 
     data.close()
-
-#made_map('hard', 30000, 9, 11, ['hard_skin_potion_1', 'turkey_plumage_2', 'sharpening_stone_1'], [5, 3, 20], ['Elsa', 'Baron'], 10)
 
 
 def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_radius, moving_speed, healing_power,
@@ -210,7 +208,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # читаем файл
 
-    data = open('game_3_0.py', 'r', encoding='UTF-8')
+    data = open('game_3_0_enemies.py', 'r', encoding='UTF-8')
 
     old_data = data.readlines()
 
@@ -291,15 +289,13 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # Записываем всё в файл
 
-    data = open('game_3_0.py', 'w', encoding='UTF-8')
+    data = open('game_3_0_enemies.py', 'w', encoding='UTF-8')
 
     for i in old_data:
 
         data.write(i)
 
     data.close()
-
-#made_enemy(100, 10, 0, 2, 0, 2, 20, 100, 'hard', 'Lucius')
 
 
 def made_artefact(name, plus_or_minus, how_many_do, how_many_on_start, artefact_chance, artefact_map, what_do):
