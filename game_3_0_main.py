@@ -353,38 +353,76 @@ kv = '''
             text: 'Back to menu'
             on_release: root.manager.current = 'menu'
 <AddMapScreen>:
-    AnchorLayout:
-        anchor_x: 'center'
-        anchor_y: 'top'
-        Label:
-            text: 'Enter map characters please.'
     GridLayout:
-        size_hint: .4, 1
+        size_hint: .6, 1
         cols: 2
         Label:
         Label:
+            text: 'Enter map characters please.\\n(comma-separated enumeration)'
+            halign: 'center'
+            font_size: 17
         Label:
-            size_hint: .4, .2
-            text: 'Map difficult:'
+            size_hint: .6, .2
+            text: 'Map name:'
         TextInput:
-            size_hint: .4, .2
+            size_hint: .5, .2
+            multiline: False
         Label:
-            size_hint: .4, .2
-            text: 'Map difficult:'
+            size_hint: .6, .2
+            text: 'Map chance:'
         TextInput:
-            size_hint: .4, .2
-            size_hint: .4, .2
+            size_hint: .5, .2
+            multiline: False
         Label:
-            size_hint: .4, .2
-            text: 'Map difficult:'
+            size_hint: .6, .2
+            text: 'Lines in map:'
         TextInput:
-            size_hint: .4, .2
+            size_hint: .5, .2
+            multiline: False
         Label:
-            size_hint: .4, .2
-            text: 'Map difficult:'
+            size_hint: .6, .2
+            text: 'Cells in line:'
         TextInput:
-            size_hint: .4, .2
+            size_hint: .5, .2
+            multiline: False
         Label:
+            size_hint: .6, .2
+            text: 'Map artefacts:'
+        TextInput:
+            size_hint: .5, .2
+            multiline: False
+        Label:
+            size_hint: .6, .2
+            text: 'Map artefacts chances:'
+        TextInput:
+            size_hint: .5, .2
+            multiline: False
+        Label:
+            size_hint: .6, .2
+            text: 'Map enemies names:'
+        TextInput:
+            size_hint: .5, .2
+            multiline: False
+        Label:
+            size_hint: .6, .2
+            text: 'Max enemies on map:'
+        TextInput:
+            size_hint: .5, .2
+            multiline: False
+        Label:
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'bottom'
+        Button:
+            size_hint: .2, .12
+            text: 'Apply.'
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        Button:
+            size_hint: .14, .07
+            text: 'Back to menu.'
+            on_release: root.manager.current = 'menu'
 <AddEnemyScreen>:
 <AddArtefactScreen>:
 <SettingsScreen>:
