@@ -4,7 +4,6 @@ import copy
 import math
 from os import path, remove
 import random
-from colorama import Fore, init
 
 # kivy
 
@@ -16,8 +15,6 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
-
-init(autoreset=True)
 
 difficult_list = copy.deepcopy(game_3_0_data.difficult_list)
 difficult_weights = copy.deepcopy(game_3_0_data.difficult_weights)
@@ -358,55 +355,72 @@ kv = '''
         cols: 2
         Label:
         Label:
+            id: add_map_label_0
             text: 'Enter map characters please.\\n(comma-separated enumeration)'
             halign: 'center'
             font_size: 17
         Label:
+            id: add_map_label_1
             size_hint: .6, .2
             text: 'Map name:'
         TextInput:
+            id: add_map_text_input_1
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_2
             size_hint: .6, .2
             text: 'Map chance:'
         TextInput:
+            id: add_map_text_input_2
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_3
             size_hint: .6, .2
             text: 'Lines in map:'
         TextInput:
+            id: add_map_text_input_3
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_4
             size_hint: .6, .2
             text: 'Cells in line:'
         TextInput:
+            id: add_map_text_input_4
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_5
             size_hint: .6, .2
             text: 'Map artefacts:'
         TextInput:
+            id: add_map_text_input_5
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_6
             size_hint: .6, .2
             text: 'Map artefacts chances:'
         TextInput:
+            id: add_map_text_input_6
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_7
             size_hint: .6, .2
             text: 'Map enemies names:'
         TextInput:
+            id: add_map_text_input_7
             size_hint: .5, .2
             multiline: False
         Label:
+            id: add_map_label_8
             size_hint: .6, .2
             text: 'Max enemies on map:'
         TextInput:
+            id: add_map_text_input_8
             size_hint: .5, .2
             multiline: False
         Label:
@@ -416,6 +430,7 @@ kv = '''
         Button:
             size_hint: .2, .12
             text: 'Apply.'
+            on_release: root.check()
     AnchorLayout:
         anchor_x: 'right'
         anchor_y: 'top'
@@ -1810,7 +1825,155 @@ class CustomizerScreen(Screen):
 
 
 class AddMapScreen(Screen):
-    pass
+
+    def check(self):
+
+        black_symbols_list = ['&', '.', '*', '?', ':', ';', '|', '\\', '/', '<', '>']  # smaller?
+        incorrect_list = []
+        alfabet = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z',
+                   'x', 'c', 'v', 'b', 'n', 'm']
+
+        if self.ids['add_map_text_input_1'].text.isnumeric() or \
+                black_symbols_list in self.ids['add_map_text_input_1'].text:
+
+            incorrect_list.append('1')
+
+        if not self.ids['add_map_text_input_2'].text.isnumeric():
+
+            incorrect_list.append('2')
+
+        if not self.ids['add_map_text_input_3'].text.isnumeric():
+
+            incorrect_list.append('3')
+
+        if not self.ids['add_map_text_input_4'].text.isnumeric():
+
+            incorrect_list.append('4')
+
+        if self.ids['add_map_text_input_5'].text.isnumeric() or \
+                black_symbols_list in self.ids['add_map_text_input_1'].text:
+
+            incorrect_list.append('5')
+
+        else:
+
+            map_artefacts_list = []
+
+            n = ''
+
+            text = self.ids['add_map_text_input_5'].text.replace(' ', '')
+
+            for i in text:
+
+                if i == ',':
+
+                    map_artefacts_list.append(n)
+
+                    n = ''
+
+                else:
+
+                    n += i
+
+            for i in map_artefacts_list:
+
+                if i not in game_3_0_data.artefact_do.keys():
+
+                    incorrect_list.append('5')
+
+                    break
+
+        if not self.ids['add_map_text_input_6'].text.isnumeric() or \
+                black_symbols_list in self.ids['add_map_text_input_1'].text or alfabet in \
+                self.ids['add_map_text_input_6'].text.isnumeric().lower():
+
+            incorrect_list.append('6')
+
+        else:
+
+            map_artefacts_chances = []
+
+            n = ''
+
+            text = self.ids['add_map_text_input_5'].text.replace(' ', '')
+
+            for i in text:
+
+                if i == ',':
+
+                    map_artefacts_chances.append(n)
+
+                    n = ''
+
+                else:
+
+                    n += i
+
+        if self.ids['add_map_text_input_7'].text.isnumeric() or \
+                black_symbols_list in self.ids['add_map_text_input_1'].text:
+
+            incorrect_list.append('7')
+
+        else:
+
+            map_enemies_list = []
+
+            n = ''
+
+            text = self.ids['add_map_text_input_5'].text.replace(' ', '')
+
+            for i in text:
+
+                if i == ',':
+
+                    map_enemies_list.append(n)
+
+                    n = ''
+
+                else:
+
+                    n += i
+
+            for i in map_enemies_list:
+
+                if i not in game_3_0_data.enemies_indexes.keys():
+
+                    incorrect_list.append('7')
+
+                    break
+
+        if not self.ids['add_map_text_input_8'].text.isnumeric():
+
+            incorrect_list.append('8')
+
+        # if all correct made map, else print incorrect value in: 1, 2... labels.
+
+        if incorrect_list:
+
+            self.ids['add_map_label_0'].text = 'Incorrect value in: '
+
+            n = 0
+
+            for i in incorrect_list:
+
+                n += 1
+
+                if n + 1 == len(incorrect_list):
+
+                    self.ids['add_map_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
+                                                            'artefact/enemies exist and correct spelling of words.)'
+
+                else:
+
+                    self.ids['add_map_label_0'].text += i + ', '
+
+        else:
+
+            self.ids['add_map_label_0'].text = 'Map made successful.'
+
+            import game_3_0_customizer  # ?
+
+            return game_3_0_customizer.made_map()
 
 
 class AddEnemyScreen(Screen):
