@@ -193,8 +193,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # добавляем новый индекс для нового врага
 
-    old_data[5] = old_data[5][:-2] + ', "' + enemy_name + '": ' + str(line + game_3_0_data.max_map_enemies[
-        enemy_difficult] + 1) + '}\n'
+    old_data[5] = old_data[5][:-2] + ', "' + enemy_name + '": ' + str(line + max(game_3_0_data.map_indexes.values()) + 1) + '}\n'
 
     # записываем нужные данные
 
@@ -216,7 +215,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # добавляем нового врага
 
-    for i in range(game_3_0_data.max_map_enemies[enemy_difficult] + 1):  # need test/check
+    for i in range(max(game_3_0_data.max_map_enemies.values()) + 1):
 
         if i != 0:
 
@@ -263,7 +262,7 @@ def made_enemy(health, damage, ranged_damage, close_fight_radius, ranged_combat_
 
     # Добавляем врага в enemies_dict_names
 
-    for i in range(game_3_0_data.max_map_enemies[enemy_difficult] + 1):
+    for i in range(max(game_3_0_data.max_map_enemies.values()) + 1):
 
         if i != 0:
 
@@ -343,22 +342,3 @@ def made_artefact(name, plus_or_minus, how_many_do, how_many_on_start, artefact_
         data.write(i)
 
     data.close()
-
-
-def change_maps():
-    pass
-
-
-def change_enemies():
-    pass
-
-
-def change_artefacts():
-    pass
-
-
-def change_player():
-    pass
-
-
-print('Hello, this is customizer for game 2.0')

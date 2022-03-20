@@ -454,6 +454,7 @@ kv = '''
             id: add_map_extra_label_2
             halign: 'center'
             font_size: 13
+            markup: True
             text: 'Any from this list\\n(with comma-separated enumeration):\\n'
         Label:
             id: add_map_label_8
@@ -483,6 +484,162 @@ kv = '''
             text: 'Back to menu.'
             on_release: root.manager.current = 'menu'
 <AddEnemyScreen>:
+    on_pre_enter: root.build()
+    GridLayout:
+        size_hint: .8, 1
+        cols: 3
+        Label:
+        Label:
+            id: add_enemy_label_0
+            text: 'Enter enemy characters please.'
+            halign: 'center'
+        Label:
+        Label:
+            id: add_enemy_label_1
+            size_hint: .8, .2
+            text: 'Health:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_1
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            text: 'One number.' 
+        Label:
+            id: add_enemy_label_2
+            size_hint: .8, .2
+            text: 'Damage:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_2
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            halign: 'center'
+            text: 'One number.'
+        Label:
+            id: add_enemy_label_3
+            size_hint: .8, .2
+            text: 'Ranged attack damage:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_3
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            text: 'One number.'
+        Label:
+            id: add_enemy_label_4
+            size_hint: .8, .2
+            text: 'Close fight radius:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_4
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            text: 'One number.'
+        Label:
+            id: add_enemy_label_5
+            size_hint: .8, .2
+            text: 'Ranged combat radius:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_5
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            text: 'One number.'
+        Label:
+            id: add_enemy_label_6
+            size_hint: .8, .2
+            text: 'Moving speed:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_6
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            markup: True
+            text: 'One number.\\n[size=11](How many cells enemy can go per turn).[/size]'
+            halign: 'center'
+        Label:
+            id: add_enemy_label_7
+            size_hint: .8, .2
+            text: 'Healing power:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_7
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            markup: True
+            text: 'One number.\\n[size=11](How many health enemy can heal per turn).[/size]'
+            halign: 'center'
+        Label:
+            id: add_enemy_label_8
+            size_hint: .8, .2
+            text: 'Max health:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_8
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            markup: True
+            text: 'One number.\\n[size=10](Enemy can start with not full health(1 input), but\\n can`t have health more then their max health.)[/size]'
+            halign: 'center'
+        Label:
+            id: add_enemy_label_9
+            size_hint: .8, .2
+            text: 'Enemy maps:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_9
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            id: add_enemy_extra_label_1
+            halign: 'center'
+            font_size: 13
+            markup: True
+            text: 'Any from this list(all lowercase and\\nwith comma-separated enumeration):\\n'
+        Label:
+            id: add_enemy_label_10
+            size_hint: .8, .2
+            text: 'Enemy name:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_enemy_text_input_10
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            text: 'No numbers,\\nall except first letter lowercase,\\nnot symbols "/" and "&".'
+        Label:
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'bottom'
+        Button:
+            size_hint: .2, .12
+            text: 'Apply.'
+            on_release: root.check()
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        Button:
+            size_hint: .14, .07
+            text: 'Back to menu.'
+            on_release: root.manager.current = 'menu'
 <AddArtefactScreen>:
 <SettingsScreen>:
     AnchorLayout:
@@ -492,7 +649,8 @@ kv = '''
             orientation: 'vertical'
             size_hint: .6, .3
             Label:
-                text: 'Don`t work now'
+                halign: 'center'
+                text: 'You can`t configure anything.\\nRemember, it`s a hard game.'
             Button:
                 text: 'Back to menu'
                 on_press: root.manager.current = 'menu'
@@ -1872,44 +2030,63 @@ class AddMapScreen(Screen):
 
     def build(self):
 
-        str_artefacts_list = '[size=11]'
+        str_artefacts_list = '[size=11][u]'
 
-        n = 0
+        n = 1
         k = 0
 
         for i in game_3_0_data.artefact_do.keys():
 
             if n == len(game_3_0_data.artefact_do.keys()):
 
-                str_artefacts_list += i + '.[/size]'
+                str_artefacts_list += i + '[/u].[/size]'
 
             else:
+
+                n += 1
 
                 if k > 30:
 
                     k = 0
 
-                    str_artefacts_list += '\n' + i + ', '
+                    str_artefacts_list += '\n' + i + '[/u], [u]'
 
                     k += len('\n' + i + ', ')
 
                 else:
 
-                    str_artefacts_list += i + ', '
+                    str_artefacts_list += i + '[/u], [u]'
 
                     k += len(i + ', ')
 
-        str_enemies_list = ''
+        str_enemies_list = '[u]'
+
+        n = 1
+        k = 0
 
         for i in game_3_0_data.enemies_indexes.keys():
 
             if n == len(game_3_0_data.enemies_indexes.keys()):
 
-                str_enemies_list += i + '.'
+                str_enemies_list += i + '[/u].'
 
             else:
 
-                str_enemies_list += i + ', '
+                n += 1
+
+                if k > 30:
+
+                    k = 0
+
+                    str_enemies_list += '\n' + i + '[/u], [u]'
+
+                    k += len('\n' + i + ', ')
+
+                else:
+
+                    str_enemies_list += i + '[/u], [u]'
+
+                    k += len(i + ', ')
 
         self.ids['add_map_extra_label_1'].text += str_artefacts_list
         self.ids['add_map_extra_label_2'].text += str_enemies_list
@@ -1948,7 +2125,7 @@ class AddMapScreen(Screen):
 
             n = ''
 
-            text = self.ids['add_map_text_input_5'].text.replace(' ', '')
+            text = self.ids['add_map_text_input_5'].text.replace(' ', '').lower()
 
             for i in text:
 
@@ -1961,6 +2138,9 @@ class AddMapScreen(Screen):
                 else:
 
                     n += i
+
+            if not map_artefacts_list:
+                map_artefacts_list.append(text)
 
             for i in map_artefacts_list:
 
@@ -2028,6 +2208,9 @@ class AddMapScreen(Screen):
 
                     n += i
 
+            if not map_enemies_list:
+                map_enemies_list.append(text)
+
             for i in map_enemies_list:
 
                 if i not in game_3_0_data.enemies_indexes.keys():
@@ -2067,7 +2250,7 @@ class AddMapScreen(Screen):
 
             import game_3_0_customizer
 
-            return game_3_0_customizer.made_map(self.ids['add_map_text_input_1'].text,
+            return game_3_0_customizer.made_map(self.ids['add_map_text_input_1'].text.lower(),
                                                 int(self.ids['add_map_text_input_2'].text),
                                                 int(self.ids['add_map_text_input_3'].text),
                                                 int(self.ids['add_map_text_input_4'].text),
@@ -2078,7 +2261,142 @@ class AddMapScreen(Screen):
 
 
 class AddEnemyScreen(Screen):
-    pass
+
+    def build(self):
+
+        str_map_list = '[u]'
+
+        n = 1
+        k = 0
+
+        for i in game_3_0_data.difficult_list:
+
+            if n == len(game_3_0_data.difficult_list):
+
+                str_map_list += i + '[/u].'
+
+            else:
+
+                n += 1
+
+                if k > 30:
+
+                    k = 0
+
+                    str_map_list += '\n' + i + '[/u], [u]'
+
+                    k += len('\n' + i + ', ')
+
+                else:
+
+                    str_map_list += i + '[/u], [u]'
+
+                    k += len(i + ', ')
+
+        self.ids['add_enemy_extra_label_1'].text += str_map_list
+
+    def check(self):
+
+        incorrect_list = []
+
+        if not self.ids['add_enemy_text_input_1'].text.isnumeric() or self.ids['add_enemy_text_input_1'].text == '':
+            incorrect_list.append('1')
+
+        if not self.ids['add_enemy_text_input_2'].text.isnumeric() or self.ids['add_enemy_text_input_2'].text == '':
+            incorrect_list.append('2')
+
+        if not self.ids['add_enemy_text_input_3'].text.isnumeric() or self.ids['add_enemy_text_input_3'].text == '':
+            incorrect_list.append('3')
+
+        if not self.ids['add_enemy_text_input_5'].text.isnumeric() or self.ids['add_enemy_text_input_5'].text == '':
+            incorrect_list.append('5')
+
+        if not self.ids['add_enemy_text_input_6'].text.isnumeric() or self.ids['add_enemy_text_input_6'].text == '':
+            incorrect_list.append('6')
+        if not self.ids['add_enemy_text_input_7'].text.isnumeric() or self.ids['add_enemy_text_input_7'].text == '':
+            incorrect_list.append('7')
+
+        if not self.ids['add_enemy_text_input_8'].text.isnumeric() or self.ids['add_enemy_text_input_8'].text == '':
+            incorrect_list.append('8')
+
+        if self.ids['add_enemy_text_input_9'].text.isnumeric() or '\\' in self.ids['add_enemy_text_input_9'].text or \
+                '&' in self.ids['add_enemy_text_input_9'].text or self.ids['add_enemy_text_input_9'].text == '':
+
+            incorrect_list.append('9')
+
+        else:
+
+            enemy_maps_list = []
+
+            n = ''
+
+            text = self.ids['add_enemy_text_input_9'].text.replace(' ', '')
+
+            for i in text:
+
+                if i == ',':
+
+                    enemy_maps_list.append(n)
+
+                    n = ''
+
+                else:
+
+                    n += i
+
+            if not enemy_maps_list:
+                enemy_maps_list.append(text)
+
+            for i in enemy_maps_list:
+
+                if i not in game_3_0_data.difficult_list:
+                    incorrect_list.append('9')
+
+                    break
+
+        if self.ids['add_enemy_text_input_10'].text.isnumeric() or '\\' in self.ids['add_enemy_text_input_10'].text or \
+                '&' in self.ids['add_enemy_text_input_10'].text or self.ids['add_enemy_text_input_10'].text == '' or \
+                not self.ids['add_enemy_text_input_10'].text[0].isupper():
+
+            incorrect_list.append('10')
+
+        # if all correct made enemy, else print incorrect value in: 1, 2... labels.
+
+        if incorrect_list:
+
+            self.ids['add_enemy_label_0'].text = 'Incorrect value in: '
+
+            n = 0
+
+            for i in incorrect_list:
+
+                n += 1
+
+                if n == len(incorrect_list):
+
+                    self.ids['add_enemy_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
+                                                            'map exist and correct spelling of words.)'
+
+                else:
+
+                    self.ids['add_enemy_label_0'].text += i + ', '
+
+        else:
+
+            self.ids['add_enemy_label_0'].text = 'enemy made successful.'
+
+            import game_3_0_customizer
+
+            return game_3_0_customizer.made_enemy(int(self.ids['add_enemy_text_input_1'].text),
+                                                  int(self.ids['add_enemy_text_input_2'].text),
+                                                  int(self.ids['add_enemy_text_input_3'].text),
+                                                  int(self.ids['add_enemy_text_input_4'].text),
+                                                  int(self.ids['add_enemy_text_input_5'].text),
+                                                  int(self.ids['add_enemy_text_input_6'].text),
+                                                  int(self.ids['add_enemy_text_input_7'].text),
+                                                  int(self.ids['add_enemy_text_input_8'].text),
+                                                  enemy_maps_list,
+                                                  self.ids['add_enemy_text_input_10'].text)
 
 
 class AddArtefactScreen(Screen):
@@ -2115,7 +2433,10 @@ class StatisticScreen(Screen):
 class GameApp(App):
 
     def build(self):
+
         Builder.load_string(kv)
+
+        Window.size = (830, 625)
 
         # Set minimum window size
 
