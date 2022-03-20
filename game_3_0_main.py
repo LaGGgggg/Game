@@ -350,79 +350,123 @@ kv = '''
             text: 'Back to menu'
             on_release: root.manager.current = 'menu'
 <AddMapScreen>:
+    on_pre_enter: root.build()
     GridLayout:
-        size_hint: .6, 1
-        cols: 2
+        size_hint: .8, 1
+        cols: 3
         Label:
         Label:
             id: add_map_label_0
-            text: 'Enter map characters please.\\n(comma-separated enumeration)'
+            text: 'Enter map characters please.'
             halign: 'center'
             font_size: 17
         Label:
+        Label:
             id: add_map_label_1
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Map name:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_1
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            text: 'No numbers, all lowercase,\\n not symbols "/" and "&".' 
         Label:
             id: add_map_label_2
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Map chance:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_2
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            halign: 'center'
+            font_size: 13
+            text: 'One number\\n(start map chance to drop for player).'
         Label:
             id: add_map_label_3
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Lines in map:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_3
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            text: 'One number.'
         Label:
             id: add_map_label_4
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Cells in line:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_4
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            text: 'One number.'
         Label:
             id: add_map_label_5
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Map artefacts:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_5
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            id: add_map_extra_label_1
+            halign: 'center'
+            font_size: 13
+            markup: True
+            text: 'Any from this list\\n(with comma-separated enumeration):\\n'
         Label:
             id: add_map_label_6
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Map artefacts chances:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_6
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            text: 'One number on one artefact.'
+            font_size: 13
         Label:
             id: add_map_label_7
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Map enemies names:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_7
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
         Label:
+            id: add_map_extra_label_2
+            halign: 'center'
+            font_size: 13
+            text: 'Any from this list\\n(with comma-separated enumeration):\\n'
+        Label:
             id: add_map_label_8
-            size_hint: .6, .2
+            size_hint: .8, .2
             text: 'Max enemies on map:'
         TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
             id: add_map_text_input_8
-            size_hint: .5, .2
+            text: ''
+            size_hint: .7, .2
             multiline: False
+        Label:
+            text: 'One number'
         Label:
     AnchorLayout:
         anchor_x: 'right'
@@ -1826,32 +1870,75 @@ class CustomizerScreen(Screen):
 
 class AddMapScreen(Screen):
 
+    def build(self):
+
+        str_artefacts_list = '[size=11]'
+
+        n = 0
+        k = 0
+
+        for i in game_3_0_data.artefact_do.keys():
+
+            if n == len(game_3_0_data.artefact_do.keys()):
+
+                str_artefacts_list += i + '.[/size]'
+
+            else:
+
+                if k > 30:
+
+                    k = 0
+
+                    str_artefacts_list += '\n' + i + ', '
+
+                    k += len('\n' + i + ', ')
+
+                else:
+
+                    str_artefacts_list += i + ', '
+
+                    k += len(i + ', ')
+
+        str_enemies_list = ''
+
+        for i in game_3_0_data.enemies_indexes.keys():
+
+            if n == len(game_3_0_data.enemies_indexes.keys()):
+
+                str_enemies_list += i + '.'
+
+            else:
+
+                str_enemies_list += i + ', '
+
+        self.ids['add_map_extra_label_1'].text += str_artefacts_list
+        self.ids['add_map_extra_label_2'].text += str_enemies_list
+
     def check(self):
 
-        black_symbols_list = ['&', '.', '*', '?', ':', ';', '|', '\\', '/', '<', '>']  # smaller?
         incorrect_list = []
-        alfabet = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z',
-                   'x', 'c', 'v', 'b', 'n', 'm']
 
         if self.ids['add_map_text_input_1'].text.isnumeric() or \
-                black_symbols_list in self.ids['add_map_text_input_1'].text:
+                '\\' in self.ids['add_map_text_input_1'].text or '&' in self.ids['add_map_text_input_1'].text or \
+                self.ids['add_map_text_input_1'].text == '':
 
             incorrect_list.append('1')
 
-        if not self.ids['add_map_text_input_2'].text.isnumeric():
+        if not self.ids['add_map_text_input_2'].text.isnumeric() or self.ids['add_map_text_input_2'].text == '':
 
             incorrect_list.append('2')
 
-        if not self.ids['add_map_text_input_3'].text.isnumeric():
+        if not self.ids['add_map_text_input_3'].text.isnumeric() or self.ids['add_map_text_input_3'].text == '':
 
             incorrect_list.append('3')
 
-        if not self.ids['add_map_text_input_4'].text.isnumeric():
+        if not self.ids['add_map_text_input_4'].text.isnumeric() or self.ids['add_map_text_input_4'].text == '':
 
             incorrect_list.append('4')
 
         if self.ids['add_map_text_input_5'].text.isnumeric() or \
-                black_symbols_list in self.ids['add_map_text_input_1'].text:
+                '\\' in self.ids['add_map_text_input_5'].text or '&' in self.ids['add_map_text_input_5'].text or \
+                self.ids['add_map_text_input_5'].text == '':
 
             incorrect_list.append('5')
 
@@ -1884,8 +1971,8 @@ class AddMapScreen(Screen):
                     break
 
         if not self.ids['add_map_text_input_6'].text.isnumeric() or \
-                black_symbols_list in self.ids['add_map_text_input_1'].text or alfabet in \
-                self.ids['add_map_text_input_6'].text.isnumeric().lower():
+                '\\' in self.ids['add_map_text_input_6'].text or '&' in self.ids['add_map_text_input_6'].text or \
+                self.ids['add_map_text_input_6'].text == '':
 
             incorrect_list.append('6')
 
@@ -1895,13 +1982,19 @@ class AddMapScreen(Screen):
 
             n = ''
 
-            text = self.ids['add_map_text_input_5'].text.replace(' ', '')
+            text = self.ids['add_map_text_input_6'].text.replace(' ', '')
 
             for i in text:
 
+                if i != ',' and not i.isnumeric():
+
+                    incorrect_list.append('6')
+
+                    break
+
                 if i == ',':
 
-                    map_artefacts_chances.append(n)
+                    map_artefacts_chances.append(int(n))
 
                     n = ''
 
@@ -1910,7 +2003,8 @@ class AddMapScreen(Screen):
                     n += i
 
         if self.ids['add_map_text_input_7'].text.isnumeric() or \
-                black_symbols_list in self.ids['add_map_text_input_1'].text:
+                '\\' in self.ids['add_map_text_input_7'].text or '&' in self.ids['add_map_text_input_7'].text or \
+                self.ids['add_map_text_input_7'].text == '':
 
             incorrect_list.append('7')
 
@@ -1920,7 +2014,7 @@ class AddMapScreen(Screen):
 
             n = ''
 
-            text = self.ids['add_map_text_input_5'].text.replace(' ', '')
+            text = self.ids['add_map_text_input_7'].text.replace(' ', '')
 
             for i in text:
 
@@ -1942,7 +2036,7 @@ class AddMapScreen(Screen):
 
                     break
 
-        if not self.ids['add_map_text_input_8'].text.isnumeric():
+        if not self.ids['add_map_text_input_8'].text.isnumeric() or self.ids['add_map_text_input_8'].text == '':
 
             incorrect_list.append('8')
 
@@ -1958,7 +2052,7 @@ class AddMapScreen(Screen):
 
                 n += 1
 
-                if n + 1 == len(incorrect_list):
+                if n == len(incorrect_list):
 
                     self.ids['add_map_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
                                                             'artefact/enemies exist and correct spelling of words.)'
@@ -1971,9 +2065,16 @@ class AddMapScreen(Screen):
 
             self.ids['add_map_label_0'].text = 'Map made successful.'
 
-            import game_3_0_customizer  # ?
+            import game_3_0_customizer
 
-            return game_3_0_customizer.made_map()
+            return game_3_0_customizer.made_map(self.ids['add_map_text_input_1'].text,
+                                                int(self.ids['add_map_text_input_2'].text),
+                                                int(self.ids['add_map_text_input_3'].text),
+                                                int(self.ids['add_map_text_input_4'].text),
+                                                map_artefacts_list,
+                                                map_artefacts_chances,
+                                                map_enemies_list,
+                                                int(self.ids['add_map_text_input_8'].text))
 
 
 class AddEnemyScreen(Screen):
