@@ -326,13 +326,15 @@ def made_artefact(name, plus_or_minus, how_many_do, how_many_on_start, artefact_
         old_data[8] = old_data[8][:-2] + ', "' + name + '": ["' + plus_or_minus + '", ' + str(what_do) + ', ' \
                        + str(how_many_do) + ']}\n'
 
-    line = game_3_0_data.map_indexes[artefact_map]
+    for i in artefact_map:
 
-    if old_data[line] == artefact_map + '_map_artefact_chances = {}\n':
-        old_data[line] = old_data[line][:-2] + '"' + name + '": ' + str(artefact_chance) + '}\n'
+        line = game_3_0_data.map_indexes[i]
 
-    else:
-        old_data[line] = old_data[line][:-2] + ', "' + name + '": ' + str(artefact_chance) + '}\n'
+        if old_data[line] == i + '_map_artefact_chances = {}\n':
+            old_data[line] = old_data[line][:-2] + '"' + name + '": ' + str(artefact_chance) + '}\n'
+
+        else:
+            old_data[line] = old_data[line][:-2] + ', "' + name + '": ' + str(artefact_chance) + '}\n'
 
     # записываем нужные данные
 

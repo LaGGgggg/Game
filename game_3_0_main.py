@@ -641,6 +641,126 @@ kv = '''
             text: 'Back to menu.'
             on_release: root.manager.current = 'menu'
 <AddArtefactScreen>:
+    on_pre_enter: root.build()
+    GridLayout:
+        size_hint: .8, 1
+        cols: 3
+        Label:
+        Label:
+            id: add_artefact_label_0
+            text: 'Enter artefact characters please.'
+            halign: 'center'
+        Label:
+        Label:
+            id: add_artefact_label_1
+            size_hint: .8, .2
+            text: 'Name:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_1
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            halign: 'center'
+            text: 'No numbers,\\nall except first letter lowercase,\\nnot symbols "/" and "&".' 
+        Label:
+            id: add_artefact_label_2
+            size_hint: .8, .2
+            text: 'Baff or debaff:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_2
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            halign: 'center'
+            text: '"+" or "-".'
+        Label:
+            id: add_artefact_label_3
+            size_hint: .8, .2
+            text: 'Artefact power:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_3
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            halign: 'center'
+            text: 'One number.\\n(How many characters + or -).'
+        Label:
+            id: add_artefact_label_4
+            size_hint: .8, .2
+            text: 'How many on start:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_4
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            halign: 'center'
+            text: 'One number.\\n(How many player have on start).'
+        Label:
+            id: add_artefact_label_5
+            size_hint: .8, .2
+            text: 'Artefact chance:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_5
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            text: 'One number.'
+        Label:
+            id: add_artefact_label_6
+            size_hint: .8, .2
+            text: 'Artefact map:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_6
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            id: add_artefact_extra_label_1
+            halign: 'center'
+            font_size: 13
+            markup: True
+            text: 'Any from this list(all lowercase and\\nwith comma-separated enumeration):\\n'
+        Label:
+            id: add_artefact_label_7
+            size_hint: .8, .2
+            text: 'Artefact characters:'
+        TextInput:
+            background_color: (0.51, 0.51, 0.55, 1)
+            id: add_artefact_text_input_7
+            text: ''
+            size_hint: .7, .2
+            multiline: False
+        Label:
+            halign: 'center'
+            font_size: 13
+            markup: True
+            text: 'Any from this list(all lowercase and\\nwith comma-separated enumeration):\\n[size=11][u]health[/u], [u]damage[/u], [u]ranged damage[/u],\\n[u]close fight radius[/u], [u]ranged combat radius[/u],\\n[u]moving speed[/u], [u]healing power[/u], [u]max health[/u][/size].'
+        Label:
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'bottom'
+        Button:
+            size_hint: .2, .12
+            text: 'Apply.'
+            on_release: root.check()
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        Button:
+            size_hint: .14, .07
+            text: 'Back to menu.'
+            on_release: root.manager.current = 'menu'
 <SettingsScreen>:
     AnchorLayout:
         anchor_x: 'center'
@@ -2400,7 +2520,177 @@ class AddEnemyScreen(Screen):
 
 
 class AddArtefactScreen(Screen):
-    pass
+
+    def build(self):
+
+        artefact_map = '[u]'
+
+        n = 1
+        k = 0
+
+        for i in game_3_0_data.difficult_list:
+
+            if n == len(game_3_0_data.difficult_list):
+
+                artefact_map += i + '[/u].'
+
+            else:
+
+                n += 1
+
+                if k > 30:
+
+                    k = 0
+
+                    artefact_map += '\n' + i + '[/u], [u]'
+
+                    k += len('\n' + i + ', ')
+
+                else:
+
+                    artefact_map += i + '[/u], [u]'
+
+                    k += len(i + ', ')
+
+        self.ids['add_artefact_extra_label_1'].text += artefact_map
+
+    def check(self):
+
+        incorrect_list = []
+
+        if self.ids['add_artefact_text_input_1'].text.isnumeric() or \
+                self.ids['add_artefact_text_input_1'].text == '' or \
+                '\\' in self.ids['add_artefact_text_input_1'].text or \
+                '&' in self.ids['add_artefact_text_input_1'].text:
+            incorrect_list.append('1')
+
+        if self.ids['add_artefact_text_input_2'].text.isnumeric() or \
+                self.ids['add_artefact_text_input_2'].text == '' or \
+                '\\' in self.ids['add_artefact_text_input_2'].text or \
+                '&' in self.ids['add_artefact_text_input_2'].text or \
+                '+' not in self.ids['add_artefact_text_input_2'].text and \
+                '-' not in self.ids['add_artefact_text_input_2'].text:
+            incorrect_list.append('2')
+
+        if not self.ids['add_artefact_text_input_3'].text.isnumeric() or \
+                self.ids['add_artefact_text_input_3'].text == '':
+            incorrect_list.append('3')
+
+        if not self.ids['add_artefact_text_input_4'].text.isnumeric() or \
+                self.ids['add_artefact_text_input_4'].text == '':
+            incorrect_list.append('4')
+
+        if not self.ids['add_artefact_text_input_5'].text.isnumeric() or \
+                self.ids['add_artefact_text_input_5'].text == '':
+            incorrect_list.append('5')
+
+        if self.ids['add_artefact_text_input_6'].text.isnumeric() or \
+                '\\' in self.ids['add_artefact_text_input_6'].text or \
+                '&' in self.ids['add_artefact_text_input_6'].text or self.ids['add_artefact_text_input_6'].text == '':
+
+            incorrect_list.append('6')
+
+        else:
+
+            artefact_maps_list = []
+
+            n = ''
+
+            text = self.ids['add_artefact_text_input_6'].text.replace(' ', '')
+
+            for i in text:
+
+                if i == ',':
+
+                    artefact_maps_list.append(n)
+
+                    n = ''
+
+                else:
+
+                    n += i
+
+            if not artefact_maps_list:
+                artefact_maps_list.append(text)
+
+            for i in artefact_maps_list:
+
+                if i not in game_3_0_data.difficult_list:
+                    incorrect_list.append('6')
+
+                    break
+
+        if self.ids['add_artefact_text_input_7'].text.isnumeric() or \
+                '\\' in self.ids['add_artefact_text_input_7'].text or \
+                '&' in self.ids['add_artefact_text_input_7'].text or self.ids['add_artefact_text_input_7'].text == '':
+
+            incorrect_list.append('7')
+
+        else:
+
+            artefact_what_do_list = []
+
+            n = ''
+
+            text = self.ids['add_artefact_text_input_7'].text.replace(' ', '')
+
+            for i in text:
+
+                if i == ',':
+
+                    artefact_what_do_list.append(n)
+
+                    n = ''
+
+                else:
+
+                    n += i
+
+            if not artefact_what_do_list:
+                artefact_what_do_list.append(text)
+
+            for i in artefact_what_do_list:
+
+                if i not in ['health', 'damage', 'ranged_damage', 'close_fight_radius', 'ranged_combat_radius',
+                             'moving_speed', 'healing_power', 'max_health']:
+                    incorrect_list.append('7')
+
+                    break
+
+        # if all correct made artefact, else print incorrect value in: 1, 2... labels.
+
+        if incorrect_list:
+
+            self.ids['add_artefact_label_0'].text = 'Incorrect value in: '
+
+            n = 0
+
+            for i in incorrect_list:
+
+                n += 1
+
+                if n == len(incorrect_list):
+
+                    self.ids['add_artefact_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
+                                                            'map exist and correct spelling of words.)'
+
+                else:
+
+                    self.ids['add_artefact_label_0'].text += i + ', '
+
+        else:
+
+            self.ids['add_artefact_label_0'].text = 'artefact made successful.'
+
+            import game_3_0_customizer
+
+            return game_3_0_customizer.made_artefact(self.ids['add_artefact_text_input_1'].text.lower(),
+                                                     self.ids['add_artefact_text_input_2'].text,
+                                                     int(self.ids['add_artefact_text_input_3'].text),
+                                                     int(self.ids['add_artefact_text_input_4'].text),
+                                                     int(self.ids['add_artefact_text_input_5'].text),
+                                                     artefact_maps_list,
+                                                     artefact_what_do_list)
 
 
 class SettingsScreen(Screen):
