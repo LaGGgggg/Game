@@ -254,9 +254,32 @@ kv = '''
                 id: game_layout_2_button_2
                 text: 'No'
                 on_release: root.manager.current = 'menu'
-
-        # system buttons layout(quit, switch.)
-
+        FloatLayout:
+            id: game_extra_layout_1
+            Button:
+                pos_hint: {'x': 15, 'y': 15}
+                id: game_layout_3_button_1
+                text: 'Inventory.'
+                on_release: 
+                    root.ids['game_label_3'].size_hint = (0, 0)
+                    root.ids['game_label_4'].size_hint = (.415, .4)
+                    root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_1'])
+                    root.ids['game_extra_layout_1'].add_widget(root.ids['game_layout_3_button_1'])
+                    root.ids['game_extra_layout_1'].remove_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_layout_4'].pos_hint = {'x': .845, 'y': .237}
+            Button:
+                pos_hint: {'x': 15, 'y': 15}
+                id: game_layout_3_button_2
+                text: 'Characters.'
+                on_release:
+                    root.ids['game_label_3'].size_hint = (.415, .4)
+                    root.ids['game_label_4'].size_hint = (0, 0)
+                    root.ids['game_extra_layout_1'].remove_widget(root.ids['game_layout_3_button_1'])
+                    root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_1'])
+                    root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_extra_layout_1'].add_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_layout_4'].pos_hint = {'x': 15, 'y': 15}
         GridLayout:
             id: game_layout_3
             rows: 1
@@ -268,33 +291,15 @@ kv = '''
                 text: 'Quit.'
                 on_release: root.manager.current = 'menu'
             Button:
-                id: game_layout_3_button_1
+                id: game_layout_3_button_5
                 text: 'Inventory.'
-                on_release: 
-
-                    # remove, because button exist for the first time
-
-                    root.ids['game_layout_1'].remove_widget(root.ids['game_layout_3_button_2'])
+                on_release:
+                    root.ids['game_extra_layout_1'].remove_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_2'])
+                    root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_5'])
                     root.ids['game_label_3'].size_hint = (0, 0)
                     root.ids['game_label_4'].size_hint = (.415, .4)
-                    root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_1'])
-                    root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_2'])
-
                     root.ids['game_layout_4'].pos_hint = {'x': .845, 'y': .237}
-
-        # here, because need to hide this button
-
-        Button:
-            pos_hint: {'x': 15, 'y': 15}
-            id: game_layout_3_button_2
-            text: 'Characters.'
-            on_release: 
-                root.ids['game_label_3'].size_hint = (.415, .4)
-                root.ids['game_label_4'].size_hint = (0, 0)
-                root.ids['game_layout_3'].remove_widget(root.ids['game_layout_3_button_2'])
-                root.ids['game_layout_3'].add_widget(root.ids['game_layout_3_button_1'])
-
-                root.ids['game_layout_4'].pos_hint = {'x': 15, 'y': 15}
         Label:
             id: game_label_3
             text: 'Player characters info label'
