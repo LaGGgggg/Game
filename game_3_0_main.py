@@ -163,6 +163,13 @@ kv = '''
             Button:
                 text: 'Settings.'
                 on_release: root.manager.current = 'settings'
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        Button:
+            size_hint: .14, .07
+            text: 'Quit.'
+            on_release: app.get_running_app().stop()
 <SaveChooseScreen>:
     on_pre_enter: root.build()
     AnchorLayout:
@@ -191,6 +198,13 @@ kv = '''
                 on_release: 
                     root.manager.current = 'game'
                     root.manager.screens[1].new_save('save_3.py')
+    AnchorLayout:
+        anchor_x: 'right'
+        anchor_y: 'top'
+        Button:
+            size_hint: .14, .07
+            text: 'Back to menu.'
+            on_release: root.manager.current = 'menu'
 <GameScreen>:
     FloatLayout:
         id: game_layout_1
@@ -223,7 +237,7 @@ kv = '''
             size_hint: .27, .55
             pos_hint: {'x': .31, 'y': .014}
             font_size: 15
-            text: 'Action label:\\n\\nDo you want to play?'
+            text: ''
 
         # player choose layout(move direction and ability choose)
 
@@ -252,7 +266,7 @@ kv = '''
             Button:
                 id: game_layout_3_button_4
                 text: 'Quit.'
-                on_release: app.get_running_app().stop()
+                on_release: root.manager.current = 'menu'
             Button:
                 id: game_layout_3_button_1
                 text: 'Inventory.'
@@ -330,7 +344,7 @@ kv = '''
         anchor_y: 'center'
         BoxLayout:
             orientation: 'vertical'
-            size_hint: .6, .3
+            size_hint: .6, .6
             Label:
                 text: 'Hello, it`s customizer for this game.\\nWhat you want to do?'
             Button:
@@ -359,6 +373,7 @@ kv = '''
             id: add_map_label_0
             text: 'Enter map characters please.'
             halign: 'center'
+            markup: True
             font_size: 17
         Label:
         Label:
@@ -491,6 +506,7 @@ kv = '''
         Label:
         Label:
             id: add_enemy_label_0
+            markup: True
             text: 'Enter enemy characters please.'
             halign: 'center'
         Label:
@@ -648,6 +664,7 @@ kv = '''
         Label:
         Label:
             id: add_artefact_label_0
+            markup: True
             text: 'Enter artefact characters please.'
             halign: 'center'
         Label:
@@ -1053,11 +1070,15 @@ class GameScreen(Screen):
 
         if instance in saves_list:
 
+            self.ids['game_label_2'].text = ''
+
             self.current_save = instance
 
             return self.build_game(instance)
 
         else:
+
+            self.ids['game_label_2'].text = 'Action label:\n\nDo you want to play?'
 
             saves_list.append(instance)
 
@@ -2217,7 +2238,8 @@ class AddMapScreen(Screen):
 
         if self.ids['add_map_text_input_1'].text.isnumeric() or \
                 '\\' in self.ids['add_map_text_input_1'].text or '&' in self.ids['add_map_text_input_1'].text or \
-                self.ids['add_map_text_input_1'].text == '':
+                self.ids['add_map_text_input_1'].text == '' or \
+                self.ids['add_map_text_input_1'].text in game_3_0_data.difficult_list:
 
             incorrect_list.append('1')
 
@@ -2357,8 +2379,9 @@ class AddMapScreen(Screen):
 
                 if n == len(incorrect_list):
 
-                    self.ids['add_map_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
-                                                            'artefact/enemies exist and correct spelling of words.)'
+                    self.ids['add_map_label_0'].text += i + '.\nCheck it and try again.\n[size=13](Check commas, ' \
+                                                            'artefact/enemies exist and correct spelling of words, ' \
+                                                            'try another names.)[/size]'
 
                 else:
 
@@ -2476,7 +2499,8 @@ class AddEnemyScreen(Screen):
 
         if self.ids['add_enemy_text_input_10'].text.isnumeric() or '\\' in self.ids['add_enemy_text_input_10'].text or \
                 '&' in self.ids['add_enemy_text_input_10'].text or self.ids['add_enemy_text_input_10'].text == '' or \
-                not self.ids['add_enemy_text_input_10'].text[0].isupper():
+                not self.ids['add_enemy_text_input_10'].text[0].isupper() or \
+                self.ids['add_enemy_text_input_10'].text in game_3_0_data.enemies_indexes.keys():
 
             incorrect_list.append('10')
 
@@ -2494,8 +2518,9 @@ class AddEnemyScreen(Screen):
 
                 if n == len(incorrect_list):
 
-                    self.ids['add_enemy_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
-                                                            'map exist and correct spelling of words.)'
+                    self.ids['add_enemy_label_0'].text += i + '.\nCheck it and try again.\n[size=13](Check commas, ' \
+                                                              'map exist and correct spelling of words, ' \
+                                                              'try another names[/size])'
 
                 else:
 
@@ -2561,7 +2586,8 @@ class AddArtefactScreen(Screen):
         if self.ids['add_artefact_text_input_1'].text.isnumeric() or \
                 self.ids['add_artefact_text_input_1'].text == '' or \
                 '\\' in self.ids['add_artefact_text_input_1'].text or \
-                '&' in self.ids['add_artefact_text_input_1'].text:
+                '&' in self.ids['add_artefact_text_input_1'].text or \
+                self.ids['add_artefact_text_input_1'].text in game_3_0_data.artefact_do.keys():
             incorrect_list.append('1')
 
         if self.ids['add_artefact_text_input_2'].text.isnumeric() or \
@@ -2671,8 +2697,9 @@ class AddArtefactScreen(Screen):
 
                 if n == len(incorrect_list):
 
-                    self.ids['add_artefact_label_0'].text += i + '.\nCheck it and try again.\n(Check commas, ' \
-                                                            'map exist and correct spelling of words.)'
+                    self.ids['add_artefact_label_0'].text += i + '.\nCheck it and try again.\n[size=13](Check commas,' \
+                                                                 ' map exist and correct spelling of words, ' \
+                                                                 'try another names.)[/size]'
 
                 else:
 
