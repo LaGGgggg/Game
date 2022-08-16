@@ -1,4 +1,4 @@
-![GitHub](https://img.shields.io/github/license/LaGGgggg/Game?label=License%3A)
+![GitHub](https://img.shields.io/github/license/LaGGgggg/Game)
 ![GitHub watchers](https://img.shields.io/github/watchers/LaGGgggg/Game)
 ![GitHub last commit](https://img.shields.io/github/last-commit/LaGGgggg/Game)
 
